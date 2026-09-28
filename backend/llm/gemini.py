@@ -32,17 +32,18 @@ class LLMClient:
             raise RuntimeError("Could not initialize LLM Client.") from e
 
     @retry(
-        wait=wait_exponential(multiplier=1, min=2, max=15),
-        stop=stop_after_attempt(5),
+        wait=wait_exponential(multiplier=2, min=5, max=60),
+        stop=stop_after_attempt(8),
         retry=retry_if_exception_type(APIError),
         before_sleep=lambda retry_state: logger.warning(
-            f"Google API overloaded (503). Retrying in {retry_state.next_action.sleep}s..."
+            f"Google API rate limited (429) or overloaded (503). Retrying in {retry_state.next_action.sleep}s..."
         )
     )
-    def generate_response(self, prompt: str) -> str:
+    def generate_response(self, prompt: str, response_schema=None) -> str:
         """
         Sends a prompt to the Gemini model and returns the generated text.
         Automatically retries with exponential backoff if the API is overloaded.
+        If response_schema is provided (a Pydantic model), it forces structured JSON output.
         """
         # Bound input size to prevent cost amplification
         if len(prompt) > MAX_INPUT_CHARS:
@@ -50,21 +51,30 @@ class LLMClient:
             prompt = prompt[:MAX_INPUT_CHARS]
 
         try:
+            # Build config: always cap output tokens; optionally force JSON schema
+            if response_schema:
+                config = types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    response_schema=response_schema,
+                    max_output_tokens=MAX_OUTPUT_TOKENS,
+                )
+            else:
+                config = types.GenerateContentConfig(
+                    max_output_tokens=MAX_OUTPUT_TOKENS,
+                )
+
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=prompt,
-                config=types.GenerateContentConfig(
-                    max_output_tokens=MAX_OUTPUT_TOKENS,
-                )
+                config=config,
             )
             
             # Extract and return the text
             return response.text
             
         except APIError as e:
-            # If it's a 503, tenacity will catch it and retry automatically.
-            # If retries are exhausted, or it's a different API Error, it raises.
-            if e.code == 503:
+            # If it's a 503 or 429, tenacity will catch it and retry automatically.
+            if e.code in [503, 429]:
                 raise # Pass up to tenacity to retry
             logger.error(f"Gemini API Error: {e}")
             raise RuntimeError(f"The model API returned an error: {e}")

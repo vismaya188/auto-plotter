@@ -3,6 +3,42 @@ import plotly.express as px
 import plotly.graph_objects as go
 from typing import Dict, Any, List
 import json
+from backend.llm.gemini import LLMClient
+from pydantic import BaseModel, Field
+import logging
+
+logger = logging.getLogger(__name__)
+
+class ChartMapping(BaseModel):
+    chart_type: str = Field(description="The type of chart: 'line', 'bar', 'scatter', 'kpi', or 'table'")
+    x_col: str = Field(description="The exact name of the column for the X-axis (or empty if not applicable)")
+    y_col: str = Field(description="The exact name of the column for the Y-axis (or empty if not applicable)")
+    color_col: str = Field(description="The exact name of the column for color grouping (or empty if not applicable)")
+    title: str = Field(description="A descriptive title for the chart")
+
+def get_chart_mapping(intent: str, columns: List[str], data_types: Dict[str, str], num_rows: int) -> ChartMapping:
+    if num_rows == 1 and len(columns) == 1:
+        return ChartMapping(chart_type="kpi", x_col="", y_col="", color_col="", title=columns[0])
+        
+    client = LLMClient()
+    prompt = f"""
+    You are a data visualization expert. Select the best chart type and map the columns for Plotly.
+    User Intent: {intent}
+    Data Schema (Columns and their types): {data_types}
+    Number of Rows: {num_rows}
+    
+    Choose the best chart_type and specify exactly which columns map to x_col, y_col, and color_col.
+    If it's just raw tabular data that shouldn't be charted, choose 'table'.
+    """
+    try:
+        response_text = client.generate_response(prompt, response_schema=ChartMapping)
+        # Assuming the returned text is JSON since response_schema is provided
+        # The schema forces it to be parsable to ChartMapping
+        return ChartMapping.model_validate_json(response_text)
+    except Exception as e:
+        logger.error(f"Failed to get chart mapping from LLM: {e}")
+        # Fallback to table
+        return ChartMapping(chart_type="table", x_col="", y_col="", color_col="", title="Data Table")
 
 TIME_KEYWORDS = ['date', 'time', 'month', 'year', 'day']
 GEO_KEYWORDS = ['country', 'state', 'city', 'region', 'location', 'territory', 'geo', 'map']
