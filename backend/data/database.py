@@ -41,6 +41,7 @@ class Database:
         """Loads the raw CSV into a DuckDB table named 'sales'. Requires a write connection."""
         if not os.path.exists(self.csv_path):
             raise DatabaseConfigError(f"Could not find sample dataset at {self.csv_path}")
+
         try:
             conn.execute(f"CREATE TABLE IF NOT EXISTS sales AS SELECT * FROM read_csv_auto('{self.csv_path}')")
             logger.info("Database initialized successfully with 'sales' table.")
