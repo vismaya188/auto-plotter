@@ -4,6 +4,7 @@ import duckdb
 import pandas as pd
 import logging
 from backend.config import settings
+from backend.data.session_store import get_session_db_path, session_has_data, SESSION_DB_DIR
 
 # Setup basic logging
 logging.basicConfig(level=logging.INFO)
@@ -18,21 +19,33 @@ class QuerySecurityError(Exception):
 
 class Database:
     """
-    Manages the local DuckDB instance and provides safe access to the data.
+    Manages the DuckDB instance and provides safe read-only query access.
+    
+    Session-aware: if session_id is provided, connects to the user's uploaded
+    dataset in data/sessions/{session_id}.duckdb instead of the default sales DB.
     """
-    def __init__(self):
-        self.db_path = settings.duckdb_path
+    def __init__(self, session_id: str = None):
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        self.csv_path = os.path.join(base_dir, "data", "sample_sales.csv")
 
-        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
-
-        # One-time init: if the db file doesn't exist yet, create and populate it,
-        # then immediately close the write connection.
-        if not os.path.exists(self.db_path):
-            init_conn = duckdb.connect(database=self.db_path, read_only=False)
-            self._initialize_db(init_conn)
-            init_conn.close()
+        if session_id and session_has_data(session_id):
+            # Route to session-specific uploaded dataset
+            self.db_path = get_session_db_path(session_id)
+            self.csv_path = None  # Session DB is already populated; no CSV init needed
+            # Session DB must already exist — was created by ingestor
+            if not os.path.exists(self.db_path):
+                raise FileNotFoundError(
+                    f"Session database not found at {self.db_path}. "
+                    "Please upload your data source first."
+                )
+        else:
+            # Default: use the built-in sales dataset
+            self.db_path = settings.duckdb_path
+            self.csv_path = os.path.join(base_dir, "data", "sample_sales.csv")
+            os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+            if not os.path.exists(self.db_path):
+                init_conn = duckdb.connect(database=self.db_path, read_only=False)
+                self._initialize_db(init_conn)
+                init_conn.close()
 
         # All query execution uses a read-only connection (matches threat model)
         self.conn = duckdb.connect(database=self.db_path, read_only=True)

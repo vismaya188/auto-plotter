@@ -34,6 +34,7 @@ class AgentState(TypedDict, total=False):
     status: str
     session_start_time: float
     trace: Any  # AgentTrace instance carried through state
+    session_id: str  # Optional: routes to user-uploaded session DB when set
 
 
 class DataRetrievalError(Exception):
@@ -122,6 +123,7 @@ def understand_intent_node(state: AgentState):
 
 def lookup_semantics_node(state: AgentState):
     trace: AgentTrace = state.get("trace")
+    session_id = state.get("session_id")
     # Combine all extracted terms for semantic lookup
     all_terms = (
         state.get("dimensions", []) +
@@ -129,7 +131,7 @@ def lookup_semantics_node(state: AgentState):
         state.get("filters", [])
     )
     terms_str = " ".join(str(t) for t in all_terms) if all_terms else state.get("user_prompt", "")
-    mapping = semantic_lookup(terms_str)
+    mapping = semantic_lookup(terms_str, session_id=session_id)
     trace.log_event("lookup_semantics", tool_called="semantic_lookup",
                     tool_arguments={"search_term": terms_str},
                     tool_result={"mapping_length": len(mapping)},
@@ -160,6 +162,7 @@ def validate_and_retrieve_node(state: AgentState):
     trace: AgentTrace = state.get("trace")
     sql = state.get("generated_sql", "")
     retries = state.get("sql_retries", 0)
+    session_id = state.get("session_id")
 
     try:
         # Pre-tool hook
@@ -168,8 +171,8 @@ def validate_and_retrieve_node(state: AgentState):
                         tool_arguments={"sql": valid_sql},
                         hook_decision="ALLOW", status="success")
 
-        # Tool execution
-        result = data_retrieve(valid_sql)
+        # Tool execution — routes to session DB if session_id is set
+        result = data_retrieve(valid_sql, session_id=session_id)
         if result["status"] == "error":
             raise DataRetrievalError(result["message"])
 

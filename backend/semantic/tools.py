@@ -1,14 +1,26 @@
 import json
+import logging
 from backend.semantic.model import semantic_model
 
+logger = logging.getLogger(__name__)
 
-def semantic_lookup(search_term: str) -> str:
+
+def semantic_lookup(search_term: str, session_id: str = None) -> str:
     """
     Looks up a business term in the semantic model.
     Returns matched columns, relevant KPI definitions, and date filter SQL snippets.
+
+    If session_id is provided and a dynamic semantic model exists for it,
+    that session schema is used instead of the static schema.json.
     """
+    # Resolve which schema to use — session-specific or default
+    if session_id:
+        from backend.data.session_store import get_semantic
+        schema = get_semantic(session_id) or semantic_model.get_full_schema()
+    else:
+        schema = semantic_model.get_full_schema()
+
     terms = [t.strip().lower() for t in search_term.replace(',', ' ').split() if t.strip()]
-    schema = semantic_model.get_full_schema()
     matches = []
 
     for table_name, table_info in schema.get("tables", {}).items():
@@ -42,9 +54,16 @@ def semantic_lookup(search_term: str) -> str:
     date_filters = schema.get("date_filters", {})
 
     if not matches and not kpi_matches:
+        # Build a helpful fallback using actual available columns
+        all_cols = [
+            col_name
+            for table_info in schema.get("tables", {}).values()
+            for col_name in table_info.get("columns", {}).keys()
+        ]
+        col_list = ", ".join(all_cols) if all_cols else "no columns found"
         return (
             f"No semantic matches found for '{search_term}'. "
-            f"Available columns: date, region, account, product, revenue, units. "
+            f"Available columns: {col_list}. "
             f"Try rephrasing using these terms."
         )
 

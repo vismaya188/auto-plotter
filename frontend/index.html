@@ -16,6 +16,48 @@
         </header>
         
         <main>
+            <div class="data-source-section glass-panel">
+                <div class="ds-header">
+                    <h3>Data Source</h3>
+                    <span id="current-ds-badge" class="badge default-badge">Default Sales DB</span>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="upload">File Upload</button>
+                    <button class="tab-btn" data-tab="url">URL / S3</button>
+                    <button class="tab-btn" data-tab="postgres">PostgreSQL</button>
+                </div>
+                
+                <div class="tab-content active" id="tab-upload">
+                    <div class="upload-wrapper">
+                        <input type="file" id="file-input" accept=".csv,.xlsx,.json,.parquet" />
+                        <button id="upload-btn" class="secondary-btn">Load File</button>
+                    </div>
+                    <small>Supported: CSV, Excel (.xlsx), JSON, Parquet (Max 50MB)</small>
+                </div>
+                
+                <div class="tab-content" id="tab-url">
+                    <div class="input-wrapper">
+                        <input type="text" id="url-input" placeholder="https://... or s3://... or Google Sheets URL" />
+                        <button id="url-btn" class="secondary-btn">Connect</button>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="tab-postgres">
+                    <div class="pg-form">
+                        <input type="text" id="pg-host" placeholder="Host (e.g. localhost)" />
+                        <input type="number" id="pg-port" placeholder="Port" value="5432" />
+                        <input type="text" id="pg-dbname" placeholder="DB Name" />
+                        <input type="text" id="pg-user" placeholder="User" />
+                        <input type="password" id="pg-password" placeholder="Password" />
+                        <input type="text" id="pg-table" placeholder="Table Name" />
+                        <button id="pg-btn" class="secondary-btn">Connect DB</button>
+                    </div>
+                </div>
+                
+                <div id="ds-status" class="ds-status hidden"></div>
+            </div>
+
             <div class="input-section glass-panel">
                 <input type="text" id="prompt-input" placeholder="Ask a question about your data (e.g. 'Show me top regions by revenue')" autofocus autocomplete="off" />
                 <button id="analyze-btn">Analyze</button>
