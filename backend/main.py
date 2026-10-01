@@ -1,17 +1,24 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+import asyncio
+import logging
 import os
 import uuid
+
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
+from typing import Optional
+
 from backend.config import settings
 from backend.agent.graph import agent_app
 from backend.agent.context import AgentJournal
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI(
     title="Prompt to Plot API",
-    description="Backend for the Prompt to Plot agentic BI system.",
-    version="0.1.0"
+    description="Agentic BI — Prompt to Plot with multi-source data ingestion.",
+    version="0.2.0"
 )
 
 app.add_middleware(
@@ -22,14 +29,198 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# ──────────────────────────────────────────────
+# Request / Response models
+# ──────────────────────────────────────────────
+
 class QueryRequest(BaseModel):
     prompt: str
-    session_id: str = None  # Optional: client can pass a session_id to resume a crashed session
+    session_id: Optional[str] = None  # Routes to uploaded dataset when set
+
+
+class PostgresConnectRequest(BaseModel):
+    host: str = Field(..., description="PostgreSQL host")
+    port: int = Field(5432, description="PostgreSQL port")
+    dbname: str = Field(..., description="Database name")
+    user: str = Field(..., description="Username")
+    password: str = Field(..., description="Password")
+    table_name: str = Field(..., description="Table to import")
+    session_id: Optional[str] = None
+
+
+class UrlConnectRequest(BaseModel):
+    url: str = Field(..., description="Public HTTPS or s3:// URL (CSV, Parquet, JSON, Google Sheets)")
+    session_id: Optional[str] = None
+
+
+# ──────────────────────────────────────────────
+# Helpers
+# ──────────────────────────────────────────────
+
+async def _run_ingestion(fn, *args) -> dict:
+    """
+    Runs a synchronous ingestion function in a thread pool so the
+    FastAPI event loop stays unblocked during heavy I/O.
+    """
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, fn, *args)
+
+
+def _complete_ingestion(session_id: str, source_type: str, source_label: str, ingest_result: dict) -> dict:
+    """
+    After ingestion succeeds, runs auto-discovery and registers the session.
+    Returns the final response payload.
+    """
+    from backend.semantic.auto_discover import auto_discover_semantics
+    from backend.data.session_store import register_session
+
+    try:
+        semantic = auto_discover_semantics(session_id)
+    except Exception as e:
+        logger.warning(f"Auto-discovery failed for session {session_id}: {e}")
+        semantic = {}
+
+    register_session(
+        session_id=session_id,
+        source_type=source_type,
+        source_label=source_label,
+        row_count=ingest_result["rows"],
+        columns=ingest_result.get("columns", []),
+        semantic=semantic
+    )
+
+    return {
+        "status": "ready",
+        "session_id": session_id,
+        "source_type": source_type,
+        "source_label": source_label,
+        "row_count": ingest_result["rows"],
+        "columns": [c["column_name"] for c in ingest_result.get("columns", [])],
+        "message": f"Dataset '{source_label}' loaded successfully. You can now ask questions about it."
+    }
+
+
+# ──────────────────────────────────────────────
+# Endpoints
+# ──────────────────────────────────────────────
+
+@app.post("/upload")
+async def upload_file(
+    file: UploadFile = File(...),
+    session_id: Optional[str] = Form(None)
+):
+    """
+    Upload a CSV, Excel (.xlsx), JSON, or Parquet file.
+    Returns a session_id that must be sent with all subsequent /query calls.
+    """
+    from backend.data.ingestion import (
+        validate_file, ingest_csv, ingest_excel, ingest_json
+    )
+
+    session_id = session_id or str(uuid.uuid4())
+    filename = file.filename or "upload"
+
+    try:
+        file_bytes = await file.read()
+        ext = validate_file(file_bytes, filename)  # raises ValueError on violations
+    except ValueError as e:
+        raise HTTPException(status_code=415, detail=str(e))
+
+    try:
+        if ext == "csv":
+            result = await _run_ingestion(ingest_csv, file_bytes, filename, session_id)
+        elif ext == "xlsx":
+            result = await _run_ingestion(ingest_excel, file_bytes, filename, session_id)
+        elif ext == "xls":
+            raise HTTPException(status_code=415, detail="Legacy .xls not supported. Re-save as .xlsx.")
+        elif ext == "json":
+            result = await _run_ingestion(ingest_json, file_bytes, filename, session_id)
+        else:
+            raise HTTPException(status_code=415, detail=f"Unsupported extension: .{ext}")
+
+        return _complete_ingestion(session_id, ext, filename, result)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Upload failed for session {session_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Ingestion failed: {str(e)}")
+
+
+@app.post("/connect/postgres")
+async def connect_postgres(request: PostgresConnectRequest):
+    """
+    Connects to a PostgreSQL database, copies the specified table
+    into a session DuckDB, and auto-discovers its semantic model.
+    """
+    from backend.data.ingestion import ingest_postgres
+
+    session_id = request.session_id or str(uuid.uuid4())
+
+    try:
+        result = await _run_ingestion(
+            ingest_postgres,
+            request.host, request.port, request.dbname,
+            request.user, request.password,
+            request.table_name, session_id
+        )
+        label = f"{request.host}/{request.dbname}.{request.table_name}"
+        return _complete_ingestion(session_id, "postgres", label, result)
+
+    except Exception as e:
+        logger.error(f"PostgreSQL connection failed: {e}")
+        # Don't expose raw PG error messages (may contain credentials)
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to connect to PostgreSQL. Check credentials and table name."
+        )
+
+
+@app.post("/connect/url")
+async def connect_url(request: UrlConnectRequest):
+    """
+    Reads a remote CSV, Parquet, JSON, or Google Sheets URL into a session DB.
+    Supports: HTTPS URLs and s3:// URIs.
+    """
+    from backend.data.ingestion import ingest_url
+
+    session_id = request.session_id or str(uuid.uuid4())
+
+    try:
+        result = await _run_ingestion(ingest_url, request.url, session_id)
+        return _complete_ingestion(session_id, "url", request.url, result)
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"URL ingestion failed ({request.url}): {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to read URL: {str(e)}")
+
+
+@app.get("/session/{session_id}")
+async def get_session_info(session_id: str):
+    """Returns metadata about a loaded data session."""
+    from backend.data.session_store import get_session
+    session = get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found. Please upload data first.")
+    return {
+        "session_id": session_id,
+        "source_type": session.get("source_type"),
+        "source_label": session.get("source_label"),
+        "row_count": session.get("row_count"),
+        "columns": [c["column_name"] for c in session.get("columns", [])]
+    }
 
 
 @app.post("/query")
 async def run_query(request: QueryRequest):
-    """Executes the full LangGraph agent workflow for a given prompt."""
+    """
+    Executes the full LangGraph agent workflow for a given prompt.
+    If session_id is provided and has ingested data, the agent queries
+    the user's uploaded dataset instead of the default sales DB.
+    """
     try:
         session_id = request.session_id or str(uuid.uuid4())
         journal = AgentJournal(session_id=session_id)
@@ -39,9 +230,11 @@ async def run_query(request: QueryRequest):
         if recovered_state:
             initial_state = recovered_state
             initial_state["_session_id"] = session_id
+            initial_state["user_prompt"] = request.prompt  # Always use latest prompt
         else:
             initial_state = {
                 "_session_id": session_id,
+                "session_id": session_id,   # threads through graph for DB routing
                 "user_prompt": request.prompt,
                 "sql_retries": 0,
                 "errors": ""
@@ -53,15 +246,12 @@ async def run_query(request: QueryRequest):
             node_name = list(s.keys())[0]
             state_data = s[node_name]
             final_merged_state.update(state_data)
-            # Write checkpoint after every node for session recovery
             journal.checkpoint(final_merged_state)
 
-        # Save human-readable trace via AgentTrace (carried in state)
         trace = final_merged_state.get("trace")
         if trace:
             trace.save(final_merged_state)
 
-        # Clear checkpoint on successful completion
         journal.clear_checkpoint()
 
         return {
@@ -78,10 +268,10 @@ async def run_query(request: QueryRequest):
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "service": "Prompt to Plot"}
+    return {"status": "ok", "service": "Prompt to Plot", "version": "0.2.0"}
 
 
-# Mount frontend static files
+# Mount frontend static files — must be LAST (catches all unmatched routes)
 frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 os.makedirs(frontend_dir, exist_ok=True)
 app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")

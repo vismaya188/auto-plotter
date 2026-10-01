@@ -12,14 +12,16 @@ TOOL_ANNOTATIONS = {
 }
 
 
-def semantic_lookup(search_term: str) -> str:
+def semantic_lookup(search_term: str, session_id: str = None) -> str:
     """
     [read-only] Maps business terms to semantic model fields deterministically.
     Input:  search_term — space/comma separated business terms
+            session_id  — if set, uses the session's auto-discovered semantic model
     Output: JSON string with matched columns, KPI definitions, date filter hints
     Error:  Returns a plain string describing available terms
     """
-    return core_semantic_lookup(search_term)
+    from backend.semantic.tools import semantic_lookup as _do_lookup
+    return _do_lookup(search_term, session_id=session_id)
 
 
 def query_generate(intent: str, semantic_mapping: str, error_context: str = "") -> str:
@@ -56,14 +58,15 @@ def query_generate(intent: str, semantic_mapping: str, error_context: str = "") 
     return sql.strip()
 
 
-def data_retrieve(sql_query: str) -> dict:
+def data_retrieve(sql_query: str, session_id: str = None) -> dict:
     """
     [read-only, external-network] Executes validated SQL against DuckDB.
-    Input:  sql_query — pre-validated SELECT statement
+    Input:  sql_query  — pre-validated SELECT statement
+            session_id — if set, queries the user's uploaded session database
     Output: {"status": "success", "data": [...]} or {"status": "error", "message": "..."}
     Error:  Always returns structured dict, never raises
     """
-    db = Database()
+    db = Database(session_id=session_id)
     try:
         df = db.execute_query(sql_query)
         records = df.to_dict(orient='records')
