@@ -66,7 +66,7 @@ EVAL_CASES = [
         "name": "10. Insight Grounding Check",
         "prompt": "Show revenue by region.",
         "expected_status": "insight_generated",
-        "criteria": lambda final_state: "ungrounded" not in final_state.get("insights", "").lower()
+        "criteria": lambda final_state: "flagged" not in str(final_state.get("insights", "")).lower()
     }
 ]
 

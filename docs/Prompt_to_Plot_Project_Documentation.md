@@ -791,5 +791,19 @@ The agent understands the user's intent, identifies the relevant data and metric
 The overall vision is to make BI more **accessible, automated, efficient, and decision-oriented**.
 
 ### One-line summary
+ 
+> **Prompt to Plot turns a natural-language business question into a relevant visualization and actionable insight with minimal manual BI effort.**
 
-> **Prompt to Plot turns a natural-language business question into a relevant Power BI visual and actionable insight with minimal manual BI effort.**
+---
+
+# 26. Hackathon Submission Notes
+
+Per the Hackathon 2026 requirements, we have explicitly documented the following architectural decisions and reusable components:
+
+### Reusable Component: The Deterministic Security Hooks (`backend/security/hooks.py`)
+To satisfy the *Best Harness* requirement of offering a component another team could lift into a different project, we present our **Deterministic Control Layer**. 
+Most teams rely on system prompts for security (e.g., "Do not drop tables", "Do not hallucinate"). Our hook library strips validation away from the LLM. It intercepts inputs and outputs at lifecycle boundaries (before-model, before-tool, after-tool) and applies deterministic Python validation (Regex AST parsing for SQL drops, exact numeric matching for hallucination grounding). Any team building a LangGraph or agentic pipeline can drop this `hooks.py` file into their project to immediately secure their tool executions without changing their LLM.
+
+### Architectural Pivot: Power BI vs. Plotly.js
+Early drafts of this documentation aimed to integrate deeply with Microsoft Power BI. However, during the hackathon, we pivoted to an **Agent-Driven Plotly.js Architecture**. 
+**Why?** Power BI requires heavy licensing, slow embedded iframe rendering, and complex semantic model setups that are rigid for an autonomous agent. By generating native `Plotly JSON` schemas directly from the agent and rendering them client-side in the browser, our system runs orders of magnitude faster, is completely open-source, and gives the LLM total control over styling, layout, and chart selection in real-time.

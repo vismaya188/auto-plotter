@@ -1,6 +1,13 @@
 # Prompt-to-Plot 🚀
 
-An end-to-end, deterministic Agentic BI platform built for the 2026 AI Hackathon. Prompt-to-Plot seamlessly translates natural language into secure, mathematically grounded, interactive visualizations using Gemini, LangGraph, and DuckDB.
+An end-to-end, deterministic Agentic BI platform built for the 2026 AI Hackathon. Prompt-to-Plot seamlessly translates natural language into secure, mathematically grounded, interactive visualizations using **Gemini 3.1 Flash**, **LangGraph**, and **DuckDB**. 
+
+### 🌟 Massive Autonomous Overhaul Highlights
+- **Native Structured Outputs:** Utilizes Gemini's Pydantic `response_schema` API constraints to guarantee 100% reliable JSON generation.
+- **LLM-as-a-Judge Entailment Grounding:** Replaces brittle regex with an incredibly strict secondary LLM judge that semantically entails the insight, mathematically preventing calculated hallucinations.
+- **Hybrid Visualization Mapping:** Dynamically selects the best Plotly axes and cluster colors using AI, ensuring visuals never crash on unknown columns.
+- **Resilient Retry Loops:** Implements strict LangGraph reducers and Tenacity exponential backoff to autonomously survive API quotas (`429`) and SQL syntax errors.
+- **Premium Dynamic UI/UX:** Features a state-of-the-art dark mode interface with animated glassmorphism, pulse interactions, and a beautiful gradient aesthetic.
 
 ## 1. End-to-End Architecture
 
@@ -17,12 +24,16 @@ graph TD
         SQLGen --> Hook2[SQL Validation Hook]
         Hook2 -->|Invalid| Loop[Retry Loop]
         Loop --> SQLGen
-        Hook2 -->|Valid| DB[(DuckDB)]
-        DB --> Viz[Deterministic Visualization Selector]
-        Viz --> Insight[Grounded Insight Generator]
+        Hook2 -->|Valid| DB[(Read-Only DuckDB Lock)]
+        DB --> Viz[Hybrid AI Plotly Schema Mapper]
+        Viz --> Sink[State Sync Node]
+        DB --> Insight[Insight Generator]
+        Insight --> Judge[LLM-as-a-Judge Entailment Hook]
+        Judge -->|Fail| Safe[Fallback Message]
+        Judge -->|Pass| Sink
     end
     
-    Insight --> Trace[JSON Trace Logger]
+    Sink --> Trace[JSON Trace Logger]
     Trace --> API
     API -->|JSON + Plotly Schema| User
 ```

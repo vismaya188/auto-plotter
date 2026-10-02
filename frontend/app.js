@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Elements ---
     const input = document.getElementById('prompt-input');
     const btn = document.getElementById('analyze-btn');
     const statusContainer = document.getElementById('status-container');
@@ -6,14 +7,156 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorText = document.getElementById('error-text');
     const resultsSection = document.getElementById('results-section');
     
-    // Elements to populate
     const plotlyDiv = document.getElementById('plotly-div');
     const factText = document.getElementById('fact-text');
     const insightText = document.getElementById('insight-text');
     const actionText = document.getElementById('action-text');
     const sqlText = document.getElementById('sql-text');
 
-    // Make Plotly dark mode by default to match our aesthetic
+    // Data Source Elements
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const dsStatus = document.getElementById('ds-status');
+    const currentDsBadge = document.getElementById('current-ds-badge');
+    
+    // Connect Buttons
+    const uploadBtn = document.getElementById('upload-btn');
+    const urlBtn = document.getElementById('url-btn');
+    const pgBtn = document.getElementById('pg-btn');
+
+    let currentSessionId = null;
+
+    // --- Tab Switching ---
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            btn.classList.add('active');
+            document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+            dsStatus.classList.add('hidden');
+        });
+    });
+
+    // --- Data Source Connection Logic ---
+    function showDsStatus(message, isError = false) {
+        dsStatus.textContent = message;
+        dsStatus.className = `ds-status ${isError ? 'error' : 'success'}`;
+        dsStatus.classList.remove('hidden');
+    }
+
+    function handleConnectSuccess(data) {
+        currentSessionId = data.session_id;
+        currentDsBadge.textContent = data.source_label;
+        currentDsBadge.classList.remove('default-badge');
+        currentDsBadge.classList.add('active-badge');
+        showDsStatus(`Connected! Found ${data.row_count} rows and ${data.columns.length} columns.`);
+    }
+
+    // 1. File Upload
+    uploadBtn.addEventListener('click', async () => {
+        const fileInput = document.getElementById('file-input');
+        if (!fileInput.files.length) {
+            showDsStatus('Please select a file first.', true);
+            return;
+        }
+
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Uploading...';
+        showDsStatus('Uploading and parsing file...', false);
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        if (currentSessionId) formData.append('session_id', currentSessionId);
+
+        try {
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || 'Upload failed');
+            handleConnectSuccess(data);
+        } catch (err) {
+            showDsStatus(err.message, true);
+        } finally {
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Load File';
+        }
+    });
+
+    // 2. URL Connect
+    urlBtn.addEventListener('click', async () => {
+        const urlInput = document.getElementById('url-input');
+        if (!urlInput.value.trim()) {
+            showDsStatus('Please enter a URL.', true);
+            return;
+        }
+
+        urlBtn.disabled = true;
+        urlBtn.textContent = 'Connecting...';
+        showDsStatus('Fetching from URL...', false);
+
+        try {
+            const response = await fetch('/connect/url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    url: urlInput.value.trim(),
+                    session_id: currentSessionId 
+                })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || 'Connection failed');
+            handleConnectSuccess(data);
+        } catch (err) {
+            showDsStatus(err.message, true);
+        } finally {
+            urlBtn.disabled = false;
+            urlBtn.textContent = 'Connect';
+        }
+    });
+
+    // 3. PostgreSQL Connect
+    pgBtn.addEventListener('click', async () => {
+        const host = document.getElementById('pg-host').value.trim();
+        const port = document.getElementById('pg-port').value;
+        const dbname = document.getElementById('pg-dbname').value.trim();
+        const user = document.getElementById('pg-user').value.trim();
+        const password = document.getElementById('pg-password').value;
+        const table_name = document.getElementById('pg-table').value.trim();
+
+        if (!host || !dbname || !user || !password || !table_name) {
+            showDsStatus('Please fill in all database fields.', true);
+            return;
+        }
+
+        pgBtn.disabled = true;
+        pgBtn.textContent = 'Connecting...';
+        showDsStatus('Connecting and syncing table...', false);
+
+        try {
+            const response = await fetch('/connect/postgres', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    host, port: parseInt(port), dbname, user, password, table_name,
+                    session_id: currentSessionId
+                })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || 'Connection failed');
+            handleConnectSuccess(data);
+        } catch (err) {
+            showDsStatus(err.message, true);
+        } finally {
+            pgBtn.disabled = false;
+            pgBtn.textContent = 'Connect DB';
+        }
+    });
+
+
+    // --- Agent Query Logic ---
     const darkLayout = {
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent',
@@ -37,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const prompt = input.value.trim();
         if (!prompt) return;
 
-        // UI Reset and Loading State
         btn.disabled = true;
         input.disabled = true;
         errorContainer.classList.add('hidden');
@@ -46,10 +188,13 @@ document.addEventListener('DOMContentLoaded', () => {
         Plotly.purge(plotlyDiv);
 
         try {
+            const body = { prompt };
+            if (currentSessionId) body.session_id = currentSessionId;
+
             const response = await fetch('/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt })
+                body: JSON.stringify(body)
             });
 
             const data = await response.json();
@@ -62,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.errors || 'The agent completely failed to process the request.');
             }
 
-            // Populate Insights securely (using textContent to prevent XSS)
+            // Populate Insights
             const insights = data.insights || {};
             factText.textContent = insights.fact || 'No data facts found.';
             insightText.textContent = insights.insight || 'No insights generated.';
@@ -71,11 +216,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Populate SQL Trace
             sqlText.textContent = data.generated_sql || 'No SQL generated.';
 
-            // Render Visualization using Plotly.js natively
+            // Render Visualization
             const viz = data.visualization || {};
             if (viz.plotly_json) {
                 const parsedFig = viz.plotly_json;
-                // Deep merge our dark layout settings over the generated layout
                 const layout = Object.assign({}, parsedFig.layout, darkLayout);
                 Plotly.newPlot(plotlyDiv, parsedFig.data, layout, {responsive: true, displayModeBar: false});
             } else if (viz.chart_type === 'kpi' && viz.plotly_json) {
@@ -86,15 +230,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 let formattedValue = value;
                 if (typeof value === 'number') {
-                    if (value >= 1e9) {
-                        formattedValue = (value / 1e9).toFixed(2) + 'B';
-                    } else if (value >= 1e6) {
-                        formattedValue = (value / 1e6).toFixed(2) + 'M';
-                    } else if (value >= 1000) {
-                        formattedValue = (value / 1000).toFixed(1) + 'K';
-                    } else {
-                        formattedValue = value.toLocaleString();
-                    }
+                    if (value >= 1e9) formattedValue = (value / 1e9).toFixed(2) + 'B';
+                    else if (value >= 1e6) formattedValue = (value / 1e6).toFixed(2) + 'M';
+                    else if (value >= 1000) formattedValue = (value / 1000).toFixed(1) + 'K';
+                    else formattedValue = value.toLocaleString();
                 }
 
                 plotlyDiv.innerHTML = `
@@ -110,14 +249,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 plotlyDiv.innerHTML = '<div style="color: #94a3b8; text-align: center; margin-top: 200px;">Table output generated. Please refer to raw data or adjust query for a chart.</div>';
             }
 
-            // Show results
             resultsSection.classList.remove('hidden');
 
         } catch (err) {
             errorText.textContent = err.message;
             errorContainer.classList.remove('hidden');
         } finally {
-            // Restore UI
             statusContainer.classList.add('hidden');
             btn.disabled = false;
             input.disabled = false;
