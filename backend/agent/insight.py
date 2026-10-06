@@ -23,13 +23,13 @@ def verify_grounding(generated_text: str, source_data: str) -> bool:
         
     client = LLMClient()
     prompt = f"""
-    You are an extremely strict fact-checker. 
+    You are a fact-checker. 
     Source Data: {source_data}
     Claim: {generated_text}
     
-    Does the claim contain ANY numbers, percentages, or calculations that do NOT appear EXACTLY in the Source Data?
-    Even if a number is mathematically correct (e.g. a sum or average of the source data), if the literal number string does not appear in the Source Data, you MUST answer YES.
-    Answer ONLY with 'YES' (if there are ungrounded numbers) or 'NO' (if every number in the claim exists in the source data).
+    Does the claim contain ANY hallucinated numbers that contradict or cannot be logically derived from the Source Data?
+    It is ACCEPTABLE for numbers to be formatted for readability (e.g. '1.5k' instead of 1500, or '12%' instead of 0.12) or to count the number of data points.
+    Answer ONLY with 'YES' (if there are severe ungrounded hallucinations) or 'NO' (if the claim is factually grounded).
     """
     try:
         res = client.generate_response(prompt).strip().upper()
