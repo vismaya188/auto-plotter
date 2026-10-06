@@ -24,8 +24,16 @@ from backend.data.session_store import SESSION_DB_DIR, get_session_db_path
 
 logger = logging.getLogger(__name__)
 
-TABLE_NAME = "user_data"
+import re
+
 MAX_FILE_BYTES = 50 * 1024 * 1024  # 50 MB hard cap
+
+def _get_table_name(source: str) -> str:
+    """Derives a safe SQL table name from a filename or URL."""
+    base = os.path.basename(source.split("?")[0])
+    name = os.path.splitext(base)[0]
+    clean_name = re.sub(r'\W+', '_', name).lower()
+    return clean_name if clean_name else "user_data"
 
 # Allowed MIME types → mapped from filetype library guesses
 ALLOWED_MIME_TYPES = {
@@ -58,14 +66,14 @@ def _open_write_conn(session_id: str) -> duckdb.DuckDBPyConnection:
     return duckdb.connect(path, read_only=False)
 
 
-def _get_schema(conn: duckdb.DuckDBPyConnection) -> list[dict]:
+def _get_schema(conn: duckdb.DuckDBPyConnection, table_name: str) -> list[dict]:
     """Returns column schema as a list of dicts [{column_name, column_type}]."""
-    rows = conn.execute(f"DESCRIBE {TABLE_NAME}").fetchall()
+    rows = conn.execute(f"DESCRIBE {table_name}").fetchall()
     return [{"column_name": r[0], "column_type": r[1]} for r in rows]
 
 
-def _get_row_count(conn: duckdb.DuckDBPyConnection) -> int:
-    return conn.execute(f"SELECT COUNT(*) FROM {TABLE_NAME}").fetchone()[0]
+def _get_row_count(conn: duckdb.DuckDBPyConnection, table_name: str) -> int:
+    return conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
 
 
 # ──────────────────────────────────────────────
@@ -168,6 +176,7 @@ def ingest_csv(file_bytes: bytes, filename: str, session_id: str) -> dict:
     Writes file bytes to a temp file, then loads into session DuckDB via read_csv.
     DuckDB auto-detects delimiter, quoting, and column types.
     """
+    table_name = _get_table_name(filename)
     with _get_session_lock(session_id):
         with tempfile.NamedTemporaryFile(suffix=".csv", delete=False) as tmp:
             tmp.write(file_bytes)
@@ -175,15 +184,15 @@ def ingest_csv(file_bytes: bytes, filename: str, session_id: str) -> dict:
 
         conn = _open_write_conn(session_id)
         try:
-            conn.execute(f"DROP TABLE IF EXISTS {TABLE_NAME}")
+            conn.execute(f"DROP TABLE IF EXISTS {table_name}")
             conn.execute(f"""
-                CREATE TABLE {TABLE_NAME} AS
+                CREATE TABLE {table_name} AS
                 SELECT * FROM read_csv('{tmp_path}', auto_detect=true, sample_size=-1, ignore_errors=true, strict_mode=false)
             """)
-            schema = _get_schema(conn)
-            row_count = _get_row_count(conn)
-            logger.info(f"[{session_id}] CSV ingested: {row_count} rows, {len(schema)} cols")
-            return {"status": "success", "rows": row_count, "columns": schema}
+            schema = _get_schema(conn, table_name)
+            row_count = _get_row_count(conn, table_name)
+            logger.info(f"[{session_id}] CSV ingested: {row_count} rows, {len(schema)} cols into '{table_name}'")
+            return {"status": "success", "table_name": table_name, "rows": row_count, "columns": schema}
         except Exception as e:
             logger.error(f"[{session_id}] CSV ingestion error: {e}")
             raise
@@ -207,6 +216,7 @@ def ingest_excel(file_bytes: bytes, filename: str, session_id: str) -> dict:
             "Legacy .xls format is not supported. Please re-save the file as .xlsx."
         )
 
+    table_name = _get_table_name(filename)
     with _get_session_lock(session_id):
         with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
             tmp.write(file_bytes)
@@ -215,17 +225,17 @@ def ingest_excel(file_bytes: bytes, filename: str, session_id: str) -> dict:
         conn = _open_write_conn(session_id)
         try:
             conn.execute("INSTALL excel; LOAD excel;")
-            conn.execute(f"DROP TABLE IF EXISTS {TABLE_NAME}")
+            conn.execute(f"DROP TABLE IF EXISTS {table_name}")
             # all_varchar=True prevents type inference failures on messy Excel files
             # A CAST pass can be added later if needed
             conn.execute(f"""
-                CREATE TABLE {TABLE_NAME} AS
+                CREATE TABLE {table_name} AS
                 SELECT * FROM read_xlsx('{tmp_path}', all_varchar=true)
             """)
-            schema = _get_schema(conn)
-            row_count = _get_row_count(conn)
-            logger.info(f"[{session_id}] Excel ingested: {row_count} rows, {len(schema)} cols")
-            return {"status": "success", "rows": row_count, "columns": schema}
+            schema = _get_schema(conn, table_name)
+            row_count = _get_row_count(conn, table_name)
+            logger.info(f"[{session_id}] Excel ingested: {row_count} rows, {len(schema)} cols into '{table_name}'")
+            return {"status": "success", "table_name": table_name, "rows": row_count, "columns": schema}
         except Exception as e:
             logger.error(f"[{session_id}] Excel ingestion error: {e}")
             raise
@@ -239,6 +249,7 @@ def ingest_excel(file_bytes: bytes, filename: str, session_id: str) -> dict:
 
 def ingest_json(file_bytes: bytes, filename: str, session_id: str) -> dict:
     """Ingests JSON (array of objects) into DuckDB via read_json."""
+    table_name = _get_table_name(filename)
     with _get_session_lock(session_id):
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
             tmp.write(file_bytes)
@@ -246,15 +257,15 @@ def ingest_json(file_bytes: bytes, filename: str, session_id: str) -> dict:
 
         conn = _open_write_conn(session_id)
         try:
-            conn.execute(f"DROP TABLE IF EXISTS {TABLE_NAME}")
+            conn.execute(f"DROP TABLE IF EXISTS {table_name}")
             conn.execute(f"""
-                CREATE TABLE {TABLE_NAME} AS
+                CREATE TABLE {table_name} AS
                 SELECT * FROM read_json('{tmp_path}', auto_detect=true)
             """)
-            schema = _get_schema(conn)
-            row_count = _get_row_count(conn)
-            logger.info(f"[{session_id}] JSON ingested: {row_count} rows")
-            return {"status": "success", "rows": row_count, "columns": schema}
+            schema = _get_schema(conn, table_name)
+            row_count = _get_row_count(conn, table_name)
+            logger.info(f"[{session_id}] JSON ingested: {row_count} rows into '{table_name}'")
+            return {"status": "success", "table_name": table_name, "rows": row_count, "columns": schema}
         except Exception as e:
             logger.error(f"[{session_id}] JSON ingestion error: {e}")
             raise
@@ -277,6 +288,7 @@ def ingest_postgres(
     immediately after — all subsequent queries run air-gapped from production.
     """
     conn_str = f"host={host} port={port} dbname={dbname} user={user} password={password}"
+    target_table = _get_table_name(table_name)
 
     with _get_session_lock(session_id):
         conn = _open_write_conn(session_id)
@@ -285,15 +297,15 @@ def ingest_postgres(
             conn.execute(
                 f"ATTACH '{conn_str}' AS pg_source (TYPE postgres, READ_ONLY)"
             )
-            conn.execute(f"DROP TABLE IF EXISTS {TABLE_NAME}")
+            conn.execute(f"DROP TABLE IF EXISTS {target_table}")
             conn.execute(
-                f"CREATE TABLE {TABLE_NAME} AS SELECT * FROM pg_source.{table_name}"
+                f"CREATE TABLE {target_table} AS SELECT * FROM pg_source.{table_name}"
             )
             conn.execute("DETACH pg_source")
-            schema = _get_schema(conn)
-            row_count = _get_row_count(conn)
-            logger.info(f"[{session_id}] PostgreSQL table '{table_name}' ingested: {row_count} rows")
-            return {"status": "success", "rows": row_count, "columns": schema}
+            schema = _get_schema(conn, target_table)
+            row_count = _get_row_count(conn, target_table)
+            logger.info(f"[{session_id}] PostgreSQL table '{table_name}' ingested: {row_count} rows into '{target_table}'")
+            return {"status": "success", "table_name": target_table, "rows": row_count, "columns": schema}
         except Exception as e:
             logger.error(f"[{session_id}] PostgreSQL ingestion error: {e}")
             raise
@@ -323,6 +335,7 @@ def ingest_url(url: str, session_id: str) -> dict:
             url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
             logger.info(f"Google Sheets URL converted to CSV export: {url}")
 
+    table_name = _get_table_name(url)
     with _get_session_lock(session_id):
         conn = _open_write_conn(session_id)
         try:
@@ -350,7 +363,7 @@ def ingest_url(url: str, session_id: str) -> dict:
                         "CREATE OR REPLACE SECRET s3_session (TYPE S3, PROVIDER CREDENTIAL_CHAIN)"
                     )
 
-            conn.execute(f"DROP TABLE IF EXISTS {TABLE_NAME}")
+            conn.execute(f"DROP TABLE IF EXISTS {table_name}")
             url_lower = url.lower().split("?")[0]  # strip query params for ext detection
 
             if url_lower.endswith(".parquet"):
@@ -358,13 +371,13 @@ def ingest_url(url: str, session_id: str) -> dict:
             elif url_lower.endswith(".json") or url_lower.endswith(".ndjson"):
                 reader = f"read_json('{url}', auto_detect=true)"
             else:
-                reader = f"read_csv('{url}', auto_detect=true)"
+                reader = f"read_csv('{url}', auto_detect=true, ignore_errors=true, strict_mode=false)"
 
-            conn.execute(f"CREATE TABLE {TABLE_NAME} AS SELECT * FROM {reader}")
-            schema = _get_schema(conn)
-            row_count = _get_row_count(conn)
-            logger.info(f"[{session_id}] URL ingested ({url}): {row_count} rows")
-            return {"status": "success", "rows": row_count, "columns": schema}
+            conn.execute(f"CREATE TABLE {table_name} AS SELECT * FROM {reader}")
+            schema = _get_schema(conn, table_name)
+            row_count = _get_row_count(conn, table_name)
+            logger.info(f"[{session_id}] URL ingested ({url}): {row_count} rows into '{table_name}'")
+            return {"status": "success", "table_name": table_name, "rows": row_count, "columns": schema}
         except Exception as e:
             logger.error(f"[{session_id}] URL ingestion error: {e}")
             raise

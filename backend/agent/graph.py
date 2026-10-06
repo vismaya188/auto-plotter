@@ -16,10 +16,11 @@ from backend.agent.context import AgentTrace
 from backend.llm.gemini import LLMClient
 
 
-# 1. Define the Typed State
 class AgentState(TypedDict, total=False):
     user_prompt: str
+    chat_history: List[Dict[str, str]]
     intent: str
+    intent_type: str
     dimensions: List[str]
     measures: List[str]
     filters: List[str]
@@ -85,51 +86,66 @@ def understand_intent_node(state: AgentState):
         trace.log_event("understand_intent", status="failed", error=str(e))
         return {"errors": str(e), "status": "failed"}
 
+    history_text = ""
+    if state.get("chat_history"):
+        history_text = "Chat History:\n" + "\n".join([f"{msg['role']}: {msg['content']}" for msg in state["chat_history"]])
+
     client = LLMClient()
     prompt = (
-        f"Analyze this business question: '{state['user_prompt']}'. "
-        f"If the user is asking a purely conversational question (like a greeting, asking how to use the app, or general chat), "
-        f"return a JSON object with 'is_conversational': true, and 'response': 'your conversational response'. "
-        f"IMPORTANT: If the user asks for a summary, overview, understanding, or explanation of the uploaded data/file, DO NOT treat it as conversational. It is an analytical query. "
-        f"For analytical queries, return a JSON object with three keys: "
-        f"'dimensions' (list of grouping fields like region, product, date), "
-        f"'measures' (list of numeric fields like revenue, units), "
-        f"'filters' (list of filter conditions mentioned like 'North region', 'last quarter'). "
-        f"If they ask for a general summary, set dimensions to ['all'] and measures to ['summary']. "
+        f"Analyze this business question: '{state['user_prompt']}'.\n"
+        f"{history_text}\n\n"
+        f"Classify the user's intent into exactly one of three categories:\n"
+        f"1. 'conversational': Greetings, asking how to use the app, or general chat that DOES NOT require querying the database.\n"
+        f"2. 'data_qa': Asking for specific facts, numbers, or lists from the data where a text answer is best (e.g. 'How many customers in the USA?'). Requires a SQL query but NO chart.\n"
+        f"3. 'visualization': Asking for trends, comparisons, or charts (e.g. 'Plot revenue by category', 'Show me sales trends'). Requires a SQL query AND a chart.\n\n"
+        f"IMPORTANT: If the user asks for a summary or overview of the uploaded data, classify it as 'data_qa'.\n\n"
+        f"Return a JSON object with:\n"
+        f"- 'intent_type': 'conversational', 'data_qa', or 'visualization'\n"
+        f"- 'response': (only if 'conversational') your text response to the user\n"
+        f"- 'dimensions': (only if NOT conversational) list of grouping fields mentioned (e.g. region, date)\n"
+        f"- 'measures': (only if NOT conversational) list of numeric fields mentioned (e.g. revenue)\n"
+        f"- 'filters': (only if NOT conversational) list of filter conditions (e.g. 'North region')\n"
+        f"If they ask for a general summary, set dimensions to ['all'] and measures to ['summary'].\n"
         f"Return only valid JSON, no markdown."
     )
     response = client.generate_response(prompt)
 
     # Parse structured intent from LLM
-    is_conversational = False
+    intent_type = "visualization"
     conversational_response = ""
+    dimensions = []
+    measures = []
+    filters = []
+    
     try:
         clean = response.strip().lstrip("```json").lstrip("```").rstrip("```").strip()
         parsed = json.loads(clean)
-        is_conversational = parsed.get("is_conversational", False)
+        intent_type = parsed.get("intent_type", "visualization")
         conversational_response = parsed.get("response", "")
         dimensions = parsed.get("dimensions", [])
         measures = parsed.get("measures", [])
         filters = parsed.get("filters", [])
     except (json.JSONDecodeError, AttributeError):
-        # Fallback: treat entire response as a flat term list
+        # Fallback
         dimensions = [response]
 
-    if is_conversational:
+    if intent_type == "conversational":
         trace.log_event("understand_intent", tool_called="gemini.generate_response",
-                        tool_result={"is_conversational": True}, status="success")
+                        tool_result={"intent_type": intent_type}, status="success")
         return {
             "intent": state["user_prompt"],
+            "intent_type": intent_type,
             "visualization": {"chart_type": "message", "message": conversational_response},
             "status": "conversational"
         }
 
     trace.log_event("understand_intent", tool_called="gemini.generate_response",
                     tool_arguments={"prompt_length": len(prompt)},
-                    tool_result={"dimensions": dimensions, "measures": measures, "filters": filters},
+                    tool_result={"intent_type": intent_type, "dimensions": dimensions, "measures": measures, "filters": filters},
                     status="success")
     return {
         "intent": state["user_prompt"],
+        "intent_type": intent_type,
         "dimensions": dimensions,
         "measures": measures,
         "filters": filters,
@@ -258,6 +274,15 @@ def generate_insight_node(state: AgentState):
     trace.log_event("generate_insight", tool_called="insight_generate",
                     tool_result={"insight_keys": list(insight.keys()) if isinstance(insight, dict) else []},
                     status="success")
+    
+    # If this was a DATA_QA intent, we bypass visualization entirely and output the insight as the chat message
+    if state.get("intent_type") == "data_qa":
+        return {
+            "insights": insight, 
+            "visualization": {"chart_type": "message", "message": f"{insight.get('fact', '')}\n\n{insight.get('insight', '')}\n\n{insight.get('action', '')}"},
+            "status": "insight_generated"
+        }
+        
     return {"insights": insight, "status": "insight_generated"}
 
 
@@ -291,6 +316,15 @@ def check_intent(state: AgentState):
 def fan_out_node(state: AgentState):
     return {"status": "processing_outputs"}
 
+def after_validate_and_retrieve(state: AgentState):
+    """Routes to fan_out if visualization is needed, otherwise direct to insight (data_qa)."""
+    status = should_retry(state)
+    if status != "continue":
+        return status
+        
+    if state.get("intent_type") == "data_qa":
+        return "generate_insight"
+    return "fan_out"
 
 # 4. Build the LangGraph Workflow
 workflow = StateGraph(AgentState)
@@ -313,8 +347,8 @@ workflow.add_edge("generate_sql", "validate_and_retrieve")
 
 workflow.add_conditional_edges(
     "validate_and_retrieve",
-    should_retry,
-    {"continue": "fan_out", "retry": "generate_sql", "fail": END}
+    after_validate_and_retrieve,
+    {"fan_out": "fan_out", "generate_insight": "generate_insight", "retry": "generate_sql", "fail": END}
 )
 
 workflow.add_edge("fan_out", "select_visualization")

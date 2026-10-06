@@ -1,0 +1,14 @@
+{
+    "session_id": "827dc5aa-035c-452e-9ce8-049e90ac7396",
+    "checkpoint_time": "2026-10-06T15:52:35.727746+00:00",
+    "state": {
+        "_session_id": "827dc5aa-035c-452e-9ce8-049e90ac7396",
+        "session_id": "827dc5aa-035c-452e-9ce8-049e90ac7396",
+        "user_prompt": "Show me total sales by region",
+        "chat_history": [],
+        "sql_retries": 0,
+        "errors": "",
+        "status": "input_validated",
+        "session_start_time": 1791301955.726755
+    }
+}

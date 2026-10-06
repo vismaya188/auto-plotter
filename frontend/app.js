@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pgBtn = document.getElementById('pg-btn');
 
     let currentSessionId = null;
+    let chatHistory = [];  // Multi-turn conversation memory
 
     // --- Tab Switching ---
     tabBtns.forEach(btn => {
@@ -46,11 +47,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleConnectSuccess(data) {
+        // On first upload to a new session, create the session ID
+        if (!currentSessionId) {
+            currentSessionId = data.session_id;
+            chatHistory = [];  // New dataset = fresh conversation
+        }
         currentSessionId = data.session_id;
-        currentDsBadge.textContent = data.source_label;
+        const tableName = data.table_name || 'dataset';
+        const totalTables = data.total_tables || 1;
+        const rowCount = data.row_count || '?';
+        const colCount = (data.columns || []).length;
+        currentDsBadge.textContent = totalTables > 1 ? `${totalTables} tables loaded` : tableName;
         currentDsBadge.classList.remove('default-badge');
         currentDsBadge.classList.add('active-badge');
-        showDsStatus(`Connected! Found ${data.row_count} rows and ${data.columns.length} columns.`);
+        const colInfo = colCount ? ` | ${colCount} columns` : '';
+        showDsStatus(`✅ Table '${tableName}' loaded (${rowCount} rows${colInfo}). Total tables: ${totalTables}.`);
     }
 
     // 1. File Upload
@@ -188,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Plotly.purge(plotlyDiv);
 
         try {
-            const body = { prompt };
+            const body = { prompt, chat_history: chatHistory };
             if (currentSessionId) body.session_id = currentSessionId;
 
             const response = await fetch('/query', {
@@ -260,6 +271,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     plotlyDiv.innerHTML = '<div style="color: #94a3b8; text-align: center; margin-top: 200px;">Table output generated. Please refer to raw data or adjust query for a chart.</div>';
                 }
             }
+
+            // Append to conversation history for multi-turn context
+            chatHistory.push({ role: 'user', content: prompt });
+            const assistantMsg = data.insights?.fact
+                ? `${data.insights.fact} ${data.insights.insight}`.trim()
+                : (data.visualization?.message || '');
+            if (assistantMsg) chatHistory.push({ role: 'assistant', content: assistantMsg });
+            // Keep history bounded to last 10 turns to avoid token bloat
+            if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
 
             resultsSection.classList.remove('hidden');
 
