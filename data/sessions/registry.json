@@ -6805,5 +6805,1670 @@
       "date_filters": {},
       "kpis": {}
     }
+  },
+  "6bebe2de-aea4-4c5f-bcc2-64cf0734af85": {
+    "tables": {
+      "test": {
+        "source_type": "csv",
+        "source_label": "test.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "id",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "name",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "revenue",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "date",
+            "column_type": "DATE"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "test": {
+          "description": "A table containing performance and revenue data associated with specific entities and dates.",
+          "columns": {
+            "id": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Unique identifier for each record entry in the dataset.",
+              "synonyms": [
+                "record id",
+                "entry index",
+                "unique identifier",
+                "primary key",
+                "id number"
+              ]
+            },
+            "name": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name of the individual or entity associated with the record.",
+              "synonyms": [
+                "person name",
+                "entity name",
+                "full name",
+                "user name",
+                "account label"
+              ]
+            },
+            "revenue": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The monetary value generated or recorded for the specific entry.",
+              "synonyms": [
+                "total sales",
+                "monetary income",
+                "earnings",
+                "transaction amount",
+                "dollar value"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The specific calendar date when the revenue or record was logged.",
+              "synonyms": [
+                "transaction date",
+                "calendar day",
+                "recorded on",
+                "event date",
+                "time stamp"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(date) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(date) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(date) = YEAR(CURRENT_DATE) AND MONTH(date) = MONTH(CURRENT_DATE)",
+        "last month": "date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND date < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND date < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) AND date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
+  },
+  "11338c8d-5c4f-4d9b-904f-eca5fea15b89": {
+    "tables": {
+      "sales": {
+        "source_type": "csv",
+        "source_label": "sales.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "sales",
+            "column_type": "BIGINT"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "sales": {
+          "description": "Contains aggregated sales data categorized by geographic region.",
+          "columns": {
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The geographical area where the sales were recorded.",
+              "synonyms": [
+                "territory",
+                "zone",
+                "location",
+                "area",
+                "market segment"
+              ]
+            },
+            "sales": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The total monetary value of sales generated in a specific region.",
+              "synonyms": [
+                "revenue",
+                "turnover",
+                "total sales",
+                "income",
+                "receipts"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {},
+      "kpis": {}
+    }
+  },
+  "50e25eb8-57b7-407b-aecf-1af0d85a3de3": {
+    "tables": {
+      "customers": {
+        "source_type": "csv",
+        "source_label": "customers.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "CompanyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "City",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Country",
+            "column_type": "VARCHAR"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "This table stores the demographic and contact information for the company's business clients.",
+          "columns": {
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The unique identifier assigned to each customer account.",
+              "synonyms": [
+                "customer code",
+                "client id",
+                "customer id",
+                "account number",
+                "client code"
+              ]
+            },
+            "CompanyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The legal name of the business entity or client.",
+              "synonyms": [
+                "client name",
+                "business name",
+                "organization name",
+                "company name",
+                "customer name"
+              ]
+            },
+            "City": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city where the customer is headquartered or primarily operates.",
+              "synonyms": [
+                "location city",
+                "customer city",
+                "headquarters city",
+                "town",
+                "city name"
+              ]
+            },
+            "Country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The nation where the customer is located.",
+              "synonyms": [
+                "customer country",
+                "client nation",
+                "country name",
+                "market region",
+                "geography"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {},
+      "kpis": {}
+    }
+  },
+  "f91328c3-7f85-4ada-a703-a38a8901fcd9": {
+    "tables": {
+      "customers": {
+        "source_type": "csv",
+        "source_label": "customers.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "CompanyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "City",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Country",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "orders": {
+        "source_type": "csv",
+        "source_label": "orders.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "OrderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "UnitPrice",
+            "column_type": "DOUBLE"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "Contains detailed information about company clients, including their locations and identification codes.",
+          "columns": {
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The unique identifier assigned to each customer.",
+              "synonyms": [
+                "customer code",
+                "client id",
+                "customer identification",
+                "account number",
+                "customer reference"
+              ]
+            },
+            "CompanyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The official name of the business entity or customer.",
+              "synonyms": [
+                "client name",
+                "business name",
+                "customer name",
+                "company",
+                "firm name"
+              ]
+            },
+            "City": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city where the customer is located.",
+              "synonyms": [
+                "location",
+                "town",
+                "customer city",
+                "headquarters city",
+                "municipality"
+              ]
+            },
+            "Country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country where the customer business is registered.",
+              "synonyms": [
+                "customer country",
+                "region",
+                "nation",
+                "territory",
+                "market country"
+              ]
+            }
+          }
+        },
+        "orders": {
+          "description": "Records individual transaction details including quantities purchased and the unit price per item.",
+          "columns": {
+            "OrderID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "The unique identification number for each order transaction.",
+              "synonyms": [
+                "order number",
+                "transaction id",
+                "sale id",
+                "invoice number",
+                "order code"
+              ]
+            },
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The ID of the customer who placed the order.",
+              "synonyms": [
+                "purchaser id",
+                "buyer id",
+                "client code",
+                "customer reference",
+                "ordering customer"
+              ]
+            },
+            "Quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The number of units purchased in the specific order.",
+              "synonyms": [
+                "units ordered",
+                "item count",
+                "volume",
+                "quantity count",
+                "number of items"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "UnitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The price per individual unit for the items in the order.",
+              "synonyms": [
+                "item cost",
+                "price",
+                "unit value",
+                "selling price",
+                "cost per unit"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [
+        "orders.CustomerID = customers.CustomerID"
+      ],
+      "date_filters": {},
+      "kpis": {}
+    }
+  },
+  "33fa00b4-51fa-48f5-93bc-5fce70194f0d": {
+    "tables": {
+      "customers": {
+        "source_type": "csv",
+        "source_label": "customers.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "CompanyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "City",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Country",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "orders": {
+        "source_type": "csv",
+        "source_label": "orders.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "OrderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "UnitPrice",
+            "column_type": "DOUBLE"
+          }
+        ]
+      },
+      "products": {
+        "source_type": "csv",
+        "source_label": "products.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "ProductID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "ProductName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "UnitPrice",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "CategoryID",
+            "column_type": "BIGINT"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "Contains information about customers who place orders with the company.",
+          "columns": {
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The unique identifier for a customer.",
+              "synonyms": [
+                "customer code",
+                "client id",
+                "customer number",
+                "customer ref"
+              ]
+            },
+            "CompanyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name of the company that is the customer.",
+              "synonyms": [
+                "client name",
+                "business name",
+                "customer name",
+                "company description"
+              ]
+            },
+            "City": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city where the customer is located.",
+              "synonyms": [
+                "town",
+                "location",
+                "customer city",
+                "office city"
+              ]
+            },
+            "Country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country where the customer is located.",
+              "synonyms": [
+                "nation",
+                "territory",
+                "customer country",
+                "region"
+              ]
+            }
+          }
+        },
+        "orders": {
+          "description": "Stores order transactional data including customer identifiers and pricing details.",
+          "columns": {
+            "OrderID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "The unique identifier for an order.",
+              "synonyms": [
+                "order number",
+                "transaction id",
+                "order reference",
+                "invoice id"
+              ]
+            },
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The identifier of the customer who placed the order.",
+              "synonyms": [
+                "purchaser id",
+                "client id",
+                "buyer id",
+                "customer code"
+              ]
+            },
+            "Quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The number of units purchased in the order.",
+              "synonyms": [
+                "units sold",
+                "count",
+                "number of items",
+                "amount",
+                "volume"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "UnitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The unit price of the item at the time of the order.",
+              "synonyms": [
+                "item price",
+                "cost per unit",
+                "price",
+                "selling price"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        },
+        "products": {
+          "description": "Contains details about products offered by the company including category and pricing.",
+          "columns": {
+            "ProductID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "The unique identifier for a product.",
+              "synonyms": [
+                "item id",
+                "sku",
+                "product code",
+                "catalog number"
+              ]
+            },
+            "ProductName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name of the product.",
+              "synonyms": [
+                "item name",
+                "description",
+                "product title",
+                "good name"
+              ]
+            },
+            "UnitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The current standard unit price for the product.",
+              "synonyms": [
+                "list price",
+                "current price",
+                "item cost",
+                "selling price"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "CategoryID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "The unique identifier for the category the product belongs to.",
+              "synonyms": [
+                "group id",
+                "category code",
+                "product category",
+                "department id"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [
+        "orders.CustomerID = customers.CustomerID"
+      ],
+      "date_filters": {},
+      "kpis": {}
+    }
+  },
+  "3093c910-f237-4ff9-a916-ac44d8c983bd": {
+    "tables": {
+      "order_details": {
+        "source_type": "csv",
+        "source_label": "order-details.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "OrderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "UnitPrice",
+            "column_type": "DOUBLE"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "order_details": {
+          "description": "Contains line item details for customer orders, including quantities and pricing information for business analysis.",
+          "columns": {
+            "OrderID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Unique identifier assigned to each customer order.",
+              "synonyms": [
+                "order id",
+                "order number",
+                "transaction id",
+                "order reference",
+                "invoice number"
+              ]
+            },
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Unique identifier for the customer who placed the order.",
+              "synonyms": [
+                "customer id",
+                "client id",
+                "customer code",
+                "buyer id",
+                "account id"
+              ]
+            },
+            "Quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The number of units purchased for a specific order line item.",
+              "synonyms": [
+                "quantity",
+                "units sold",
+                "item count",
+                "order quantity",
+                "qty"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "UnitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The price per individual unit for the ordered item.",
+              "synonyms": [
+                "unit price",
+                "item cost",
+                "price per unit",
+                "selling price",
+                "rate"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {},
+      "kpis": {}
+    }
+  },
+  "60fb79b5-6171-425e-8ee6-d318e0f9f9ba": {
+    "tables": {
+      "customers": {
+        "source_type": "csv",
+        "source_label": "customers.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "CompanyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "City",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Country",
+            "column_type": "VARCHAR"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "Contains details of business clients including their location and company identification.",
+          "columns": {
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The unique identifier assigned to each customer.",
+              "synonyms": [
+                "customer code",
+                "client ID",
+                "customer identifier",
+                "user ID",
+                "account number"
+              ]
+            },
+            "CompanyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The legal name of the customer's company.",
+              "synonyms": [
+                "client name",
+                "business name",
+                "organization name",
+                "company",
+                "firm name"
+              ]
+            },
+            "City": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city where the customer's headquarters or branch is located.",
+              "synonyms": [
+                "location",
+                "town",
+                "municipality",
+                "office city",
+                "business location"
+              ]
+            },
+            "Country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country where the customer operates.",
+              "synonyms": [
+                "nation",
+                "region",
+                "territory",
+                "country name",
+                "market area"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {},
+      "kpis": {}
+    }
+  },
+  "8c821dbd-9ee8-4fc4-8c71-93cac1d8b870": {
+    "tables": {
+      "customers": {
+        "source_type": "csv",
+        "source_label": "customers.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "CompanyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "City",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Country",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "orders": {
+        "source_type": "csv",
+        "source_label": "orders.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "OrderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "UnitPrice",
+            "column_type": "DOUBLE"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "Stores information about the company's client base including contact details and geographical locations.",
+          "columns": {
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Unique identifier for a customer.",
+              "synonyms": [
+                "customer code",
+                "client ID",
+                "customer ref",
+                "client code",
+                "customer identifier"
+              ]
+            },
+            "CompanyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The legal name of the customer company.",
+              "synonyms": [
+                "business name",
+                "client name",
+                "company",
+                "firm name",
+                "customer name"
+              ]
+            },
+            "City": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city where the customer is headquartered.",
+              "synonyms": [
+                "location",
+                "town",
+                "city name",
+                "office location"
+              ]
+            },
+            "Country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country where the customer is headquartered.",
+              "synonyms": [
+                "nation",
+                "country name",
+                "region",
+                "territory"
+              ]
+            }
+          }
+        },
+        "orders": {
+          "description": "Contains details of individual orders placed by customers, including quantity and pricing information.",
+          "columns": {
+            "OrderID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Unique identifier for each order placed.",
+              "synonyms": [
+                "order number",
+                "transaction ID",
+                "order code",
+                "order ref"
+              ]
+            },
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The identifier of the customer who placed the order.",
+              "synonyms": [
+                "client ID",
+                "purchaser ID",
+                "customer code",
+                "buyer ID"
+              ]
+            },
+            "Quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The number of items ordered in the transaction.",
+              "synonyms": [
+                "units",
+                "order volume",
+                "item count",
+                "total quantity"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "UnitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The price per individual unit for the ordered item.",
+              "synonyms": [
+                "item cost",
+                "price per unit",
+                "cost",
+                "unit rate"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [
+        "orders.CustomerID = customers.CustomerID"
+      ],
+      "date_filters": {},
+      "kpis": {}
+    }
+  },
+  "47cbd86c-fb24-4806-8b2a-1078d34664e0": {
+    "tables": {
+      "customers": {
+        "source_type": "csv",
+        "source_label": "customers.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "CompanyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "City",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Country",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "orders": {
+        "source_type": "csv",
+        "source_label": "orders.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "OrderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "UnitPrice",
+            "column_type": "DOUBLE"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "Contains detailed information about client entities including their location and business name.",
+          "columns": {
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Unique identifier assigned to each customer account.",
+              "synonyms": [
+                "customer code",
+                "client id",
+                "customer number",
+                "account id",
+                "customer reference"
+              ]
+            },
+            "CompanyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The legal name of the customer company.",
+              "synonyms": [
+                "company name",
+                "client name",
+                "customer organization",
+                "business name",
+                "firm name"
+              ]
+            },
+            "City": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city where the customer company is headquartered.",
+              "synonyms": [
+                "customer city",
+                "business location",
+                "office city",
+                "city name",
+                "town"
+              ]
+            },
+            "Country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country where the customer company is located.",
+              "synonyms": [
+                "customer country",
+                "country name",
+                "business nation",
+                "customer region",
+                "territory"
+              ]
+            }
+          }
+        },
+        "orders": {
+          "description": "Records individual transactional details regarding product orders placed by customers.",
+          "columns": {
+            "OrderID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "A unique identifier for each placed order.",
+              "synonyms": [
+                "order number",
+                "transaction id",
+                "order reference",
+                "purchase id",
+                "invoice number"
+              ]
+            },
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Identifier linking the order to a specific customer.",
+              "synonyms": [
+                "client id",
+                "buyer id",
+                "purchaser identifier",
+                "customer code",
+                "account id"
+              ]
+            },
+            "Quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The number of items purchased in the order.",
+              "synonyms": [
+                "units sold",
+                "item count",
+                "number of items",
+                "order volume",
+                "purchase quantity"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "UnitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The individual price of a single unit within an order.",
+              "synonyms": [
+                "item cost",
+                "price per unit",
+                "unit rate",
+                "selling price",
+                "product price"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [
+        "orders.CustomerID = customers.CustomerID"
+      ],
+      "date_filters": {},
+      "kpis": {}
+    }
+  },
+  "8f1f457a-71a2-4540-8990-5cdfd728db6b": {
+    "tables": {
+      "customers": {
+        "source_type": "csv",
+        "source_label": "customers.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "CompanyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "City",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Country",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "orders": {
+        "source_type": "csv",
+        "source_label": "orders.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "OrderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "UnitPrice",
+            "column_type": "DOUBLE"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "Contains details about the company's customer base, including location information.",
+          "columns": {
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The unique identifier for each customer.",
+              "synonyms": [
+                "customer code",
+                "client ID",
+                "customer number",
+                "account identifier",
+                "unique customer key"
+              ]
+            },
+            "CompanyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The legal name of the customer company.",
+              "synonyms": [
+                "client name",
+                "customer organization",
+                "business name",
+                "company",
+                "account title"
+              ]
+            },
+            "City": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city where the customer is located.",
+              "synonyms": [
+                "customer city",
+                "location city",
+                "headquarters city",
+                "city of operation",
+                "town"
+              ]
+            },
+            "Country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country where the customer is located.",
+              "synonyms": [
+                "customer country",
+                "region",
+                "nation",
+                "country of origin",
+                "market location"
+              ]
+            }
+          }
+        },
+        "orders": {
+          "description": "Contains order transactional data including quantities and unit prices for items sold.",
+          "columns": {
+            "OrderID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "The unique identifier for each order placed.",
+              "synonyms": [
+                "order number",
+                "transaction ID",
+                "order reference",
+                "sale ID",
+                "order code"
+              ]
+            },
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The identifier of the customer who placed the order.",
+              "synonyms": [
+                "buyer ID",
+                "purchaser code",
+                "client reference",
+                "customer identifier",
+                "purchasing account"
+              ]
+            },
+            "Quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The number of items included in the order.",
+              "synonyms": [
+                "order volume",
+                "units ordered",
+                "total items",
+                "number of products",
+                "count of units"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "UnitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The individual price of a single unit of the ordered item.",
+              "synonyms": [
+                "item cost",
+                "price per unit",
+                "unit rate",
+                "product price",
+                "sale price"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [
+        "orders.CustomerID = customers.CustomerID"
+      ],
+      "date_filters": {},
+      "kpis": {}
+    }
+  },
+  "51e0f24d-a81d-4c04-8703-ff355cfba75c": {
+    "tables": {
+      "customers": {
+        "source_type": "csv",
+        "source_label": "customers.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "CompanyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "City",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Country",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "orders": {
+        "source_type": "csv",
+        "source_label": "orders.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "OrderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "UnitPrice",
+            "column_type": "DOUBLE"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "Contains details about the company, location, and identity of registered customers.",
+          "columns": {
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Unique identifier for the customer.",
+              "synonyms": [
+                "client id",
+                "customer code",
+                "account id",
+                "customer reference",
+                "identifier"
+              ]
+            },
+            "CompanyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The legal name of the customer company.",
+              "synonyms": [
+                "client name",
+                "business name",
+                "customer name",
+                "company",
+                "firm name"
+              ]
+            },
+            "City": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city where the customer is located.",
+              "synonyms": [
+                "municipality",
+                "location city",
+                "town",
+                "office city",
+                "region city"
+              ]
+            },
+            "Country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country where the customer is located.",
+              "synonyms": [
+                "nation",
+                "territory",
+                "country name",
+                "region country",
+                "base country"
+              ]
+            }
+          }
+        },
+        "orders": {
+          "description": "Stores transactional order records including quantities and pricing details for each purchase.",
+          "columns": {
+            "OrderID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "The unique identification number assigned to each order.",
+              "synonyms": [
+                "order number",
+                "transaction id",
+                "sale id",
+                "purchase number",
+                "reference number"
+              ]
+            },
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The ID of the customer who placed the order.",
+              "synonyms": [
+                "client id",
+                "buyer id",
+                "purchaser identifier",
+                "customer code",
+                "associated customer"
+              ]
+            },
+            "Quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The number of items purchased in the order.",
+              "synonyms": [
+                "units sold",
+                "item count",
+                "volume",
+                "order quantity",
+                "purchase amount"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "UnitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The price per individual unit for the order.",
+              "synonyms": [
+                "item price",
+                "price per unit",
+                "cost per item",
+                "unit cost",
+                "rate"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [
+        "orders.CustomerID = customers.CustomerID"
+      ],
+      "date_filters": {},
+      "kpis": {}
+    }
+  },
+  "df4b0049-bce1-4df5-9863-e77509096643": {
+    "tables": {
+      "customers": {
+        "source_type": "csv",
+        "source_label": "customers.csv",
+        "row_count": 3,
+        "columns": [
+          {
+            "column_name": "CustomerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "CompanyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "City",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Country",
+            "column_type": "VARCHAR"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "Contains detailed profile information for customers who interact with the business.",
+          "columns": {
+            "CustomerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Unique identifier assigned to each customer.",
+              "synonyms": [
+                "customer code",
+                "client id",
+                "customer number",
+                "unique customer identifier",
+                "customer key"
+              ]
+            },
+            "CompanyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The legal name of the customer company.",
+              "synonyms": [
+                "customer name",
+                "client name",
+                "business name",
+                "organization name",
+                "company title"
+              ]
+            },
+            "City": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city where the customer company is headquartered.",
+              "synonyms": [
+                "customer city",
+                "business location city",
+                "city of operation",
+                "branch city",
+                "office city"
+              ]
+            },
+            "Country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country where the customer company is located.",
+              "synonyms": [
+                "customer country",
+                "client nation",
+                "business country",
+                "country of origin",
+                "market location"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {},
+      "kpis": {}
+    }
   }
 }

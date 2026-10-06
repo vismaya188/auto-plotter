@@ -1,0 +1,136 @@
+{
+    "session_id": "2002009735424",
+    "started_at": "2026-10-06T17:09:45.897503+00:00",
+    "completed_at": "2026-10-06T17:10:17.634548+00:00",
+    "final_status": "insight_generated",
+    "sql_retries": 0,
+    "generated_sql": "SELECT DISTINCT Country FROM customers ORDER BY Country ASC",
+    "errors": "",
+    "events": [
+        {
+            "timestamp": "2026-10-06T17:09:45.897538+00:00",
+            "step": "validate_input",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "sanitize_prompt",
+            "tool_arguments": {
+                "prompt": "List all countries in the customers table"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-06T17:09:57.083897+00:00",
+            "step": "understand_intent",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "gemini.generate_response",
+            "tool_arguments": {
+                "prompt_length": 1551
+            },
+            "tool_result": {
+                "intent_type": "data_qa",
+                "dimensions": [
+                    "country"
+                ],
+                "measures": [],
+                "filters": []
+            }
+        },
+        {
+            "timestamp": "2026-10-06T17:09:57.089919+00:00",
+            "step": "lookup_semantics",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "semantic_lookup",
+            "tool_arguments": {
+                "search_term": "country"
+            },
+            "tool_result": {
+                "mapping_length": 320
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-06T17:10:05.497554+00:00",
+            "step": "generate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "query_generate",
+            "tool_arguments": {
+                "intent": "List all countries in the customers table",
+                "retry": 0
+            },
+            "tool_result": {
+                "sql": "SELECT DISTINCT Country FROM customers ORDER BY Country ASC"
+            }
+        },
+        {
+            "timestamp": "2026-10-06T17:10:05.499319+00:00",
+            "step": "validate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "validate_sql",
+            "tool_arguments": {
+                "sql": "SELECT DISTINCT Country FROM customers ORDER BY Country ASC"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-06T17:10:05.538071+00:00",
+            "step": "validate_and_retrieve",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "data_retrieve",
+            "tool_result": {
+                "rows": 3
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-06T17:10:17.632675+00:00",
+            "step": "generate_insight",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "insight_generate",
+            "tool_result": {
+                "insight_keys": [
+                    "fact",
+                    "insight",
+                    "action"
+                ]
+            }
+        }
+    ],
+    "final_state_summary": {
+        "_session_id": "51e0f24d-a81d-4c04-8703-ff355cfba75c",
+        "session_id": "51e0f24d-a81d-4c04-8703-ff355cfba75c",
+        "user_prompt": "List all countries in the customers table",
+        "chat_history": [],
+        "sql_retries": 0,
+        "errors": "",
+        "status": "insight_generated",
+        "session_start_time": 1791306585.8975465,
+        "intent": "List all countries in the customers table",
+        "intent_type": "data_qa",
+        "dimensions": [
+            "country"
+        ],
+        "measures": [],
+        "filters": [],
+        "semantic_mapping": "{\n  \"search_term\": \"country\",\n  \"matches\": [\n    {\n      \"table\": \"customers\",\n      \"column\": \"Country\",\n      \"role\": \"dimension\",\n      \"type\": \"VARCHAR\",\n      \"description\": \"The country where the customer is located.\",\n      \"annotation\": \"read-only\"\n    }\n  ],\n  \"kpi_definitions\": [],\n  \"date_filter_hints\": {}\n}",
+        "generated_sql": "SELECT DISTINCT Country FROM customers ORDER BY Country ASC",
+        "sql_validation": "VALID",
+        "insights": {
+            "fact": "The customers table contains entries from France, Germany, and Mexico.",
+            "insight": "The customer base is currently distributed across three distinct countries, indicating an international market presence.",
+            "action": "Query the full customer database to confirm if these are the only three countries present or if further geographic segments exist."
+        },
+        "visualization": {
+            "chart_type": "message",
+            "message": "The customers table contains entries from France, Germany, and Mexico.\n\nThe customer base is currently distributed across three distinct countries, indicating an international market presence.\n\nQuery the full customer database to confirm if these are the only three countries present or if further geographic segments exist."
+        },
+        "query_result_metadata": {
+            "rows_returned": 3
+        }
+    }
+}
