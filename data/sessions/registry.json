@@ -8470,5 +8470,1449 @@
       "date_filters": {},
       "kpis": {}
     }
+  },
+  "0474f982-bc57-464e-8958-1ee99127f30d": {
+    "tables": {
+      "real_superstore": {
+        "source_type": "csv",
+        "source_label": "real_superstore.csv",
+        "row_count": 7150,
+        "columns": [
+          {
+            "column_name": "Row ID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "Order ID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "Order Date",
+            "column_type": "DATE"
+          },
+          {
+            "column_name": "Order Priority",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Order Quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "Sales",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Discount",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Ship Mode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Profit",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Unit Price",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Shipping Cost",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Customer Name",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Province",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Customer Segment",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Product Category",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Product Sub-Category",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Product Name",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Product Container",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Product Base Margin",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Ship Date",
+            "column_type": "DATE"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "real_superstore": {
+          "description": "User-uploaded real_superstore dataset.",
+          "columns": {
+            "Row ID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The Row ID field.",
+              "synonyms": [
+                "row id",
+                "i",
+                "row",
+                "d"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Order ID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The Order ID field.",
+              "synonyms": [
+                "order id",
+                "i",
+                "order",
+                "d"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Order Date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The Order Date field.",
+              "synonyms": [
+                "order date",
+                "date",
+                "order"
+              ]
+            },
+            "Order Priority": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Order Priority field.",
+              "synonyms": [
+                "order",
+                "order priority",
+                "priority"
+              ]
+            },
+            "Order Quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The Order Quantity field.",
+              "synonyms": [
+                "order quantity",
+                "order",
+                "quantity"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Sales": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Sales field.",
+              "synonyms": [
+                "sales"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Discount": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Discount field.",
+              "synonyms": [
+                "discount"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Ship Mode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Ship Mode field.",
+              "synonyms": [
+                "ship",
+                "mode",
+                "ship mode"
+              ]
+            },
+            "Profit": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Profit field.",
+              "synonyms": [
+                "profit"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Unit Price": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Unit Price field.",
+              "synonyms": [
+                "price",
+                "unit",
+                "unit price"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Shipping Cost": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Shipping Cost field.",
+              "synonyms": [
+                "shipping",
+                "cost",
+                "shipping cost"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Customer Name": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Customer Name field.",
+              "synonyms": [
+                "name",
+                "customer name",
+                "customer"
+              ]
+            },
+            "Province": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Province field.",
+              "synonyms": [
+                "province"
+              ]
+            },
+            "Region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Region field.",
+              "synonyms": [
+                "region"
+              ]
+            },
+            "Customer Segment": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Customer Segment field.",
+              "synonyms": [
+                "segment",
+                "customer",
+                "customer segment"
+              ]
+            },
+            "Product Category": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Product Category field.",
+              "synonyms": [
+                "product category",
+                "product",
+                "category"
+              ]
+            },
+            "Product Sub-Category": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Product Sub-Category field.",
+              "synonyms": [
+                "sub-",
+                "product",
+                "product sub-category",
+                "category"
+              ]
+            },
+            "Product Name": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Product Name field.",
+              "synonyms": [
+                "name",
+                "product name",
+                "product"
+              ]
+            },
+            "Product Container": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Product Container field.",
+              "synonyms": [
+                "product container",
+                "container",
+                "product"
+              ]
+            },
+            "Product Base Margin": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Product Base Margin field.",
+              "synonyms": [
+                "product base margin",
+                "base",
+                "product",
+                "margin"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Ship Date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The Ship Date field.",
+              "synonyms": [
+                "ship",
+                "ship date",
+                "date"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(Order Date) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(Order Date) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(Order Date) = YEAR(CURRENT_DATE) AND MONTH(Order Date) = MONTH(CURRENT_DATE)",
+        "last month": "Order Date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND Order Date < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "Order Date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND Order Date < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "Order Date >= DATE_TRUNC('quarter', CURRENT_DATE) AND Order Date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
+  },
+  "384decd2-4781-4b9b-9070-abbdf18141ea": {
+    "tables": {
+      "sample_sales": {
+        "source_type": "csv",
+        "source_label": "sample_sales.csv",
+        "row_count": 15,
+        "columns": [
+          {
+            "column_name": "date",
+            "column_type": "DATE"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "account",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "product",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "revenue",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "units",
+            "column_type": "BIGINT"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "sample_sales": {
+          "description": "This table tracks daily sales transactions detailing the revenue and quantity of products sold to specific accounts across different geographic regions.",
+          "columns": {
+            "date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The specific calendar date on which the sale transaction occurred.",
+              "synonyms": [
+                "transaction date",
+                "sales day",
+                "calendar day",
+                "day of sale",
+                "sale timestamp"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The geographic area or territory where the sales transaction took place.",
+              "synonyms": [
+                "sales region",
+                "geographic territory",
+                "area",
+                "market zone",
+                "location"
+              ]
+            },
+            "account": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name of the customer or business organization associated with the sale.",
+              "synonyms": [
+                "customer",
+                "client",
+                "business name",
+                "purchaser",
+                "account name"
+              ]
+            },
+            "product": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name or identifying label of the specific item sold.",
+              "synonyms": [
+                "item name",
+                "SKU",
+                "merchandise",
+                "good",
+                "product description"
+              ]
+            },
+            "revenue": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The total monetary value generated from the sale transaction.",
+              "synonyms": [
+                "sales amount",
+                "total revenue",
+                "gross sales",
+                "transaction value",
+                "dollar amount"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "units": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The number of product items sold in the transaction.",
+              "synonyms": [
+                "quantity",
+                "item count",
+                "volume",
+                "units sold",
+                "amount sold"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(date) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(date) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(date) = YEAR(CURRENT_DATE) AND MONTH(date) = MONTH(CURRENT_DATE)",
+        "last month": "date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND date < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND date < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) AND date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
+  },
+  "21b8e06e-f10a-415a-87a4-02deecd2e0ea": {
+    "tables": {
+      "sample_sales": {
+        "source_type": "csv",
+        "source_label": "sample_sales.csv",
+        "row_count": 15,
+        "columns": [
+          {
+            "column_name": "date",
+            "column_type": "DATE"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "account",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "product",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "revenue",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "units",
+            "column_type": "BIGINT"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "sample_sales": {
+          "description": "Contains transaction-level data including sales revenue, unit volume, dates, and organizational hierarchy information for business reporting.",
+          "columns": {
+            "date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The specific calendar date when the sale occurred.",
+              "synonyms": [
+                "transaction date",
+                "sale date",
+                "calendar day",
+                "time period",
+                "reporting date"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The geographical territory or market zone where the transaction took place.",
+              "synonyms": [
+                "territory",
+                "sales area",
+                "geographic zone",
+                "market location",
+                "district"
+              ]
+            },
+            "account": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The specific customer or business entity associated with the sales transaction.",
+              "synonyms": [
+                "customer",
+                "client",
+                "company name",
+                "organization",
+                "purchaser"
+              ]
+            },
+            "product": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name or identifier of the specific item sold.",
+              "synonyms": [
+                "item",
+                "merchandise",
+                "stock keeping unit",
+                "offering",
+                "service name"
+              ]
+            },
+            "revenue": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The total monetary value generated from the sale.",
+              "synonyms": [
+                "total sales",
+                "gross amount",
+                "dollars",
+                "transaction value",
+                "turnover"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "units": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The quantity of items sold during the transaction.",
+              "synonyms": [
+                "volume",
+                "quantity",
+                "number of items",
+                "unit count",
+                "sold quantity"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(date) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(date) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(date) = YEAR(CURRENT_DATE) AND MONTH(date) = MONTH(CURRENT_DATE)",
+        "last month": "date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND date < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND date < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) AND date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
+  },
+  "1cf990d9-a8ee-43ac-a67a-8f837be42d65": {
+    "tables": {
+      "sample_sales": {
+        "source_type": "csv",
+        "source_label": "sample_sales.csv",
+        "row_count": 15,
+        "columns": [
+          {
+            "column_name": "date",
+            "column_type": "DATE"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "account",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "product",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "revenue",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "units",
+            "column_type": "BIGINT"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "sample_sales": {
+          "description": "This table records individual sales transactions capturing the date, region, client account, product sold, and associated financial metrics.",
+          "columns": {
+            "date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The specific calendar date when the transaction occurred.",
+              "synonyms": [
+                "transaction date",
+                "sale date",
+                "day of sale",
+                "time period",
+                "calendar date"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The geographical area where the sale took place.",
+              "synonyms": [
+                "sales territory",
+                "geographic zone",
+                "location",
+                "market area",
+                "area"
+              ]
+            },
+            "account": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name of the customer organization associated with the sale.",
+              "synonyms": [
+                "customer",
+                "client",
+                "business name",
+                "company",
+                "account name"
+              ]
+            },
+            "product": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name of the item or service sold.",
+              "synonyms": [
+                "item name",
+                "product description",
+                "stock item",
+                "merchandise",
+                "good sold"
+              ]
+            },
+            "revenue": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The total monetary value generated from the transaction.",
+              "synonyms": [
+                "sales amount",
+                "total revenue",
+                "monetary value",
+                "transaction amount",
+                "dollars"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "units": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The quantity of items sold in the transaction.",
+              "synonyms": [
+                "quantity",
+                "volume",
+                "number of items",
+                "count",
+                "units sold"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(date) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(date) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(date) = YEAR(CURRENT_DATE) AND MONTH(date) = MONTH(CURRENT_DATE)",
+        "last month": "date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND date < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND date < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) AND date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
+  },
+  "ed324c98-f186-44f1-9f2e-4b7ff496ee1f": {
+    "tables": {
+      "sample_sales": {
+        "source_type": "csv",
+        "source_label": "sample_sales.csv",
+        "row_count": 16,
+        "columns": [
+          {
+            "column_name": "date",
+            "column_type": "DATE"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "account",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "product",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "revenue",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "units",
+            "column_type": "BIGINT"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "sample_sales": {
+          "description": "Contains transactional sales records detailing revenue and volume broken down by date, region, account, and product.",
+          "columns": {
+            "date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The calendar date on which the sales transaction occurred.",
+              "synonyms": [
+                "transaction date",
+                "day",
+                "sales period",
+                "time",
+                "timestamp"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The geographical area where the sale was recorded.",
+              "synonyms": [
+                "territory",
+                "geographic area",
+                "location",
+                "sales zone",
+                "district"
+              ]
+            },
+            "account": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name of the customer account or organization that made the purchase.",
+              "synonyms": [
+                "customer",
+                "client",
+                "company name",
+                "organization",
+                "account name"
+              ]
+            },
+            "product": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name or identifier of the item sold.",
+              "synonyms": [
+                "item",
+                "merchandise",
+                "SKU",
+                "product name",
+                "offering"
+              ]
+            },
+            "revenue": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The total monetary value generated by the sale.",
+              "synonyms": [
+                "sales amount",
+                "total revenue",
+                "transaction value",
+                "dollars",
+                "income"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "units": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The quantity of items sold in the transaction.",
+              "synonyms": [
+                "quantity",
+                "number of items",
+                "volume",
+                "count",
+                "total units sold"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(date) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(date) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(date) = YEAR(CURRENT_DATE) AND MONTH(date) = MONTH(CURRENT_DATE)",
+        "last month": "date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND date < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND date < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) AND date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
+  },
+  "845d8b09-e537-4192-9aac-c8dfb4c56399": {
+    "tables": {
+      "sample_sales": {
+        "source_type": "csv",
+        "source_label": "sample_sales.csv",
+        "row_count": 16,
+        "columns": [
+          {
+            "column_name": "date",
+            "column_type": "DATE"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "account",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "product",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "revenue",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "units",
+            "column_type": "BIGINT"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "sample_sales": {
+          "description": "Contains daily sales performance metrics broken down by region, customer account, and product.",
+          "columns": {
+            "date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The specific calendar day on which the transaction occurred.",
+              "synonyms": [
+                "transaction date",
+                "day",
+                "calendar date",
+                "time period",
+                "sale date"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The geographic territory or sales area where the transaction took place.",
+              "synonyms": [
+                "territory",
+                "geographic area",
+                "sales region",
+                "location",
+                "zone"
+              ]
+            },
+            "account": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name of the customer or business entity that made the purchase.",
+              "synonyms": [
+                "customer",
+                "client",
+                "company",
+                "account name",
+                "purchaser"
+              ]
+            },
+            "product": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The specific item or service name sold to the customer.",
+              "synonyms": [
+                "item",
+                "good",
+                "product name",
+                "stock unit",
+                "commodity"
+              ]
+            },
+            "revenue": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The total monetary value generated from the sale of the products.",
+              "synonyms": [
+                "sales amount",
+                "total revenue",
+                "earnings",
+                "gross sales",
+                "dollars"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "units": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The total quantity of physical items sold in the transaction.",
+              "synonyms": [
+                "quantity",
+                "volume",
+                "units sold",
+                "item count",
+                "number of units"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(date) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(date) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(date) = YEAR(CURRENT_DATE) AND MONTH(date) = MONTH(CURRENT_DATE)",
+        "last month": "date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND date < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND date < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "date >= DATE_TRUNC('quarter', CURRENT_DATE) AND date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
+  },
+  "05d880e2-dbf2-488c-838b-b6acb704c555": {
+    "tables": {
+      "real_superstore": {
+        "source_type": "csv",
+        "source_label": "real_superstore.csv",
+        "row_count": 7150,
+        "columns": [
+          {
+            "column_name": "Row ID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "Order ID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "Order Date",
+            "column_type": "DATE"
+          },
+          {
+            "column_name": "Order Priority",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Order Quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "Sales",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Discount",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Ship Mode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Profit",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Unit Price",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Shipping Cost",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Customer Name",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Province",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Customer Segment",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Product Category",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Product Sub-Category",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Product Name",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Product Container",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "Product Base Margin",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "Ship Date",
+            "column_type": "DATE"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "real_superstore": {
+          "description": "User-uploaded real_superstore dataset.",
+          "columns": {
+            "Row ID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The Row ID field.",
+              "synonyms": [
+                "d",
+                "row id",
+                "i",
+                "row"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Order ID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The Order ID field.",
+              "synonyms": [
+                "d",
+                "i",
+                "order",
+                "order id"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Order Date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The Order Date field.",
+              "synonyms": [
+                "order date",
+                "order",
+                "date"
+              ]
+            },
+            "Order Priority": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Order Priority field.",
+              "synonyms": [
+                "priority",
+                "order priority",
+                "order"
+              ]
+            },
+            "Order Quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The Order Quantity field.",
+              "synonyms": [
+                "order quantity",
+                "quantity",
+                "order"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Sales": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Sales field.",
+              "synonyms": [
+                "sales"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Discount": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Discount field.",
+              "synonyms": [
+                "discount"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Ship Mode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Ship Mode field.",
+              "synonyms": [
+                "ship",
+                "ship mode",
+                "mode"
+              ]
+            },
+            "Profit": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Profit field.",
+              "synonyms": [
+                "profit"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Unit Price": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Unit Price field.",
+              "synonyms": [
+                "price",
+                "unit price",
+                "unit"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Shipping Cost": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Shipping Cost field.",
+              "synonyms": [
+                "cost",
+                "shipping",
+                "shipping cost"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Customer Name": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Customer Name field.",
+              "synonyms": [
+                "customer",
+                "name",
+                "customer name"
+              ]
+            },
+            "Province": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Province field.",
+              "synonyms": [
+                "province"
+              ]
+            },
+            "Region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Region field.",
+              "synonyms": [
+                "region"
+              ]
+            },
+            "Customer Segment": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Customer Segment field.",
+              "synonyms": [
+                "customer",
+                "segment",
+                "customer segment"
+              ]
+            },
+            "Product Category": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Product Category field.",
+              "synonyms": [
+                "product",
+                "product category",
+                "category"
+              ]
+            },
+            "Product Sub-Category": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Product Sub-Category field.",
+              "synonyms": [
+                "product sub-category",
+                "product",
+                "category",
+                "sub-"
+              ]
+            },
+            "Product Name": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Product Name field.",
+              "synonyms": [
+                "product",
+                "name",
+                "product name"
+              ]
+            },
+            "Product Container": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The Product Container field.",
+              "synonyms": [
+                "container",
+                "product",
+                "product container"
+              ]
+            },
+            "Product Base Margin": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The Product Base Margin field.",
+              "synonyms": [
+                "base",
+                "product",
+                "margin",
+                "product base margin"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "Ship Date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The Ship Date field.",
+              "synonyms": [
+                "ship",
+                "ship date",
+                "date"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(Order Date) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(Order Date) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(Order Date) = YEAR(CURRENT_DATE) AND MONTH(Order Date) = MONTH(CURRENT_DATE)",
+        "last month": "Order Date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND Order Date < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "Order Date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND Order Date < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "Order Date >= DATE_TRUNC('quarter', CURRENT_DATE) AND Order Date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
   }
 }

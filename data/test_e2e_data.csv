@@ -1,6 +1,0 @@
-order_id,customer_name,product,amount,order_date
-1,Alice,Widget A,150.50,2023-10-01
-2,Bob,Widget B,200.00,2023-10-02
-3,Charlie,Widget A,150.50,2023-10-02
-4,Alice,Widget C,300.00,2023-10-03
-5,Eve,Widget B,200.00,2023-10-03
