@@ -71,8 +71,8 @@ class Database:
         query_upper = query.upper().strip()
 
         # 1. Pre-tool Hook: Ensure it is a read-only query
-        if not query_upper.startswith("SELECT"):
-            raise QuerySecurityError("Only SELECT queries are allowed.")
+        if not (query_upper.startswith("SELECT") or query_upper.startswith("SUMMARIZE") or query_upper.startswith("WITH")):
+            raise QuerySecurityError("Only SELECT, SUMMARIZE, and WITH queries are allowed.")
 
         # 2. Pre-tool Hook: Block destructive keywords (basic implementation)
         forbidden_keywords = ["DROP", "DELETE", "UPDATE", "INSERT", "ALTER", "CREATE", "TRUNCATE"]
