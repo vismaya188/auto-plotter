@@ -6,8 +6,10 @@ from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_excep
 from backend.config import settings
 
 # Hard caps to prevent unbounded resource consumption (CWE-400, CWE-770)
-MAX_INPUT_CHARS = 8000
-MAX_OUTPUT_TOKENS = 1024
+# Raised to 32k chars to support multi-table semantic maps (7+ Northwind tables)
+# Raised to 4096 tokens to support complex CTEs and window function SQL output
+MAX_INPUT_CHARS = 32000
+MAX_OUTPUT_TOKENS = 4096
 
 # Setup basic logging
 logging.basicConfig(level=logging.INFO)

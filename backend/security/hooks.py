@@ -74,9 +74,9 @@ def validate_sql(sql: str) -> str:
     sql_clean = sql.strip()
     sql_upper = sql_clean.upper()
 
-    if not (sql_upper.startswith("SELECT") or sql_upper.startswith("SUMMARIZE")):
-        logger.warning("Hook decision: DENY — SQL does not start with SELECT or SUMMARIZE")
-        raise SecurityViolation("Only SELECT and SUMMARIZE queries are allowed. Query must start with SELECT or SUMMARIZE.")
+    if not (sql_upper.startswith("SELECT") or sql_upper.startswith("SUMMARIZE") or sql_upper.startswith("WITH")):
+        logger.warning("Hook decision: DENY — SQL does not start with SELECT, SUMMARIZE, or WITH")
+        raise SecurityViolation("Only SELECT, SUMMARIZE, and WITH queries are allowed. Query must start with one of these keywords.")
 
     forbidden_keywords = [
         "DROP", "DELETE", "UPDATE", "INSERT", "ALTER", "TRUNCATE",
