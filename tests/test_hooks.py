@@ -34,11 +34,16 @@ def test_validate_sql_blocked_keywords():
         validate_sql("SELECT * FROM sales; INSERT INTO sales VALUES ('a')")
 
 def test_validate_sql_not_select():
-    """Test that queries not starting with SELECT are blocked."""
-    with pytest.raises(SecurityViolation, match="Only SELECT queries are allowed"):
-        # Even if they use CTEs, for this MVP we enforce SELECT strictly as the first word
-        validate_sql("WITH data AS (SELECT * FROM sales) SELECT * FROM data") 
-        
+    """Test that queries not starting with SELECT or SUMMARIZE are blocked."""
+    with pytest.raises(SecurityViolation, match="Only SELECT and SUMMARIZE queries are allowed"):
+        # Even if they use CTEs, for this MVP we enforce SELECT or SUMMARIZE strictly as the first word
+        validate_sql("WITH data AS (SELECT * FROM sales) SELECT * FROM data")
+
+def test_validate_sql_summarize_allowed():
+    """Test that SUMMARIZE queries are permitted for data profiling."""
+    sql = "SUMMARIZE user_data"
+    assert validate_sql(sql) == sql
+
 def test_validate_tool_output_truncation():
     """Test that returning massive datasets truncates safely to protect context window."""
     data = [{"id": i} for i in range(150)]
@@ -52,9 +57,6 @@ def test_validate_tool_output_empty():
     assert validate_tool_output([]) == []
 
 def test_sanitize_prompt_ambiguous():
-    """Test that vague prompts are caught by ambiguity detection."""
-    with pytest.raises(AmbiguousPromptError):
-        sanitize_prompt("How are things")
-
-    with pytest.raises(AmbiguousPromptError):
-        sanitize_prompt("Show me everything")
+    """Test that ambiguous or conversational prompts pass sanitization and are routed to intent node."""
+    assert sanitize_prompt("How are things") == "How are things"
+    assert sanitize_prompt("Show me everything") == "Show me everything"
