@@ -178,7 +178,7 @@ def ingest_csv(file_bytes: bytes, filename: str, session_id: str) -> dict:
             conn.execute(f"DROP TABLE IF EXISTS {TABLE_NAME}")
             conn.execute(f"""
                 CREATE TABLE {TABLE_NAME} AS
-                SELECT * FROM read_csv('{tmp_path}', auto_detect=true, sample_size=-1, ignore_errors=true)
+                SELECT * FROM read_csv('{tmp_path}', auto_detect=true, sample_size=-1, ignore_errors=true, strict_mode=false)
             """)
             schema = _get_schema(conn)
             row_count = _get_row_count(conn)
