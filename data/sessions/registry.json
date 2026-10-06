@@ -2911,5 +2911,3021 @@
       "date_filters": {},
       "kpis": {}
     }
+  },
+  "c5511f2c-906b-464e-ad16-57efe73837b1": {
+    "tables": {
+      "customers": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/customers.csv",
+        "row_count": 91,
+        "columns": [
+          {
+            "column_name": "customerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "companyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "contactName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "contactTitle",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "address",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "city",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "postalCode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "country",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "phone",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "fax",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "orders": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/orders.csv",
+        "row_count": 830,
+        "columns": [
+          {
+            "column_name": "orderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "customerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "employeeID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "orderDate",
+            "column_type": "TIMESTAMP"
+          },
+          {
+            "column_name": "requiredDate",
+            "column_type": "TIMESTAMP"
+          },
+          {
+            "column_name": "shippedDate",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipVia",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "freight",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "shipName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipAddress",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipCity",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipRegion",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipPostalCode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipCountry",
+            "column_type": "VARCHAR"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "User-uploaded customers dataset.",
+          "columns": {
+            "customerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The customerID field.",
+              "synonyms": [
+                "d",
+                "customerid",
+                "customer",
+                "i"
+              ]
+            },
+            "companyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The companyName field.",
+              "synonyms": [
+                "name",
+                "companyname",
+                "company"
+              ]
+            },
+            "contactName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The contactName field.",
+              "synonyms": [
+                "name",
+                "contact",
+                "contactname"
+              ]
+            },
+            "contactTitle": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The contactTitle field.",
+              "synonyms": [
+                "title",
+                "contacttitle",
+                "contact"
+              ]
+            },
+            "address": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The address field.",
+              "synonyms": [
+                "address"
+              ]
+            },
+            "city": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city field.",
+              "synonyms": [
+                "city"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The region field.",
+              "synonyms": [
+                "region"
+              ]
+            },
+            "postalCode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The postalCode field.",
+              "synonyms": [
+                "postal",
+                "postalcode",
+                "code"
+              ]
+            },
+            "country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country field.",
+              "synonyms": [
+                "country"
+              ]
+            },
+            "phone": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The phone field.",
+              "synonyms": [
+                "phone"
+              ]
+            },
+            "fax": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The fax field.",
+              "synonyms": [
+                "fax"
+              ]
+            }
+          }
+        },
+        "orders": {
+          "description": "User-uploaded orders dataset.",
+          "columns": {
+            "orderID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The orderID field.",
+              "synonyms": [
+                "orderid",
+                "order",
+                "d",
+                "i"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "customerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The customerID field.",
+              "synonyms": [
+                "d",
+                "customerid",
+                "customer",
+                "i"
+              ]
+            },
+            "employeeID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The employeeID field.",
+              "synonyms": [
+                "d",
+                "employee",
+                "employeeid",
+                "i"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "orderDate": {
+              "type": "TIMESTAMP",
+              "role": "dimension",
+              "description": "The orderDate field.",
+              "synonyms": [
+                "orderdate",
+                "order",
+                "date"
+              ]
+            },
+            "requiredDate": {
+              "type": "TIMESTAMP",
+              "role": "dimension",
+              "description": "The requiredDate field.",
+              "synonyms": [
+                "requireddate",
+                "date",
+                "required"
+              ]
+            },
+            "shippedDate": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shippedDate field.",
+              "synonyms": [
+                "shipped",
+                "date",
+                "shippeddate"
+              ]
+            },
+            "shipVia": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The shipVia field.",
+              "synonyms": [
+                "via",
+                "ship",
+                "shipvia"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "freight": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The freight field.",
+              "synonyms": [
+                "freight"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "shipName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipName field.",
+              "synonyms": [
+                "name",
+                "ship",
+                "shipname"
+              ]
+            },
+            "shipAddress": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipAddress field.",
+              "synonyms": [
+                "shipaddress",
+                "ship",
+                "address"
+              ]
+            },
+            "shipCity": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipCity field.",
+              "synonyms": [
+                "city",
+                "ship",
+                "shipcity"
+              ]
+            },
+            "shipRegion": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipRegion field.",
+              "synonyms": [
+                "region",
+                "ship",
+                "shipregion"
+              ]
+            },
+            "shipPostalCode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipPostalCode field.",
+              "synonyms": [
+                "postal",
+                "ship",
+                "shippostalcode",
+                "code"
+              ]
+            },
+            "shipCountry": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipCountry field.",
+              "synonyms": [
+                "ship",
+                "country",
+                "shipcountry"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(orderDate) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(orderDate) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(orderDate) = YEAR(CURRENT_DATE) AND MONTH(orderDate) = MONTH(CURRENT_DATE)",
+        "last month": "orderDate >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND orderDate < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "orderDate >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND orderDate < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "orderDate >= DATE_TRUNC('quarter', CURRENT_DATE) AND orderDate < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
+  },
+  "a69dcb0a-964c-44f1-9d08-acb28c6d9145": {
+    "tables": {
+      "customers": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/customers.csv",
+        "row_count": 91,
+        "columns": [
+          {
+            "column_name": "customerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "companyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "contactName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "contactTitle",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "address",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "city",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "postalCode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "country",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "phone",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "fax",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "orders": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/orders.csv",
+        "row_count": 830,
+        "columns": [
+          {
+            "column_name": "orderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "customerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "employeeID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "orderDate",
+            "column_type": "TIMESTAMP"
+          },
+          {
+            "column_name": "requiredDate",
+            "column_type": "TIMESTAMP"
+          },
+          {
+            "column_name": "shippedDate",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipVia",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "freight",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "shipName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipAddress",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipCity",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipRegion",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipPostalCode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipCountry",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "products": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/products.csv",
+        "row_count": 77,
+        "columns": [
+          {
+            "column_name": "productID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "productName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "supplierID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "categoryID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "quantityPerUnit",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "unitPrice",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "unitsInStock",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "unitsOnOrder",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "reorderLevel",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "discontinued",
+            "column_type": "BIGINT"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "customers": {
+          "description": "User-uploaded customers dataset.",
+          "columns": {
+            "customerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The customerID field.",
+              "synonyms": [
+                "d",
+                "customerid",
+                "customer",
+                "i"
+              ]
+            },
+            "companyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The companyName field.",
+              "synonyms": [
+                "name",
+                "companyname",
+                "company"
+              ]
+            },
+            "contactName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The contactName field.",
+              "synonyms": [
+                "name",
+                "contact",
+                "contactname"
+              ]
+            },
+            "contactTitle": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The contactTitle field.",
+              "synonyms": [
+                "title",
+                "contacttitle",
+                "contact"
+              ]
+            },
+            "address": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The address field.",
+              "synonyms": [
+                "address"
+              ]
+            },
+            "city": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city field.",
+              "synonyms": [
+                "city"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The region field.",
+              "synonyms": [
+                "region"
+              ]
+            },
+            "postalCode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The postalCode field.",
+              "synonyms": [
+                "postal",
+                "postalcode",
+                "code"
+              ]
+            },
+            "country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country field.",
+              "synonyms": [
+                "country"
+              ]
+            },
+            "phone": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The phone field.",
+              "synonyms": [
+                "phone"
+              ]
+            },
+            "fax": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The fax field.",
+              "synonyms": [
+                "fax"
+              ]
+            }
+          }
+        },
+        "orders": {
+          "description": "User-uploaded orders dataset.",
+          "columns": {
+            "orderID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The orderID field.",
+              "synonyms": [
+                "orderid",
+                "order",
+                "d",
+                "i"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "customerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The customerID field.",
+              "synonyms": [
+                "d",
+                "customerid",
+                "customer",
+                "i"
+              ]
+            },
+            "employeeID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The employeeID field.",
+              "synonyms": [
+                "d",
+                "employee",
+                "employeeid",
+                "i"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "orderDate": {
+              "type": "TIMESTAMP",
+              "role": "dimension",
+              "description": "The orderDate field.",
+              "synonyms": [
+                "orderdate",
+                "order",
+                "date"
+              ]
+            },
+            "requiredDate": {
+              "type": "TIMESTAMP",
+              "role": "dimension",
+              "description": "The requiredDate field.",
+              "synonyms": [
+                "requireddate",
+                "date",
+                "required"
+              ]
+            },
+            "shippedDate": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shippedDate field.",
+              "synonyms": [
+                "shipped",
+                "date",
+                "shippeddate"
+              ]
+            },
+            "shipVia": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The shipVia field.",
+              "synonyms": [
+                "via",
+                "ship",
+                "shipvia"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "freight": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The freight field.",
+              "synonyms": [
+                "freight"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "shipName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipName field.",
+              "synonyms": [
+                "name",
+                "ship",
+                "shipname"
+              ]
+            },
+            "shipAddress": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipAddress field.",
+              "synonyms": [
+                "shipaddress",
+                "ship",
+                "address"
+              ]
+            },
+            "shipCity": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipCity field.",
+              "synonyms": [
+                "city",
+                "ship",
+                "shipcity"
+              ]
+            },
+            "shipRegion": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipRegion field.",
+              "synonyms": [
+                "region",
+                "ship",
+                "shipregion"
+              ]
+            },
+            "shipPostalCode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipPostalCode field.",
+              "synonyms": [
+                "postal",
+                "ship",
+                "shippostalcode",
+                "code"
+              ]
+            },
+            "shipCountry": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipCountry field.",
+              "synonyms": [
+                "ship",
+                "country",
+                "shipcountry"
+              ]
+            }
+          }
+        },
+        "products": {
+          "description": "User-uploaded products dataset.",
+          "columns": {
+            "productID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The productID field.",
+              "synonyms": [
+                "d",
+                "product",
+                "productid",
+                "i"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "productName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The productName field.",
+              "synonyms": [
+                "productname",
+                "product",
+                "name"
+              ]
+            },
+            "supplierID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The supplierID field.",
+              "synonyms": [
+                "d",
+                "supplier",
+                "i",
+                "supplierid"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "categoryID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The categoryID field.",
+              "synonyms": [
+                "d",
+                "categoryid",
+                "category",
+                "i"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "quantityPerUnit": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The quantityPerUnit field.",
+              "synonyms": [
+                "per",
+                "unit",
+                "quantityperunit",
+                "quantity"
+              ]
+            },
+            "unitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The unitPrice field.",
+              "synonyms": [
+                "price",
+                "unit",
+                "unitprice"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "unitsInStock": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The unitsInStock field.",
+              "synonyms": [
+                "units",
+                "unitsinstock",
+                "stock",
+                "in"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "unitsOnOrder": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The unitsOnOrder field.",
+              "synonyms": [
+                "units",
+                "order",
+                "unitsonorder",
+                "on"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "reorderLevel": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The reorderLevel field.",
+              "synonyms": [
+                "level",
+                "reorder",
+                "reorderlevel"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "discontinued": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The discontinued field.",
+              "synonyms": [
+                "discontinued"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(orderDate) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(orderDate) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(orderDate) = YEAR(CURRENT_DATE) AND MONTH(orderDate) = MONTH(CURRENT_DATE)",
+        "last month": "orderDate >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND orderDate < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "orderDate >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND orderDate < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "orderDate >= DATE_TRUNC('quarter', CURRENT_DATE) AND orderDate < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
+  },
+  "6bd3527f-938e-48d0-9415-1c43619592c5": {
+    "tables": {
+      "customers": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/customers.csv",
+        "row_count": 91,
+        "columns": [
+          {
+            "column_name": "customerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "companyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "contactName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "contactTitle",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "address",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "city",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "postalCode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "country",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "phone",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "fax",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "orders": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/orders.csv",
+        "row_count": 830,
+        "columns": [
+          {
+            "column_name": "orderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "customerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "employeeID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "orderDate",
+            "column_type": "TIMESTAMP"
+          },
+          {
+            "column_name": "requiredDate",
+            "column_type": "TIMESTAMP"
+          },
+          {
+            "column_name": "shippedDate",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipVia",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "freight",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "shipName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipAddress",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipCity",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipRegion",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipPostalCode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipCountry",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "products": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/products.csv",
+        "row_count": 77,
+        "columns": [
+          {
+            "column_name": "productID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "productName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "supplierID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "categoryID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "quantityPerUnit",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "unitPrice",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "unitsInStock",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "unitsOnOrder",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "reorderLevel",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "discontinued",
+            "column_type": "BIGINT"
+          }
+        ]
+      },
+      "order_details": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/order-details.csv",
+        "row_count": 2155,
+        "columns": [
+          {
+            "column_name": "orderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "productID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "unitPrice",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "discount",
+            "column_type": "DOUBLE"
+          }
+        ]
+      },
+      "categories": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/categories.csv",
+        "row_count": 8,
+        "columns": [
+          {
+            "column_name": "categoryID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "categoryName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "description",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "picture",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "suppliers": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/suppliers.csv",
+        "row_count": 29,
+        "columns": [
+          {
+            "column_name": "supplierID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "companyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "contactName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "contactTitle",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "address",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "city",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "postalCode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "country",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "phone",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "fax",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "homePage",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "employees": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/employees.csv",
+        "row_count": 9,
+        "columns": [
+          {
+            "column_name": "employeeID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "lastName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "firstName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "title",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "titleOfCourtesy",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "birthDate",
+            "column_type": "TIMESTAMP"
+          },
+          {
+            "column_name": "hireDate",
+            "column_type": "TIMESTAMP"
+          },
+          {
+            "column_name": "address",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "city",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "postalCode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "country",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "homePhone",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "extension",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "photo",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "notes",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "reportsTo",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "photoPath",
+            "column_type": "VARCHAR"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "categories": {
+          "description": "User-uploaded categories dataset.",
+          "columns": {
+            "categoryID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The categoryID field.",
+              "synonyms": [
+                "d",
+                "i",
+                "categoryid",
+                "category"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "categoryName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The categoryName field.",
+              "synonyms": [
+                "name",
+                "category",
+                "categoryname"
+              ]
+            },
+            "description": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The description field.",
+              "synonyms": [
+                "description"
+              ]
+            },
+            "picture": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The picture field.",
+              "synonyms": [
+                "picture"
+              ]
+            }
+          }
+        },
+        "customers": {
+          "description": "User-uploaded customers dataset.",
+          "columns": {
+            "customerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The customerID field.",
+              "synonyms": [
+                "d",
+                "i",
+                "customerid",
+                "customer"
+              ]
+            },
+            "companyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The companyName field.",
+              "synonyms": [
+                "companyname",
+                "name",
+                "company"
+              ]
+            },
+            "contactName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The contactName field.",
+              "synonyms": [
+                "contact",
+                "name",
+                "contactname"
+              ]
+            },
+            "contactTitle": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The contactTitle field.",
+              "synonyms": [
+                "contact",
+                "title",
+                "contacttitle"
+              ]
+            },
+            "address": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The address field.",
+              "synonyms": [
+                "address"
+              ]
+            },
+            "city": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city field.",
+              "synonyms": [
+                "city"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The region field.",
+              "synonyms": [
+                "region"
+              ]
+            },
+            "postalCode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The postalCode field.",
+              "synonyms": [
+                "postalcode",
+                "code",
+                "postal"
+              ]
+            },
+            "country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country field.",
+              "synonyms": [
+                "country"
+              ]
+            },
+            "phone": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The phone field.",
+              "synonyms": [
+                "phone"
+              ]
+            },
+            "fax": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The fax field.",
+              "synonyms": [
+                "fax"
+              ]
+            }
+          }
+        },
+        "employees": {
+          "description": "User-uploaded employees dataset.",
+          "columns": {
+            "employeeID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The employeeID field.",
+              "synonyms": [
+                "d",
+                "i",
+                "employee",
+                "employeeid"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "lastName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The lastName field.",
+              "synonyms": [
+                "name",
+                "lastname",
+                "last"
+              ]
+            },
+            "firstName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The firstName field.",
+              "synonyms": [
+                "firstname",
+                "name",
+                "first"
+              ]
+            },
+            "title": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The title field.",
+              "synonyms": [
+                "title"
+              ]
+            },
+            "titleOfCourtesy": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The titleOfCourtesy field.",
+              "synonyms": [
+                "of",
+                "title",
+                "titleofcourtesy",
+                "courtesy"
+              ]
+            },
+            "birthDate": {
+              "type": "TIMESTAMP",
+              "role": "dimension",
+              "description": "The birthDate field.",
+              "synonyms": [
+                "birth",
+                "birthdate",
+                "date"
+              ]
+            },
+            "hireDate": {
+              "type": "TIMESTAMP",
+              "role": "dimension",
+              "description": "The hireDate field.",
+              "synonyms": [
+                "hiredate",
+                "date",
+                "hire"
+              ]
+            },
+            "address": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The address field.",
+              "synonyms": [
+                "address"
+              ]
+            },
+            "city": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city field.",
+              "synonyms": [
+                "city"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The region field.",
+              "synonyms": [
+                "region"
+              ]
+            },
+            "postalCode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The postalCode field.",
+              "synonyms": [
+                "postalcode",
+                "code",
+                "postal"
+              ]
+            },
+            "country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country field.",
+              "synonyms": [
+                "country"
+              ]
+            },
+            "homePhone": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The homePhone field.",
+              "synonyms": [
+                "homephone",
+                "phone",
+                "home"
+              ]
+            },
+            "extension": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The extension field.",
+              "synonyms": [
+                "extension"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "photo": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The photo field.",
+              "synonyms": [
+                "photo"
+              ]
+            },
+            "notes": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The notes field.",
+              "synonyms": [
+                "notes"
+              ]
+            },
+            "reportsTo": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The reportsTo field.",
+              "synonyms": [
+                "to",
+                "reportsto",
+                "reports"
+              ]
+            },
+            "photoPath": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The photoPath field.",
+              "synonyms": [
+                "photo",
+                "path",
+                "photopath"
+              ]
+            }
+          }
+        },
+        "order_details": {
+          "description": "User-uploaded order_details dataset.",
+          "columns": {
+            "orderID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The orderID field.",
+              "synonyms": [
+                "d",
+                "order",
+                "i",
+                "orderid"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "productID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The productID field.",
+              "synonyms": [
+                "d",
+                "productid",
+                "i",
+                "product"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "unitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The unitPrice field.",
+              "synonyms": [
+                "unit",
+                "price",
+                "unitprice"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The quantity field.",
+              "synonyms": [
+                "quantity"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "discount": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The discount field.",
+              "synonyms": [
+                "discount"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            }
+          }
+        },
+        "orders": {
+          "description": "User-uploaded orders dataset.",
+          "columns": {
+            "orderID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The orderID field.",
+              "synonyms": [
+                "d",
+                "order",
+                "i",
+                "orderid"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "customerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The customerID field.",
+              "synonyms": [
+                "d",
+                "i",
+                "customerid",
+                "customer"
+              ]
+            },
+            "employeeID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The employeeID field.",
+              "synonyms": [
+                "d",
+                "i",
+                "employee",
+                "employeeid"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "orderDate": {
+              "type": "TIMESTAMP",
+              "role": "dimension",
+              "description": "The orderDate field.",
+              "synonyms": [
+                "order",
+                "orderdate",
+                "date"
+              ]
+            },
+            "requiredDate": {
+              "type": "TIMESTAMP",
+              "role": "dimension",
+              "description": "The requiredDate field.",
+              "synonyms": [
+                "requireddate",
+                "required",
+                "date"
+              ]
+            },
+            "shippedDate": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shippedDate field.",
+              "synonyms": [
+                "shippeddate",
+                "date",
+                "shipped"
+              ]
+            },
+            "shipVia": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The shipVia field.",
+              "synonyms": [
+                "via",
+                "shipvia",
+                "ship"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "freight": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The freight field.",
+              "synonyms": [
+                "freight"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "shipName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipName field.",
+              "synonyms": [
+                "name",
+                "shipname",
+                "ship"
+              ]
+            },
+            "shipAddress": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipAddress field.",
+              "synonyms": [
+                "shipaddress",
+                "address",
+                "ship"
+              ]
+            },
+            "shipCity": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipCity field.",
+              "synonyms": [
+                "shipcity",
+                "city",
+                "ship"
+              ]
+            },
+            "shipRegion": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipRegion field.",
+              "synonyms": [
+                "region",
+                "shipregion",
+                "ship"
+              ]
+            },
+            "shipPostalCode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipPostalCode field.",
+              "synonyms": [
+                "postal",
+                "code",
+                "shippostalcode",
+                "ship"
+              ]
+            },
+            "shipCountry": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The shipCountry field.",
+              "synonyms": [
+                "country",
+                "shipcountry",
+                "ship"
+              ]
+            }
+          }
+        },
+        "products": {
+          "description": "User-uploaded products dataset.",
+          "columns": {
+            "productID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The productID field.",
+              "synonyms": [
+                "d",
+                "productid",
+                "i",
+                "product"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "productName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The productName field.",
+              "synonyms": [
+                "product",
+                "name",
+                "productname"
+              ]
+            },
+            "supplierID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The supplierID field.",
+              "synonyms": [
+                "d",
+                "i",
+                "supplierid",
+                "supplier"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "categoryID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The categoryID field.",
+              "synonyms": [
+                "d",
+                "i",
+                "categoryid",
+                "category"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "quantityPerUnit": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The quantityPerUnit field.",
+              "synonyms": [
+                "unit",
+                "per",
+                "quantityperunit",
+                "quantity"
+              ]
+            },
+            "unitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The unitPrice field.",
+              "synonyms": [
+                "unit",
+                "price",
+                "unitprice"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "unitsInStock": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The unitsInStock field.",
+              "synonyms": [
+                "units",
+                "in",
+                "stock",
+                "unitsinstock"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "unitsOnOrder": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The unitsOnOrder field.",
+              "synonyms": [
+                "units",
+                "unitsonorder",
+                "on",
+                "order"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "reorderLevel": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The reorderLevel field.",
+              "synonyms": [
+                "reorderlevel",
+                "reorder",
+                "level"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "discontinued": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The discontinued field.",
+              "synonyms": [
+                "discontinued"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            }
+          }
+        },
+        "suppliers": {
+          "description": "User-uploaded suppliers dataset.",
+          "columns": {
+            "supplierID": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The supplierID field.",
+              "synonyms": [
+                "d",
+                "i",
+                "supplierid",
+                "supplier"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "companyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The companyName field.",
+              "synonyms": [
+                "companyname",
+                "name",
+                "company"
+              ]
+            },
+            "contactName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The contactName field.",
+              "synonyms": [
+                "contact",
+                "name",
+                "contactname"
+              ]
+            },
+            "contactTitle": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The contactTitle field.",
+              "synonyms": [
+                "contact",
+                "title",
+                "contacttitle"
+              ]
+            },
+            "address": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The address field.",
+              "synonyms": [
+                "address"
+              ]
+            },
+            "city": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city field.",
+              "synonyms": [
+                "city"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The region field.",
+              "synonyms": [
+                "region"
+              ]
+            },
+            "postalCode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The postalCode field.",
+              "synonyms": [
+                "postalcode",
+                "code",
+                "postal"
+              ]
+            },
+            "country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country field.",
+              "synonyms": [
+                "country"
+              ]
+            },
+            "phone": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The phone field.",
+              "synonyms": [
+                "phone"
+              ]
+            },
+            "fax": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The fax field.",
+              "synonyms": [
+                "fax"
+              ]
+            },
+            "homePage": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The homePage field.",
+              "synonyms": [
+                "page",
+                "homepage",
+                "home"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [],
+      "date_filters": {
+        "this year": "YEAR(birthDate) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(birthDate) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(birthDate) = YEAR(CURRENT_DATE) AND MONTH(birthDate) = MONTH(CURRENT_DATE)",
+        "last month": "birthDate >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND birthDate < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "birthDate >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND birthDate < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "birthDate >= DATE_TRUNC('quarter', CURRENT_DATE) AND birthDate < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
+  },
+  "ee7b62ff-683e-4a64-95a8-c4832123a858": {
+    "tables": {
+      "customers": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/customers.csv",
+        "row_count": 91,
+        "columns": [
+          {
+            "column_name": "customerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "companyName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "contactName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "contactTitle",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "address",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "city",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "postalCode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "country",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "phone",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "fax",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "orders": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/orders.csv",
+        "row_count": 830,
+        "columns": [
+          {
+            "column_name": "orderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "customerID",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "employeeID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "orderDate",
+            "column_type": "TIMESTAMP"
+          },
+          {
+            "column_name": "requiredDate",
+            "column_type": "TIMESTAMP"
+          },
+          {
+            "column_name": "shippedDate",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipVia",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "freight",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "shipName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipAddress",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipCity",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipRegion",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipPostalCode",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "shipCountry",
+            "column_type": "VARCHAR"
+          }
+        ]
+      },
+      "products": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/products.csv",
+        "row_count": 77,
+        "columns": [
+          {
+            "column_name": "productID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "productName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "supplierID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "categoryID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "quantityPerUnit",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "unitPrice",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "unitsInStock",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "unitsOnOrder",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "reorderLevel",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "discontinued",
+            "column_type": "BIGINT"
+          }
+        ]
+      },
+      "order_details": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/order-details.csv",
+        "row_count": 2155,
+        "columns": [
+          {
+            "column_name": "orderID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "productID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "unitPrice",
+            "column_type": "DOUBLE"
+          },
+          {
+            "column_name": "quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "discount",
+            "column_type": "DOUBLE"
+          }
+        ]
+      },
+      "categories": {
+        "source_type": "url",
+        "source_label": "https://raw.githubusercontent.com/neo4j-contrib/northwind-neo4j/master/data/categories.csv",
+        "row_count": 8,
+        "columns": [
+          {
+            "column_name": "categoryID",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "categoryName",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "description",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "picture",
+            "column_type": "VARCHAR"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "categories": {
+          "description": "Contains definitions and descriptions for different product categories.",
+          "columns": {
+            "categoryID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Unique identifier for each product category.",
+              "synonyms": [
+                "category id",
+                "category code",
+                "category number",
+                "id of category"
+              ]
+            },
+            "categoryName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name of the product category.",
+              "synonyms": [
+                "category name",
+                "name of category",
+                "category label",
+                "category title"
+              ]
+            },
+            "description": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "A textual description of the products within this category.",
+              "synonyms": [
+                "category description",
+                "category details",
+                "description of category",
+                "category info"
+              ]
+            },
+            "picture": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Binary data for the category image.",
+              "synonyms": [
+                "category image",
+                "category photo",
+                "picture of category",
+                "category icon"
+              ]
+            }
+          }
+        },
+        "customers": {
+          "description": "Stores contact and location information for all business customers.",
+          "columns": {
+            "customerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Unique code used to identify a customer.",
+              "synonyms": [
+                "customer id",
+                "customer code",
+                "customer reference",
+                "client id"
+              ]
+            },
+            "companyName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The registered name of the customer company.",
+              "synonyms": [
+                "company name",
+                "customer name",
+                "business name",
+                "organization name"
+              ]
+            },
+            "contactName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The name of the primary contact person for the company.",
+              "synonyms": [
+                "contact person",
+                "name of contact",
+                "customer contact",
+                "representative name"
+              ]
+            },
+            "contactTitle": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The job title of the contact person.",
+              "synonyms": [
+                "job title",
+                "position",
+                "contact role",
+                "title"
+              ]
+            },
+            "address": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Physical street address of the customer.",
+              "synonyms": [
+                "street address",
+                "customer address",
+                "location",
+                "mailing address"
+              ]
+            },
+            "city": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The city where the customer is located.",
+              "synonyms": [
+                "customer city",
+                "location city",
+                "city name",
+                "town"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The state or region of the customer.",
+              "synonyms": [
+                "state",
+                "province",
+                "area",
+                "customer region"
+              ]
+            },
+            "postalCode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The zip or postal code for the customer address.",
+              "synonyms": [
+                "zip code",
+                "post code",
+                "postal code",
+                "mailing code"
+              ]
+            },
+            "country": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The country where the customer is headquartered.",
+              "synonyms": [
+                "country name",
+                "customer country",
+                "nation",
+                "origin"
+              ]
+            },
+            "phone": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Primary telephone number for the customer.",
+              "synonyms": [
+                "contact phone",
+                "phone number",
+                "customer phone",
+                "business phone"
+              ]
+            },
+            "fax": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Fax number for the customer.",
+              "synonyms": [
+                "fax number",
+                "customer fax",
+                "facsimile"
+              ]
+            }
+          }
+        },
+        "order_details": {
+          "description": "Contains line-item details for individual customer orders.",
+          "columns": {
+            "orderID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Identifier for the parent order.",
+              "synonyms": [
+                "order id",
+                "order reference",
+                "order number",
+                "id of order"
+              ]
+            },
+            "productID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Identifier for the product purchased.",
+              "synonyms": [
+                "product id",
+                "product reference",
+                "product number",
+                "id of product"
+              ]
+            },
+            "unitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The price per unit at the time of order.",
+              "synonyms": [
+                "price",
+                "unit price",
+                "item price",
+                "selling price"
+              ],
+              "allowed_aggregations": [
+                "AVG",
+                "MIN",
+                "MAX",
+                "SUM"
+              ]
+            },
+            "quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The number of units ordered.",
+              "synonyms": [
+                "number of items",
+                "quantity",
+                "order quantity",
+                "amount"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "discount": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "Percentage discount applied to the item.",
+              "synonyms": [
+                "discount rate",
+                "discount amount",
+                "item discount"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            }
+          }
+        },
+        "orders": {
+          "description": "Records headers for customer orders including shipping details.",
+          "columns": {
+            "orderID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Unique identifier for each order.",
+              "synonyms": [
+                "order id",
+                "order number",
+                "order code",
+                "transaction id"
+              ]
+            },
+            "customerID": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The customer who placed the order.",
+              "synonyms": [
+                "customer id",
+                "client id",
+                "ordering customer"
+              ]
+            },
+            "employeeID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "The employee who handled the order.",
+              "synonyms": [
+                "employee id",
+                "salesperson",
+                "representative id"
+              ]
+            },
+            "orderDate": {
+              "type": "TIMESTAMP",
+              "role": "dimension",
+              "description": "The date the order was placed.",
+              "synonyms": [
+                "order date",
+                "date ordered",
+                "transaction date"
+              ]
+            },
+            "requiredDate": {
+              "type": "TIMESTAMP",
+              "role": "dimension",
+              "description": "The date the order is required to be delivered.",
+              "synonyms": [
+                "required date",
+                "due date",
+                "deadline"
+              ]
+            },
+            "shippedDate": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The date the order was dispatched.",
+              "synonyms": [
+                "ship date",
+                "date shipped",
+                "dispatch date"
+              ]
+            },
+            "shipVia": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Identifier for the shipping company used.",
+              "synonyms": [
+                "shipper id",
+                "shipping method",
+                "carrier id"
+              ]
+            },
+            "freight": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The cost of shipping for the order.",
+              "synonyms": [
+                "freight cost",
+                "shipping charge",
+                "delivery cost",
+                "shipping fee"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "shipName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Recipient name on the shipping label.",
+              "synonyms": [
+                "ship name",
+                "recipient name",
+                "delivery name"
+              ]
+            },
+            "shipAddress": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Address where the order was shipped.",
+              "synonyms": [
+                "shipping address",
+                "delivery address",
+                "ship to address"
+              ]
+            },
+            "shipCity": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "City where the order was shipped.",
+              "synonyms": [
+                "shipping city",
+                "delivery city",
+                "ship to city"
+              ]
+            },
+            "shipRegion": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Region where the order was shipped.",
+              "synonyms": [
+                "shipping region",
+                "delivery state",
+                "ship to region"
+              ]
+            },
+            "shipPostalCode": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Postal code where the order was shipped.",
+              "synonyms": [
+                "shipping zip",
+                "delivery zip",
+                "ship to postal code"
+              ]
+            },
+            "shipCountry": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Country where the order was shipped.",
+              "synonyms": [
+                "shipping country",
+                "delivery country",
+                "ship to country"
+              ]
+            }
+          }
+        },
+        "products": {
+          "description": "Maintains details for products available in inventory.",
+          "columns": {
+            "productID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Unique identifier for the product.",
+              "synonyms": [
+                "product id",
+                "product code",
+                "item id",
+                "product reference"
+              ]
+            },
+            "productName": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Name of the product.",
+              "synonyms": [
+                "product name",
+                "item name",
+                "product description"
+              ]
+            },
+            "supplierID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Identifier for the product supplier.",
+              "synonyms": [
+                "supplier id",
+                "vendor id",
+                "supplier reference"
+              ]
+            },
+            "categoryID": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Identifier for the product category.",
+              "synonyms": [
+                "category id",
+                "product category",
+                "category code"
+              ]
+            },
+            "quantityPerUnit": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Physical quantity or weight per stock unit.",
+              "synonyms": [
+                "package size",
+                "unit measurement",
+                "quantity per unit"
+              ]
+            },
+            "unitPrice": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "Current selling price per unit.",
+              "synonyms": [
+                "price",
+                "unit cost",
+                "product price",
+                "selling price"
+              ],
+              "allowed_aggregations": [
+                "AVG",
+                "MIN",
+                "MAX",
+                "SUM"
+              ]
+            },
+            "unitsInStock": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "Total quantity currently available.",
+              "synonyms": [
+                "inventory level",
+                "stock level",
+                "on-hand quantity"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "unitsOnOrder": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "Quantity currently on order from suppliers.",
+              "synonyms": [
+                "pending orders",
+                "units in transit",
+                "incoming inventory"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "reorderLevel": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The inventory threshold that triggers a restock order.",
+              "synonyms": [
+                "reorder point",
+                "stock threshold",
+                "restock level"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX"
+              ]
+            },
+            "discontinued": {
+              "type": "BIGINT",
+              "role": "dimension",
+              "description": "Flag indicating if the product is discontinued.",
+              "synonyms": [
+                "is discontinued",
+                "active status",
+                "discontinued flag"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [
+        "orders.customer_id = customers.customer_id",
+        "order_details.order_id = orders.order_id",
+        "order_details.product_id = products.product_id",
+        "products.category_id = categories.category_id"
+      ],
+      "date_filters": {
+        "this year": "YEAR(orderDate) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(orderDate) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(orderDate) = YEAR(CURRENT_DATE) AND MONTH(orderDate) = MONTH(CURRENT_DATE)",
+        "last month": "orderDate >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND orderDate < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "orderDate >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND orderDate < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "orderDate >= DATE_TRUNC('quarter', CURRENT_DATE) AND orderDate < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
   }
 }

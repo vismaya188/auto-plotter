@@ -33,20 +33,61 @@ def query_generate(intent: str, semantic_mapping: str, error_context: str = "") 
     """
     client = LLMClient()
     prompt = f"""
-    You are a SQL generation assistant for DuckDB.
-    User Intent: {intent}
-    Semantic Mapping: {semantic_mapping}
+You are an expert DuckDB SQL analyst. Generate a single, complete, valid DuckDB SQL query.
 
-    Rules:
-    - Generate ONLY a valid DuckDB SQL SELECT or SUMMARIZE query.
-    - If the user asks for a general summary, high-level understanding, or overview of the dataset without specifying columns, generate exactly: SUMMARIZE <table_name> (choose the most relevant table).
-    - If the user's intent requires data from multiple tables, write a query that JOINs them using the foreign keys provided in the Semantic Mapping.
-    - Do not include markdown formatting (like ```sql).
-    - Do not include any explanations.
-    - Use date filter hints from the semantic mapping if the user mentions a time period.
-    """
+User Intent: {intent}
+Semantic Mapping (tables, columns, foreign keys): {semantic_mapping}
+
+=== STRICT OUTPUT RULES ===
+- Output ONLY raw SQL — no markdown fences, no explanations, no comments.
+- The query MUST start with SELECT or WITH or SUMMARIZE.
+- Never use DROP, DELETE, UPDATE, INSERT, CREATE, TRUNCATE, or any write operation.
+
+=== SQL CONSTRUCTION RULES ===
+1. JOINS: Use the foreign_keys from the Semantic Mapping to join tables correctly.
+   - Prefer explicit JOIN ... ON syntax.
+   - Use table aliases to keep queries readable.
+
+2. CTEs (Common Table Expressions): Use WITH clauses freely for complex multi-step logic.
+   - Break down complex calculations into named CTEs.
+   - Example: WITH revenue_per_customer AS (...), cohorts AS (...) SELECT ...
+
+3. WINDOW FUNCTIONS (DuckDB syntax):
+   - Ranking: ROW_NUMBER() / RANK() / DENSE_RANK() OVER (ORDER BY ...)
+   - Cohorts: NTILE(5) OVER (ORDER BY total_revenue DESC) — gives quintiles 1..5
+   - Running totals: SUM(col) OVER (PARTITION BY category ORDER BY month)
+   - Percentages: PERCENT_RANK() OVER (ORDER BY total_revenue DESC)
+   - Lead/Lag: LAG(revenue, 1) OVER (PARTITION BY customer ORDER BY month)
+
+4. DATE ARITHMETIC (DuckDB):
+   - Current date: CURRENT_DATE
+   - Subtract interval: CURRENT_DATE - INTERVAL '6 months', CURRENT_DATE - INTERVAL '180 days'
+   - Extract month/year: DATE_TRUNC('month', order_date) or YEAR(date_col), MONTH(date_col)
+   - Date diff in days: DATEDIFF('day', start_date, end_date) — use this for churn/frequency
+
+5. DERIVED METRICS: If the user defines a custom formula (e.g. "risk ratio = qty_ordered / units_in_stock"), implement it exactly as specified using column arithmetic.
+
+6. BOOLEAN FLAGS: Use CASE WHEN ... THEN 'Label' ELSE 'Label' END for categorical groupings.
+   - Example: CASE WHEN days_since_last_order > 180 THEN 'Churned' ELSE 'Active' END AS status
+
+7. AGGREGATIONS: Always alias aggregated columns clearly.
+   - SUM(unit_price * quantity * (1 - discount)) AS total_revenue
+   - COUNT(DISTINCT order_id) AS order_count
+   - AVG(days_between_orders) AS avg_order_frequency_days
+
+8. SUMMARIZE: If the user asks for a general overview with no specific columns, use:
+   SUMMARIZE <most_relevant_table_name>
+
+9. ORDERING & LIMITING: Always include ORDER BY and LIMIT for "top N" queries.
+
+=== DuckDB-SPECIFIC NOTES ===
+- DuckDB supports QUALIFY to filter window function results: QUALIFY ROW_NUMBER() OVER (...) = 1
+- String concat: col1 || ' ' || col2
+- Type casting: CAST(col AS DOUBLE), col::INTEGER
+- Structs are not needed; use flat column references.
+"""
     if error_context:
-        prompt += f"\nYour previous attempt failed with this error: {error_context}\nPlease fix the SQL."
+        prompt += f"\n\n=== PREVIOUS ATTEMPT FAILED ===\nError: {error_context}\nFix the SQL so it passes DuckDB validation."
 
     response = client.generate_response(prompt)
 

@@ -1,0 +1,31 @@
+{
+    "session_id": "6bd3527f-938e-48d0-9415-1c43619592c5",
+    "checkpoint_time": "2026-10-06T16:23:08.584687+00:00",
+    "state": {
+        "_session_id": "6bd3527f-938e-48d0-9415-1c43619592c5",
+        "session_id": "6bd3527f-938e-48d0-9415-1c43619592c5",
+        "user_prompt": "Show me a month-over-month trend of total revenue for the 'Beverages' category compared to the 'Condiments' category over the entire dataset. I want to see the exact percentage of total monthly revenue that Beverage sales made up, plotted over time.",
+        "chat_history": [],
+        "sql_retries": 2,
+        "errors": "Only SELECT and SUMMARIZE queries are allowed. Query must start with SELECT or SUMMARIZE.",
+        "status": "sql_error",
+        "session_start_time": 1791303748.209516,
+        "intent": "Show me a month-over-month trend of total revenue for the 'Beverages' category compared to the 'Condiments' category over the entire dataset. I want to see the exact percentage of total monthly revenue that Beverage sales made up, plotted over time.",
+        "intent_type": "visualization",
+        "dimensions": [
+            "month",
+            "category"
+        ],
+        "measures": [
+            "total revenue",
+            "percentage of total monthly revenue"
+        ],
+        "filters": [
+            "category: 'Beverages'",
+            "category: 'Condiments'"
+        ],
+        "semantic_mapping": "{\n  \"search_term\": \"month category total revenue percentage of total monthly revenue category: 'Beverages' category: 'Condiments'\",\n  \"matches\": [\n    {\n      \"table\": \"categories\",\n      \"column\": \"categoryID\",\n      \"role\": \"measure\",\n      \"type\": \"BIGINT\",\n      \"description\": \"The categoryID field.\",\n      \"annotation\": \"read-only\",\n      \"allowed_aggregations\": [\n        \"SUM\",\n        \"AVG\",\n        \"MIN\",\n        \"MAX\"\n      ]\n    },\n    {\n      \"table\": \"categories\",\n      \"column\": \"categoryName\",\n      \"role\": \"dimension\",\n      \"type\": \"VARCHAR\",\n      \"description\": \"The categoryName field.\",\n      \"annotation\": \"read-only\"\n    },\n    {\n      \"table\": \"employees\",\n      \"column\": \"titleOfCourtesy\",\n      \"role\": \"dimension\",\n      \"type\": \"VARCHAR\",\n      \"description\": \"The titleOfCourtesy field.\",\n      \"annotation\": \"read-only\"\n    },\n    {\n      \"table\": \"products\",\n      \"column\": \"categoryID\",\n      \"role\": \"measure\",\n      \"type\": \"BIGINT\",\n      \"description\": \"The categoryID field.\",\n      \"annotation\": \"read-only\",\n      \"allowed_aggregations\": [\n        \"SUM\",\n        \"AVG\",\n        \"MIN\",\n        \"MAX\"\n      ]\n    }\n  ],\n  \"kpi_definitions\": [],\n  \"date_filter_hints\": {\n    \"this year\": \"YEAR(birthDate) = YEAR(CURRENT_DATE)\",\n    \"last year\": \"YEAR(birthDate) = YEAR(CURRENT_DATE) - 1\",\n    \"this month\": \"YEAR(birthDate) = YEAR(CURRENT_DATE) AND MONTH(birthDate) = MONTH(CURRENT_DATE)\",\n    \"last month\": \"birthDate >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND birthDate < DATE_TRUNC('month', CURRENT_DATE)\",\n    \"last quarter\": \"birthDate >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND birthDate < DATE_TRUNC('quarter', CURRENT_DATE)\",\n    \"this quarter\": \"birthDate >= DATE_TRUNC('quarter', CURRENT_DATE) AND birthDate < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH\"\n  }\n}",
+        "generated_sql": "WITH monthly_revenue AS (\n    SELECT\n        DATE_TRUNC('month', o.orderDate) AS order_month,\n        c.categoryName,\n        SUM(od.unitPrice * od.quantity * (1 - od.discount)) AS category_revenue\n    FROM orders o\n    JOIN order_details od ON o.orderID = od.orderID\n    JOIN products p ON od.productID = p.productID\n    JOIN categories c ON p.categoryID = c.categoryID\n    WHERE c.categoryName IN ('Beverages', 'Condiments')\n    GROUP BY 1, 2\n),\ntotal_monthly_revenue AS (\n    SELECT\n        order_month,\n        SUM(category_revenue) AS total_monthly_all_selected\n    FROM monthly_revenue\n    GROUP BY 1\n)\nSELECT\n    mr.order_month,\n    SUM(CASE WHEN mr.categoryName = 'Beverages' THEN mr.category_revenue ELSE 0 END) AS beverage_revenue,\n    SUM(CASE WHEN mr.categoryName = 'Condiments' THEN mr.category_revenue ELSE 0 END) AS condiment_revenue,\n    (SUM(CASE WHEN mr.categoryName = 'Beverages' THEN mr.category_revenue ELSE 0 END) / NULLIF(tmr.total_monthly_all_selected, 0)) * 100 AS beverage_percentage_of_selected\nFROM monthly_revenue mr\nJOIN total_monthly_revenue tmr ON mr.order_month = tmr.order_month\nGROUP BY 1, tmr.total_monthly_all_selected\nORDER BY 1 ASC",
+        "sql_validation": "Only SELECT and SUMMARIZE queries are allowed. Query must start with SELECT or SUMMARIZE."
+    }
+}
