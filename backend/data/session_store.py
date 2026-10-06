@@ -35,26 +35,32 @@ def register_session(
     session_id: str,
     source_type: str,
     source_label: str,
+    table_name: str,
     row_count: int,
     columns: list,
     semantic: dict
 ):
     """
-    Stores metadata for an ingested session.
-    source_type: 'csv' | 'excel' | 'json' | 'postgres' | 's3_url'
-    source_label: friendly display name (filename, table name, URL)
+    Stores metadata for an ingested table in the session.
+    Appends to existing tables if the session already exists.
     """
     with _registry_lock:
         registry = _load()
-        registry[session_id] = {
+        session = registry.get(session_id, {"tables": {}, "semantic": {}})
+        
+        session["tables"][table_name] = {
             "source_type": source_type,
             "source_label": source_label,
             "row_count": row_count,
-            "columns": columns,
-            "semantic": semantic
+            "columns": columns
         }
+        
+        # Merge new semantic info (auto-discovery handles the merge/overwrite logic)
+        if semantic:
+            session["semantic"] = semantic
+            
+        registry[session_id] = session
         _save(registry)
-
 
 def get_session(session_id: str) -> Optional[dict]:
     """Returns full session metadata or None if not found."""

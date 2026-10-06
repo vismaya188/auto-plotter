@@ -37,6 +37,7 @@ app.add_middleware(
 class QueryRequest(BaseModel):
     prompt: str
     session_id: Optional[str] = None  # Routes to uploaded dataset when set
+    chat_history: Optional[list] = None
 
 
 class PostgresConnectRequest(BaseModel):
@@ -73,7 +74,9 @@ def _complete_ingestion(session_id: str, source_type: str, source_label: str, in
     Returns the final response payload.
     """
     from backend.semantic.auto_discover import auto_discover_semantics
-    from backend.data.session_store import register_session
+    from backend.data.session_store import register_session, get_session
+
+    table_name = ingest_result["table_name"]
 
     try:
         semantic = auto_discover_semantics(session_id)
@@ -85,19 +88,22 @@ def _complete_ingestion(session_id: str, source_type: str, source_label: str, in
         session_id=session_id,
         source_type=source_type,
         source_label=source_label,
+        table_name=table_name,
         row_count=ingest_result["rows"],
         columns=ingest_result.get("columns", []),
         semantic=semantic
     )
 
+    session = get_session(session_id)
+
     return {
         "status": "ready",
         "session_id": session_id,
-        "source_type": source_type,
-        "source_label": source_label,
+        "table_name": table_name,
+        "total_tables": len(session.get("tables", {})),
         "row_count": ingest_result["rows"],
         "columns": [c["column_name"] for c in ingest_result.get("columns", [])],
-        "message": f"Dataset '{source_label}' loaded successfully. You can now ask questions about it."
+        "message": f"Table '{table_name}' loaded successfully. Total tables in session: {len(session.get('tables', {}))}."
     }
 
 
@@ -200,17 +206,25 @@ async def connect_url(request: UrlConnectRequest):
 
 @app.get("/session/{session_id}")
 async def get_session_info(session_id: str):
-    """Returns metadata about a loaded data session."""
+    """Returns metadata about all tables in a loaded data session."""
     from backend.data.session_store import get_session
     session = get_session(session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found. Please upload data first.")
+    tables = session.get("tables", {})
+    table_summary = {
+        name: {
+            "row_count": info.get("row_count"),
+            "columns": [c["column_name"] if isinstance(c, dict) else c for c in info.get("columns", [])]
+        }
+        for name, info in tables.items()
+    }
+    foreign_keys = session.get("semantic", {}).get("foreign_keys", [])
     return {
         "session_id": session_id,
-        "source_type": session.get("source_type"),
-        "source_label": session.get("source_label"),
-        "row_count": session.get("row_count"),
-        "columns": [c["column_name"] for c in session.get("columns", [])]
+        "total_tables": len(tables),
+        "tables": table_summary,
+        "foreign_keys": foreign_keys,
     }
 
 
@@ -231,11 +245,13 @@ async def run_query(request: QueryRequest):
             initial_state = recovered_state
             initial_state["_session_id"] = session_id
             initial_state["user_prompt"] = request.prompt  # Always use latest prompt
+            initial_state["chat_history"] = request.chat_history or []
         else:
             initial_state = {
                 "_session_id": session_id,
                 "session_id": session_id,   # threads through graph for DB routing
                 "user_prompt": request.prompt,
+                "chat_history": request.chat_history or [],
                 "sql_retries": 0,
                 "errors": ""
             }

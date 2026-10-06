@@ -1,0 +1,140 @@
+{
+    "session_id": "2640332332608",
+    "started_at": "2026-10-06T16:06:49.549907+00:00",
+    "completed_at": "2026-10-06T16:07:31.113458+00:00",
+    "final_status": "insight_generated",
+    "sql_retries": 0,
+    "generated_sql": "SELECT T1.CompanyName, SUM(T2.Quantity) AS TotalQuantity FROM customers AS T1 JOIN orders AS T2 ON T1.CustomerID = T2.CustomerID GROUP BY T1.CompanyName",
+    "errors": "",
+    "events": [
+        {
+            "timestamp": "2026-10-06T16:06:49.549941+00:00",
+            "step": "validate_input",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "sanitize_prompt",
+            "tool_arguments": {
+                "prompt": "Show total quantity ordered per customer"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-06T16:07:00.566388+00:00",
+            "step": "understand_intent",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "gemini.generate_response",
+            "tool_arguments": {
+                "prompt_length": 1269
+            },
+            "tool_result": {
+                "intent_type": "data_qa",
+                "dimensions": [
+                    "customer"
+                ],
+                "measures": [
+                    "quantity"
+                ],
+                "filters": []
+            }
+        },
+        {
+            "timestamp": "2026-10-06T16:07:00.574697+00:00",
+            "step": "lookup_semantics",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "semantic_lookup",
+            "tool_arguments": {
+                "search_term": "customer quantity"
+            },
+            "tool_result": {
+                "mapping_length": 1598
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-06T16:07:08.242467+00:00",
+            "step": "generate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "query_generate",
+            "tool_arguments": {
+                "intent": "Show total quantity ordered per customer",
+                "retry": 0
+            },
+            "tool_result": {
+                "sql": "SELECT T1.CompanyName, SUM(T2.Quantity) AS TotalQuantity FROM customers AS T1 JOIN orders AS T2 ON T1.CustomerID = T2.CustomerID GROUP BY T1.CompanyName"
+            }
+        },
+        {
+            "timestamp": "2026-10-06T16:07:08.245153+00:00",
+            "step": "validate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "validate_sql",
+            "tool_arguments": {
+                "sql": "SELECT T1.CompanyName, SUM(T2.Quantity) AS TotalQuantity FROM customers AS T1 JOIN orders AS T2 ON T1.CustomerID = T2.CustomerID GROUP BY T1.CompanyName"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-06T16:07:08.315103+00:00",
+            "step": "validate_and_retrieve",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "data_retrieve",
+            "tool_result": {
+                "rows": 2
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-06T16:07:31.110972+00:00",
+            "step": "generate_insight",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "insight_generate",
+            "tool_result": {
+                "insight_keys": [
+                    "fact",
+                    "insight",
+                    "action"
+                ]
+            }
+        }
+    ],
+    "final_state_summary": {
+        "_session_id": "081e8c74-5714-4e45-a34a-5413148ebb3b",
+        "session_id": "081e8c74-5714-4e45-a34a-5413148ebb3b",
+        "user_prompt": "Show total quantity ordered per customer",
+        "chat_history": [],
+        "sql_retries": 0,
+        "errors": "",
+        "status": "insight_generated",
+        "session_start_time": 1791302809.5499501,
+        "intent": "Show total quantity ordered per customer",
+        "intent_type": "data_qa",
+        "dimensions": [
+            "customer"
+        ],
+        "measures": [
+            "quantity"
+        ],
+        "filters": [],
+        "semantic_mapping": "{\n  \"search_term\": \"customer quantity\",\n  \"matches\": [\n    {\n      \"table\": \"customers\",\n      \"column\": \"CustomerID\",\n      \"role\": \"dimension\",\n      \"type\": \"VARCHAR\",\n      \"description\": \"Unique identifier for each customer record.\",\n      \"annotation\": \"read-only\"\n    },\n    {\n      \"table\": \"customers\",\n      \"column\": \"CompanyName\",\n      \"role\": \"dimension\",\n      \"type\": \"VARCHAR\",\n      \"description\": \"The registered legal name of the customer company.\",\n      \"annotation\": \"read-only\"\n    },\n    {\n      \"table\": \"customers\",\n      \"column\": \"City\",\n      \"role\": \"dimension\",\n      \"type\": \"VARCHAR\",\n      \"description\": \"The city where the customer company is headquartered.\",\n      \"annotation\": \"read-only\"\n    },\n    {\n      \"table\": \"customers\",\n      \"column\": \"Country\",\n      \"role\": \"dimension\",\n      \"type\": \"VARCHAR\",\n      \"description\": \"The country where the customer company is located.\",\n      \"annotation\": \"read-only\"\n    },\n    {\n      \"table\": \"orders\",\n      \"column\": \"CustomerID\",\n      \"role\": \"dimension\",\n      \"type\": \"VARCHAR\",\n      \"description\": \"The identifier of the customer who placed the order.\",\n      \"annotation\": \"read-only\"\n    },\n    {\n      \"table\": \"orders\",\n      \"column\": \"Quantity\",\n      \"role\": \"measure\",\n      \"type\": \"BIGINT\",\n      \"description\": \"The total number of units ordered for a specific transaction.\",\n      \"annotation\": \"read-only\",\n      \"allowed_aggregations\": [\n        \"SUM\",\n        \"AVG\",\n        \"MIN\",\n        \"MAX\",\n        \"COUNT\"\n      ]\n    }\n  ],\n  \"kpi_definitions\": [],\n  \"date_filter_hints\": {}\n}",
+        "generated_sql": "SELECT T1.CompanyName, SUM(T2.Quantity) AS TotalQuantity FROM customers AS T1 JOIN orders AS T2 ON T1.CustomerID = T2.CustomerID GROUP BY T1.CompanyName",
+        "sql_validation": "VALID",
+        "insights": {
+            "fact": "The data returned valid results, but the automated insight was flagged for containing ungrounded numbers.",
+            "insight": "The LLM attempted to calculate or hallucinate data that wasn't strictly returned by DuckDB.",
+            "action": "Review the raw data visually in the chart or table."
+        },
+        "visualization": {
+            "chart_type": "message",
+            "message": "The data returned valid results, but the automated insight was flagged for containing ungrounded numbers.\n\nThe LLM attempted to calculate or hallucinate data that wasn't strictly returned by DuckDB.\n\nReview the raw data visually in the chart or table."
+        },
+        "query_result_metadata": {
+            "rows_returned": 2
+        }
+    }
+}

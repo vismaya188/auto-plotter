@@ -11,13 +11,12 @@ subsequent lookup calls in that session.
 """
 import json
 import logging
-from typing import List, Literal
+from typing import List, Literal, Optional
 
 import duckdb
 from pydantic import BaseModel, Field
 
 from backend.data.session_store import get_session_db_path
-from backend.data.ingestion import TABLE_NAME
 from backend.llm.gemini import LLMClient
 
 logger = logging.getLogger(__name__)
@@ -43,11 +42,19 @@ class ColumnSemantics(BaseModel):
 
 
 class TableSemantics(BaseModel):
+    table_name: str = Field(description="The exact table name in the database")
     table_description: str = Field(
         description="One sentence describing what this dataset contains and its business purpose"
     )
     columns: List[ColumnSemantics] = Field(
         description="Semantic metadata for every column in the table"
+    )
+
+class MultiTableSemantics(BaseModel):
+    tables: List[TableSemantics] = Field(description="List of semantic metadata for all tables")
+    foreign_keys: List[str] = Field(
+        default_factory=list,
+        description="List of inferred foreign key relationships between tables, e.g. 'orders.customer_id = customers.customer_id'. Leave empty if only one table."
     )
 
 
@@ -57,28 +64,28 @@ class TableSemantics(BaseModel):
 
 def _get_schema_summary(session_id: str) -> dict:
     """
-    Returns a lightweight schema summary for the LLM prompt:
-    - Column names + DuckDB types
-    - 3 sample rows (to help LLM understand actual data values)
-    - Total row count
+    Returns a lightweight schema summary for ALL tables for the LLM prompt.
     """
     path = get_session_db_path(session_id)
     conn = duckdb.connect(path, read_only=True)
+    summary = {}
     try:
-        schema_rows = conn.execute(f"DESCRIBE {TABLE_NAME}").fetchall()
-        columns = [{"column_name": r[0], "column_type": r[1]} for r in schema_rows]
+        tables = [r[0] for r in conn.execute("SHOW TABLES").fetchall()]
+        for table in tables:
+            schema_rows = conn.execute(f"DESCRIBE {table}").fetchall()
+            columns = [{"column_name": r[0], "column_type": r[1]} for r in schema_rows]
 
-        sample_df = conn.execute(f"SELECT * FROM {TABLE_NAME} LIMIT 3").fetchdf()
-        # Convert to JSON-serializable format — handle NaN, dates, etc.
-        sample_rows = json.loads(sample_df.to_json(orient="records", date_format="iso"))
+            sample_df = conn.execute(f"SELECT * FROM {table} LIMIT 3").fetchdf()
+            sample_rows = json.loads(sample_df.to_json(orient="records", date_format="iso"))
 
-        row_count = conn.execute(f"SELECT COUNT(*) FROM {TABLE_NAME}").fetchone()[0]
+            row_count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
 
-        return {
-            "columns": columns,
-            "sample_rows": sample_rows,
-            "row_count": row_count
-        }
+            summary[table] = {
+                "columns": columns,
+                "sample_rows": sample_rows,
+                "row_count": row_count
+            }
+        return summary
     finally:
         conn.close()
 
@@ -139,7 +146,7 @@ def auto_discover_semantics(session_id: str) -> dict:
         logger.error(f"[{session_id}] Schema introspection failed: {e}")
         raise
 
-    logger.info(f"[{session_id}] Auto-discovering semantics for {len(raw['columns'])} columns, {raw['row_count']} rows")
+    logger.info(f"[{session_id}] Auto-discovering semantics for {len(raw)} tables")
 
     try:
         semantic = _llm_discover(raw, session_id)
@@ -152,91 +159,102 @@ def auto_discover_semantics(session_id: str) -> dict:
 
 
 def _llm_discover(raw: dict, session_id: str) -> dict:
-    """Calls Gemini with structured output to generate the semantic model."""
+    """Calls Gemini with structured output to generate the semantic model for multiple tables."""
     client = LLMClient()
 
     prompt = (
-        f"You are a business intelligence expert. Analyze this database table schema and sample data, "
-        f"then generate a precise semantic model for it.\n\n"
-        f"Table Name: {TABLE_NAME}\n"
-        f"Columns and Types (from DuckDB DESCRIBE):\n{json.dumps(raw['columns'], indent=2)}\n\n"
-        f"Sample Rows (first 3 rows of actual data):\n{json.dumps(raw['sample_rows'], indent=2)}\n\n"
-        f"Total Row Count: {raw['row_count']}\n\n"
+        f"You are a business intelligence expert. Analyze this database containing multiple tables.\n\n"
+        f"Database Schema and Sample Data:\n{json.dumps(raw, indent=2)}\n\n"
         f"Instructions:\n"
+        f"- For each table, describe its business purpose.\n"
         f"- For each column, set role='dimension' if it is text/categorical/date, "
         f"or role='measure' if it is numeric and meaningful to aggregate.\n"
-        f"- Write a concise, plain-English description of what the column represents in a business context.\n"
-        f"- Generate 4-6 synonyms: alternative words a non-technical business user might say.\n"
-        f"- For measures, set allowed_aggregations to the appropriate subset of [SUM, AVG, MIN, MAX, COUNT].\n"
-        f"- Also write a one-sentence table_description summarising the dataset.\n"
-        f"Return ONLY valid JSON matching the provided schema. No markdown, no explanation."
+        f"- Write a concise description and 4-6 synonyms for each column.\n"
+        f"- For measures, set allowed_aggregations to [SUM, AVG, MIN, MAX, COUNT].\n"
+        f"- Analyze the tables and infer any FOREIGN KEY relationships (e.g. 'orders.customer_id = customers.customer_id') based on column names. Return these in the foreign_keys array.\n"
+        f"Return ONLY valid JSON matching the provided schema. No markdown."
     )
 
-    response_text = client.generate_response(prompt, response_schema=TableSemantics)
-    parsed: TableSemantics = TableSemantics.model_validate_json(response_text)
+    response_text = client.generate_response(prompt, response_schema=MultiTableSemantics)
+    parsed: MultiTableSemantics = MultiTableSemantics.model_validate_json(response_text)
 
     # Build the output dict in schema.json format
-    col_type_map = {c["column_name"]: c["column_type"] for c in raw["columns"]}
-    columns_dict = {}
-    for col in parsed.columns:
-        entry = {
-            "type": col_type_map.get(col.column_name, "VARCHAR"),
-            "role": col.role,
-            "description": col.description,
-            "synonyms": col.synonyms,
+    tables_output = {}
+    all_columns = []
+    
+    for table_def in parsed.tables:
+        table_name = table_def.table_name
+        if table_name not in raw:
+            continue
+            
+        col_type_map = {c["column_name"]: c["column_type"] for c in raw[table_name]["columns"]}
+        all_columns.extend(raw[table_name]["columns"])
+        
+        columns_dict = {}
+        for col in table_def.columns:
+            entry = {
+                "type": col_type_map.get(col.column_name, "VARCHAR"),
+                "role": col.role,
+                "description": col.description,
+                "synonyms": col.synonyms,
+            }
+            if col.allowed_aggregations:
+                entry["allowed_aggregations"] = col.allowed_aggregations
+            columns_dict[col.column_name] = entry
+            
+        tables_output[table_name] = {
+            "description": table_def.table_description,
+            "columns": columns_dict
         }
-        if col.allowed_aggregations:
-            entry["allowed_aggregations"] = col.allowed_aggregations
-        columns_dict[col.column_name] = entry
 
     return {
-        "tables": {
-            TABLE_NAME: {
-                "description": parsed.table_description,
-                "columns": columns_dict
-            }
-        },
-        "date_filters": _build_date_filters(raw["columns"]),
-        "kpis": {}  # KPIs can be added by the user later; auto-discovery leaves this empty
+        "tables": tables_output,
+        "foreign_keys": parsed.foreign_keys,
+        "date_filters": _build_date_filters(all_columns),
+        "kpis": {}  # KPIs can be added by the user later
     }
 
 
 def _rule_based_fallback(raw: dict) -> dict:
     """
-    Minimal semantic model built from DuckDB type heuristics alone.
-    Used when the LLM call fails so ingestion can still proceed.
+    Minimal semantic model built from DuckDB type heuristics alone for all tables.
     """
     import re
-    columns_dict = {}
     numeric_types = {"integer", "bigint", "double", "float", "decimal", "numeric", "real", "hugeint", "smallint"}
+    tables_output = {}
+    all_columns = []
 
-    for col in raw["columns"]:
-        col_name = col["column_name"]
-        col_type = col["column_type"].lower()
+    for table_name, data in raw.items():
+        columns_dict = {}
+        all_columns.extend(data["columns"])
+        
+        for col in data["columns"]:
+            col_name = col["column_name"]
+            col_type = col["column_type"].lower()
 
-        is_numeric = any(t in col_type for t in numeric_types)
-        role = "measure" if is_numeric else "dimension"
-        # Simple synonym: split underscore/camelCase into words
-        words = re.sub(r"([A-Z])", r" \1", col_name).replace("_", " ").lower().split()
-        synonyms = list({col_name.lower(), *words})[:5]
+            is_numeric = any(t in col_type for t in numeric_types)
+            role = "measure" if is_numeric else "dimension"
+            words = re.sub(r"([A-Z])", r" \1", col_name).replace("_", " ").lower().split()
+            synonyms = list({col_name.lower(), *words})[:5]
 
-        entry = {
-            "type": col["column_type"],
-            "role": role,
-            "description": f"The {col_name.replace('_', ' ')} field.",
-            "synonyms": synonyms,
+            entry = {
+                "type": col["column_type"],
+                "role": role,
+                "description": f"The {col_name.replace('_', ' ')} field.",
+                "synonyms": synonyms,
+            }
+            if role == "measure":
+                entry["allowed_aggregations"] = ["SUM", "AVG", "MIN", "MAX"]
+            columns_dict[col_name] = entry
+
+        tables_output[table_name] = {
+            "description": f"User-uploaded {table_name} dataset.",
+            "columns": columns_dict
         }
-        if role == "measure":
-            entry["allowed_aggregations"] = ["SUM", "AVG", "MIN", "MAX"]
-        columns_dict[col_name] = entry
 
     return {
-        "tables": {
-            TABLE_NAME: {
-                "description": "User-uploaded dataset.",
-                "columns": columns_dict
-            }
-        },
-        "date_filters": _build_date_filters(raw["columns"]),
+        "tables": tables_output,
+        "foreign_keys": [],
+        "date_filters": _build_date_filters(all_columns),
         "kpis": {}
     }
