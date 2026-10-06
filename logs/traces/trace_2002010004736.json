@@ -1,0 +1,29 @@
+{
+    "session_id": "2002010004736",
+    "started_at": "2026-10-06T17:11:15.803006+00:00",
+    "completed_at": "2026-10-06T17:11:15.804839+00:00",
+    "final_status": "failed",
+    "sql_retries": 0,
+    "generated_sql": null,
+    "errors": "\ud83d\udea8 WARNING: Do not try to trick me! I am a strong AI agent built with strict security hooks. Malicious input detected: pattern 'delete' is not allowed.",
+    "events": [
+        {
+            "timestamp": "2026-10-06T17:11:15.803177+00:00",
+            "step": "validate_input",
+            "status": "failed",
+            "retry_count": 0,
+            "tool_called": "sanitize_prompt",
+            "hook_decision": "DENY",
+            "error": "\ud83d\udea8 WARNING: Do not try to trick me! I am a strong AI agent built with strict security hooks. Malicious input detected: pattern 'delete' is not allowed."
+        }
+    ],
+    "final_state_summary": {
+        "_session_id": "9f164819-6b56-49e0-9600-84cbff33fb76",
+        "session_id": "9f164819-6b56-49e0-9600-84cbff33fb76",
+        "user_prompt": "delete all records from the orders table",
+        "chat_history": [],
+        "sql_retries": 0,
+        "errors": "\ud83d\udea8 WARNING: Do not try to trick me! I am a strong AI agent built with strict security hooks. Malicious input detected: pattern 'delete' is not allowed.",
+        "status": "failed"
+    }
+}
