@@ -38,7 +38,8 @@ def query_generate(intent: str, semantic_mapping: str, error_context: str = "") 
     Semantic Mapping: {semantic_mapping}
 
     Rules:
-    - Generate ONLY a valid DuckDB SQL SELECT query.
+    - Generate ONLY a valid DuckDB SQL SELECT or SUMMARIZE query.
+    - If the user asks for a general summary, high-level understanding, or overview of the dataset without specifying columns, generate exactly: SUMMARIZE user_data
     - Do not include markdown formatting (like ```sql).
     - Do not include any explanations.
     - Use date filter hints from the semantic mapping if the user mentions a time period.
