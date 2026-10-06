@@ -34,10 +34,14 @@ def test_validate_sql_blocked_keywords():
         validate_sql("SELECT * FROM sales; INSERT INTO sales VALUES ('a')")
 
 def test_validate_sql_not_select():
-    """Test that queries not starting with SELECT or SUMMARIZE are blocked."""
-    with pytest.raises(SecurityViolation, match="Only SELECT and SUMMARIZE queries are allowed"):
-        # Even if they use CTEs, for this MVP we enforce SELECT or SUMMARIZE strictly as the first word
-        validate_sql("WITH data AS (SELECT * FROM sales) SELECT * FROM data")
+    """Test that queries not starting with SELECT, SUMMARIZE, or WITH are blocked."""
+    with pytest.raises(SecurityViolation, match="Only SELECT, SUMMARIZE, and WITH queries are allowed"):
+        validate_sql("PRAGMA table_info('sales')")
+
+def test_validate_sql_with_allowed():
+    """Test that WITH queries are permitted for CTEs."""
+    sql = "WITH data AS (SELECT * FROM sales) SELECT * FROM data"
+    assert validate_sql(sql) == sql
 
 def test_validate_sql_summarize_allowed():
     """Test that SUMMARIZE queries are permitted for data profiling."""
