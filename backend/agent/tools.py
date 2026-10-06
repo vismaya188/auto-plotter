@@ -78,10 +78,9 @@ Semantic Mapping (tables, columns, foreign keys): {semantic_mapping}
 8. SUMMARIZE: If the user asks for a general overview with no specific columns, use exactly:
    SUMMARIZE <table_name>
    (Extract the correct table name from the Semantic Mapping provided above. NEVER use read_csv_auto or hallucinate file names.)
-9. ANALYTICAL ROBUSTNESS:
-   - Apply standard SQL best practices for edge cases automatically. 
-   - For example, when answering "Top N" or "Highest/Lowest" questions, intelligently decide whether to use standard `LIMIT`, or if `SELECT DISTINCT` / `DENSE_RANK()` is required to handle identical duplicate values in raw metrics. 
-   - Adapt your query dynamically to best answer the user's core intent without being constrained to a single pattern.
+9. HANDLING TOP-N AND DUPLICATES:
+   - Whenever the user asks for the "Top N" or "Highest/Lowest" of a metric (like revenue or units) WITHOUT asking to group by a category, you MUST use `SELECT DISTINCT` to avoid returning duplicate values (e.g., `SELECT DISTINCT revenue FROM sales ORDER BY revenue DESC LIMIT 2`).
+   - If grouping by a category (e.g., "Top 2 products by revenue"), use standard `GROUP BY` and `LIMIT`.
 
 === DuckDB-SPECIFIC NOTES ===
 - DuckDB supports QUALIFY to filter window function results: QUALIFY ROW_NUMBER() OVER (...) = 1
