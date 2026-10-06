@@ -1,0 +1,14 @@
+{
+    "session_id": "c23492d5-a605-4f81-8ad4-e947f2f26e02",
+    "checkpoint_time": "2026-10-06T16:53:48.298204+00:00",
+    "state": {
+        "_session_id": "c23492d5-a605-4f81-8ad4-e947f2f26e02",
+        "session_id": "c23492d5-a605-4f81-8ad4-e947f2f26e02",
+        "user_prompt": "Hello, what can you do?",
+        "chat_history": [],
+        "sql_retries": 0,
+        "errors": "",
+        "status": "input_validated",
+        "session_start_time": 1791305628.29675
+    }
+}

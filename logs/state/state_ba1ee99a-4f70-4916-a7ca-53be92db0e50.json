@@ -1,0 +1,14 @@
+{
+    "session_id": "ba1ee99a-4f70-4916-a7ca-53be92db0e50",
+    "checkpoint_time": "2026-10-06T16:39:18.393214+00:00",
+    "state": {
+        "_session_id": "ba1ee99a-4f70-4916-a7ca-53be92db0e50",
+        "session_id": "ba1ee99a-4f70-4916-a7ca-53be92db0e50",
+        "user_prompt": "Show me total sales by region",
+        "chat_history": [],
+        "sql_retries": 0,
+        "errors": "",
+        "status": "input_validated",
+        "session_start_time": 1791304758.391843
+    }
+}
