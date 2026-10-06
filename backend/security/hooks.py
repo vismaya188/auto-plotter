@@ -56,11 +56,9 @@ def sanitize_prompt(prompt: str) -> str:
 
     for pattern in AMBIGUOUS_PATTERNS:
         if re.search(pattern, prompt_lower):
-            logger.warning(f"Hook decision: DENY — ambiguous prompt matched '{pattern}'")
-            raise AmbiguousPromptError(
-                "Your question is too vague. Please specify a dimension (e.g. region, product, date) "
-                "and a measure (e.g. revenue, units) to analyze."
-            )
+            logger.info(f"Hook decision: WARN — ambiguous/conversational prompt matched '{pattern}'")
+            # We no longer block this. The LLM intent node will route it appropriately.
+
 
     logger.info("Hook decision: ALLOW — prompt passed all checks")
     return prompt
