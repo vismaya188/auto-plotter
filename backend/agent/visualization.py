@@ -124,6 +124,24 @@ def _build_map(df: pd.DataFrame, keys: list) -> tuple:
     return "map", fig
 
 
+def _build_table(df: pd.DataFrame) -> tuple:
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(df.columns),
+                    fill_color='#1e293b',
+                    font=dict(color='white', size=14),
+                    align='left'),
+        cells=dict(values=[df[col] for col in df.columns],
+                   fill_color='#0f172a',
+                   font=dict(color='white', size=12),
+                   align='left'))
+    ])
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        margin=dict(l=0, r=0, t=30, b=0)
+    )
+    return "table", fig
+
 def select_visualization(intent_data: Dict[str, Any], data_records: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Deterministically selects the best visualization based on data shape and intent.
@@ -165,6 +183,10 @@ def select_visualization(intent_data: Dict[str, Any], data_records: List[Dict[st
     # Three+ columns with scatter/relationship intent
     elif len(keys) >= 3 and ("relationship" in intent or "scatter" in intent):
         chart_type, fig = _build_scatter(df, keys)
+
+    # Fallback to a Plotly table if no other chart type fits
+    if fig is None:
+        chart_type, fig = _build_table(df)
 
     return {
         "chart_type": chart_type,
