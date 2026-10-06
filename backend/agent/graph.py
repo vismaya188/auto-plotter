@@ -88,7 +88,9 @@ def understand_intent_node(state: AgentState):
     client = LLMClient()
     prompt = (
         f"Analyze this business question: '{state['user_prompt']}'. "
-        f"Return a JSON object with three keys: "
+        f"If the user is asking a conversational question (like a greeting, asking how to use the app, or general chat), "
+        f"return a JSON object with 'is_conversational': true, and 'response': 'your conversational response'. "
+        f"Otherwise, return a JSON object with three keys: "
         f"'dimensions' (list of grouping fields like region, product, date), "
         f"'measures' (list of numeric fields like revenue, units), "
         f"'filters' (list of filter conditions mentioned like 'North region', 'last quarter'). "
@@ -97,16 +99,28 @@ def understand_intent_node(state: AgentState):
     response = client.generate_response(prompt)
 
     # Parse structured intent from LLM
-    dimensions, measures, filters = [], [], []
+    is_conversational = False
+    conversational_response = ""
     try:
         clean = response.strip().lstrip("```json").lstrip("```").rstrip("```").strip()
         parsed = json.loads(clean)
+        is_conversational = parsed.get("is_conversational", False)
+        conversational_response = parsed.get("response", "")
         dimensions = parsed.get("dimensions", [])
         measures = parsed.get("measures", [])
         filters = parsed.get("filters", [])
     except (json.JSONDecodeError, AttributeError):
         # Fallback: treat entire response as a flat term list
         dimensions = [response]
+
+    if is_conversational:
+        trace.log_event("understand_intent", tool_called="gemini.generate_response",
+                        tool_result={"is_conversational": True}, status="success")
+        return {
+            "intent": state["user_prompt"],
+            "visualization": {"chart_type": "message", "message": conversational_response},
+            "status": "conversational"
+        }
 
     trace.log_event("understand_intent", tool_called="gemini.generate_response",
                     tool_arguments={"prompt_length": len(prompt)},
@@ -263,6 +277,15 @@ def check_errors(state: AgentState):
     return "continue"
 
 
+def check_intent(state: AgentState):
+    """Routes conversational intents directly to END, otherwise continues."""
+    if state.get("status") == "conversational":
+        return "end"
+    if state.get("errors"):
+        return "fail"
+    return "continue"
+
+
 def fan_out_node(state: AgentState):
     return {"status": "processing_outputs"}
 
@@ -282,7 +305,7 @@ workflow.add_node("generate_insight", generate_insight_node)
 workflow.set_entry_point("validate_input")
 
 workflow.add_conditional_edges("validate_input", check_errors, {"continue": "understand_intent", "fail": END})
-workflow.add_edge("understand_intent", "lookup_semantics")
+workflow.add_conditional_edges("understand_intent", check_intent, {"continue": "lookup_semantics", "end": END, "fail": END})
 workflow.add_edge("lookup_semantics", "generate_sql")
 workflow.add_edge("generate_sql", "validate_and_retrieve")
 

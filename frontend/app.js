@@ -218,35 +218,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Render Visualization
             const viz = data.visualization || {};
-            if (viz.plotly_json) {
-                const parsedFig = viz.plotly_json;
-                const layout = Object.assign({}, parsedFig.layout, darkLayout);
-                Plotly.newPlot(plotlyDiv, parsedFig.data, layout, {responsive: true, displayModeBar: false});
-            } else if (viz.chart_type === 'kpi' && viz.plotly_json) {
-                const kpiData = viz.plotly_json.data[0];
-                const value = kpiData.value;
-                const titleText = (kpiData.title && kpiData.title.text) ? kpiData.title.text : 'Metric';
-                const title = titleText.replace(/_/g, ' ').toUpperCase();
-                
-                let formattedValue = value;
-                if (typeof value === 'number') {
-                    if (value >= 1e9) formattedValue = (value / 1e9).toFixed(2) + 'B';
-                    else if (value >= 1e6) formattedValue = (value / 1e6).toFixed(2) + 'M';
-                    else if (value >= 1000) formattedValue = (value / 1000).toFixed(1) + 'K';
-                    else formattedValue = value.toLocaleString();
-                }
+            const insightContainer = document.querySelector('.insight-container');
+            const sqlContainer = document.querySelector('.sql-container');
 
-                plotlyDiv.innerHTML = `
-                    <div class="custom-kpi-container">
-                        <div class="kpi-glass-card">
-                            <h3 class="kpi-title">${title}</h3>
-                            <div class="kpi-value">${formattedValue}</div>
-                            <div class="kpi-glow"></div>
-                        </div>
-                    </div>
-                `;
+            if (viz.chart_type === 'message') {
+                plotlyDiv.innerHTML = `<div style="color: #f8fafc; font-size: 1.2rem; text-align: center; margin-top: 150px; padding: 0 20px;">${viz.message}</div>`;
+                if (insightContainer) insightContainer.style.display = 'none';
+                if (sqlContainer) sqlContainer.style.display = 'none';
             } else {
-                plotlyDiv.innerHTML = '<div style="color: #94a3b8; text-align: center; margin-top: 200px;">Table output generated. Please refer to raw data or adjust query for a chart.</div>';
+                if (insightContainer) insightContainer.style.display = 'block';
+                if (sqlContainer) sqlContainer.style.display = 'block';
+
+                if (viz.plotly_json) {
+                    const parsedFig = viz.plotly_json;
+                    const layout = Object.assign({}, parsedFig.layout, darkLayout);
+                    Plotly.newPlot(plotlyDiv, parsedFig.data, layout, {responsive: true, displayModeBar: false});
+                } else if (viz.chart_type === 'kpi' && viz.plotly_json) {
+                    const kpiData = viz.plotly_json.data[0];
+                    const value = kpiData.value;
+                    const titleText = (kpiData.title && kpiData.title.text) ? kpiData.title.text : 'Metric';
+                    const title = titleText.replace(/_/g, ' ').toUpperCase();
+                    
+                    let formattedValue = value;
+                    if (typeof value === 'number') {
+                        if (value >= 1e9) formattedValue = (value / 1e9).toFixed(2) + 'B';
+                        else if (value >= 1e6) formattedValue = (value / 1e6).toFixed(2) + 'M';
+                        else if (value >= 1000) formattedValue = (value / 1000).toFixed(1) + 'K';
+                        else formattedValue = value.toLocaleString();
+                    }
+
+                    plotlyDiv.innerHTML = `
+                        <div class="custom-kpi-container">
+                            <div class="kpi-glass-card">
+                                <h3 class="kpi-title">${title}</h3>
+                                <div class="kpi-value">${formattedValue}</div>
+                                <div class="kpi-glow"></div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    plotlyDiv.innerHTML = '<div style="color: #94a3b8; text-align: center; margin-top: 200px;">Table output generated. Please refer to raw data or adjust query for a chart.</div>';
+                }
             }
 
             resultsSection.classList.remove('hidden');
