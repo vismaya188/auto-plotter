@@ -88,12 +88,14 @@ def understand_intent_node(state: AgentState):
     client = LLMClient()
     prompt = (
         f"Analyze this business question: '{state['user_prompt']}'. "
-        f"If the user is asking a conversational question (like a greeting, asking how to use the app, or general chat), "
+        f"If the user is asking a purely conversational question (like a greeting, asking how to use the app, or general chat), "
         f"return a JSON object with 'is_conversational': true, and 'response': 'your conversational response'. "
-        f"Otherwise, return a JSON object with three keys: "
+        f"IMPORTANT: If the user asks for a summary, overview, understanding, or explanation of the uploaded data/file, DO NOT treat it as conversational. It is an analytical query. "
+        f"For analytical queries, return a JSON object with three keys: "
         f"'dimensions' (list of grouping fields like region, product, date), "
         f"'measures' (list of numeric fields like revenue, units), "
         f"'filters' (list of filter conditions mentioned like 'North region', 'last quarter'). "
+        f"If they ask for a general summary, set dimensions to ['all'] and measures to ['summary']. "
         f"Return only valid JSON, no markdown."
     )
     response = client.generate_response(prompt)
