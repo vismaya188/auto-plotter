@@ -28,12 +28,16 @@ def verify_grounding(generated_text: str, source_data: str) -> bool:
     Claim: {generated_text}
     
     Does the claim contain ANY hallucinated numbers that contradict or cannot be logically derived from the Source Data?
-    It is ACCEPTABLE for numbers to be formatted for readability (e.g. '1.5k' instead of 1500, or '12%' instead of 0.12) or to count the number of data points.
-    Answer ONLY with 'YES' (if there are severe ungrounded hallucinations) or 'NO' (if the claim is factually grounded).
+    - Be LENIENT with general data overviews (e.g. if the source data is a table schema or SUMMARIZE output).
+    - It is ACCEPTABLE for numbers to be formatted for readability (e.g. '1.5k' instead of 1500, or '12%' instead of 0.12).
+    - It is ACCEPTABLE to count the number of columns, rows, or data points.
+    
+    Answer ONLY with 'YES' (if there are severe, objectively ungrounded numerical hallucinations) or 'NO' (if the claim is factually grounded). Do not explain your reasoning.
     """
     try:
         res = client.generate_response(prompt).strip().upper()
-        if 'YES' in res:
+        # Strictly check for YES instead of 'in' to avoid catching "NO, IT DOES NOT..."
+        if res.startswith('YES'):
             logger.warning(f"Ungrounded claim detected by LLM judge: {generated_text}")
             return False
         return True
