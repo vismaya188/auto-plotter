@@ -55,6 +55,8 @@ def semantic_lookup(search_term: str, session_id: str = None) -> str:
 
     if not matches and not kpi_matches:
         # Build a helpful fallback using actual available columns
+        tables = list(schema.get("tables", {}).keys())
+        table_list = ", ".join(tables) if tables else "no tables found"
         all_cols = [
             col_name
             for table_info in schema.get("tables", {}).values()
@@ -62,8 +64,9 @@ def semantic_lookup(search_term: str, session_id: str = None) -> str:
         ]
         col_list = ", ".join(all_cols) if all_cols else "no columns found"
         return (
-            f"No semantic matches found for '{search_term}'. "
-            f"Available columns: {col_list}. "
+            f"No semantic matches found for '{search_term}'.\n"
+            f"Available tables: {table_list}.\n"
+            f"Available columns: {col_list}.\n"
             f"Try rephrasing using these terms."
         )
 
