@@ -51,6 +51,7 @@ header h1 {
     background: linear-gradient(to right, #60a5fa, #c084fc, #60a5fa);
     background-size: 200% auto;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: shine 3s linear infinite;
 }
