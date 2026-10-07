@@ -1,0 +1,1085 @@
+{
+    "session_id": "2348064406656",
+    "started_at": "2026-10-07T03:56:12.521154+00:00",
+    "completed_at": "2026-10-07T03:57:16.946600+00:00",
+    "final_status": "insight_generated",
+    "sql_retries": 0,
+    "generated_sql": "SELECT \n    CASE \n        WHEN discount = 0.00 THEN '0%'\n        WHEN discount = 0.05 THEN '5%'\n        WHEN discount = 0.10 THEN '10%'\n        WHEN discount = 0.15 THEN '15%'\n        WHEN discount = 0.20 THEN '20%'\n        WHEN discount = 0.25 THEN '25%'\n        ELSE 'Other'\n    END AS discount_tier,\n    MIN(quantity) AS min_quantity,\n    QUANTILE_CONT(quantity, 0.25) AS q1_quantity,\n    MEDIAN(quantity) AS median_quantity,\n    QUANTILE_CONT(quantity, 0.75) AS q3_quantity,\n    MAX(quantity) AS max_quantity\nFROM order_details\nGROUP BY 1\nORDER BY \n    CASE \n        WHEN discount_tier = '0%' THEN 0\n        WHEN discount_tier = '5%' THEN 1\n        WHEN discount_tier = '10%' THEN 2\n        WHEN discount_tier = '15%' THEN 3\n        WHEN discount_tier = '20%' THEN 4\n        WHEN discount_tier = '25%' THEN 5\n        ELSE 6\n    END",
+    "errors": "",
+    "events": [
+        {
+            "timestamp": "2026-10-07T03:56:12.521322+00:00",
+            "step": "validate_input",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "sanitize_prompt",
+            "tool_arguments": {
+                "prompt": "Using order-details.csv, group transactions by Discount tiers (e.g., 0%, 5%, 10%, 15%, 20%, 25%). Plot a box plot or grouped bar chart showing the distribution of Quantity ordered across discount levels."
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:56:32.739214+00:00",
+            "step": "understand_intent",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "gemini.generate_response",
+            "tool_arguments": {
+                "prompt_length": 4407
+            },
+            "tool_result": {
+                "intent_type": "visualization",
+                "dimensions": [
+                    "Discount tiers"
+                ],
+                "measures": [
+                    "Quantity"
+                ],
+                "filters": []
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:56:32.759488+00:00",
+            "step": "lookup_semantics",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "semantic_lookup",
+            "tool_arguments": {
+                "search_term": "Discount tiers Quantity"
+            },
+            "tool_result": {
+                "mapping_length": 923
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:56:56.992953+00:00",
+            "step": "generate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "query_generate",
+            "tool_arguments": {
+                "intent": "Using order-details.csv, group transactions by Discount tiers (e.g., 0%, 5%, 10%, 15%, 20%, 25%). Plot a box plot or grouped bar chart showing the distribution of Quantity ordered across discount levels.",
+                "retry": 0
+            },
+            "tool_result": {
+                "sql": "SELECT \n    CASE \n        WHEN discount = 0.00 THEN '0%'\n        WHEN discount = 0.05 THEN '5%'\n        WHEN discount = 0.10 THEN '10%'\n        WHEN discount = 0.15 THEN '15%'\n        WHEN discount = 0.20 THEN '20%'\n        WHEN discount = 0.25 THEN '25%'\n        ELSE 'Other'\n    END AS discount_tier,\n    MIN(quantity) AS min_quantity,\n    QUANTILE_CONT(quantity, 0.25) AS q1_quantity,\n    MEDIAN(quantity) AS median_quantity,\n    QUANTILE_CONT(quantity, 0.75) AS q3_quantity,\n    MAX(quantity) AS max_quantity\nFROM order_details\nGROUP BY 1\nORDER BY \n    CASE \n        WHEN discount_tier = '0%' THEN 0\n        WHEN discount_tier = '5%' THEN 1\n        WHEN discount_tier = '10%' THEN 2\n        WHEN discount_tier = '15%' THEN 3\n        WHEN discount_tier = '20%' THEN 4\n        WHEN discount_tier = '25%' THEN 5\n        ELSE 6\n    END"
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:56:56.997349+00:00",
+            "step": "validate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "validate_sql",
+            "tool_arguments": {
+                "sql": "SELECT \n    CASE \n        WHEN discount = 0.00 THEN '0%'\n        WHEN discount = 0.05 THEN '5%'\n        WHEN discount = 0.10 THEN '10%'\n        WHEN discount = 0.15 THEN '15%'\n        WHEN discount = 0.20 THEN '20%'\n        WHEN discount = 0.25 THEN '25%'\n        ELSE 'Other'\n    END AS discount_tier,\n    MIN(quantity) AS min_quantity,\n    QUANTILE_CONT(quantity, 0.25) AS q1_quantity,\n    MEDIAN(quantity) AS median_quantity,\n    QUANTILE_CONT(quantity, 0.75) AS q3_quantity,\n    MAX(quantity) AS max_quantity\nFROM order_details\nGROUP BY 1\nORDER BY \n    CASE \n        WHEN discount_tier = '0%' THEN 0\n        WHEN discount_tier = '5%' THEN 1\n        WHEN discount_tier = '10%' THEN 2\n        WHEN discount_tier = '15%' THEN 3\n        WHEN discount_tier = '20%' THEN 4\n        WHEN discount_tier = '25%' THEN 5\n        ELSE 6\n    END"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:56:57.088111+00:00",
+            "step": "validate_and_retrieve",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "data_retrieve",
+            "tool_result": {
+                "rows": 7
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:56:57.116178+00:00",
+            "step": "select_visualization",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "viz_select",
+            "tool_result": {
+                "chart_type": "table"
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:57:16.940616+00:00",
+            "step": "generate_insight",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "insight_generate",
+            "tool_result": {
+                "insight_keys": [
+                    "fact",
+                    "insight",
+                    "action"
+                ]
+            }
+        }
+    ],
+    "final_state_summary": {
+        "_session_id": "e24e4283-843e-4163-818d-6e1be293c316",
+        "session_id": "e24e4283-843e-4163-818d-6e1be293c316",
+        "user_prompt": "Using order-details.csv, group transactions by Discount tiers (e.g., 0%, 5%, 10%, 15%, 20%, 25%). Plot a box plot or grouped bar chart showing the distribution of Quantity ordered across discount levels.",
+        "chat_history": [
+            {
+                "role": "user",
+                "content": "Can i know what data is all about?"
+            },
+            {
+                "role": "assistant",
+                "content": "The dataset contains 15 records across 6 columns covering a date range from 2025-01-01 to 2025-06-15, documenting revenue, units, regions, accounts, and products. The data tracks transactional performance with 4 regions, 5 accounts, and 3 distinct product types, showing a wide variation in revenue between 1200.0 and 4500.0."
+            },
+            {
+                "role": "user",
+                "content": "Top 10 Revenue-Generating Products"
+            },
+            {
+                "role": "assistant",
+                "content": "Widget C leads revenue at 14200.0, followed by Widget B at 13400.0 and Widget A at 10200.0. There is a consistent performance gap between these three products, indicating that Widget C is currently the primary driver of total revenue."
+            },
+            {
+                "role": "user",
+                "content": "Merge products.csv with aggregated sales from order-details.csv. Create a scatter plot where the X-axis is UnitPrice, the Y-axis is total Quantity sold, and point size represents total revenue. Add a trendline to evaluate price elasticity."
+            },
+            {
+                "role": "assistant",
+                "content": "The data shows unit prices of 10.0, 20.0, and 50.0 corresponding to total quantities of 1020.0, 670.0, and 284.0 respectively. There is a clear inverse relationship between unit price and quantity sold, suggesting that demand decreases as the price increases."
+            },
+            {
+                "role": "user",
+                "content": "Discount Impact on Quantity Sold"
+            },
+            {
+                "role": "assistant",
+                "content": "I cannot answer this question because the required data (e.g., specific columns) is not present in the current dataset."
+            },
+            {
+                "role": "user",
+                "content": "Using order-details.csv, group transactions by Discount tiers (e.g., 0%, 5%, 10%, 15%, 20%, 25%). Plot a box plot or grouped bar chart showing the distribution of Quantity ordered across discount levels"
+            },
+            {
+                "role": "assistant",
+                "content": "I cannot answer this question because the required data (e.g., specific columns) is not present in the current dataset."
+            },
+            {
+                "role": "user",
+                "content": "can I know whats the current data u have"
+            },
+            {
+                "role": "assistant",
+                "content": "The dataset contains 15 entries across six columns: date, region, account, product, revenue, and units, with no missing values. The data spans from 2025-01-01 to 2025-06-15, capturing transactional metrics for 5 accounts, 4 regions, and 3 products."
+            },
+            {
+                "role": "user",
+                "content": "can I know whats the current data u have"
+            },
+            {
+                "role": "assistant",
+                "content": "The dataset contains 77 product records across 10 columns, including identifiers, pricing, inventory metrics, and discontinuation status, with zero null values reported for any field. The distribution of data shows high variability in unit pricing (range 2.5 to 263.5) and stock levels (0 to 125), with the majority of items not currently on order (Q75 is 0) and mostly active (mean discontinued value of 0.1039)."
+            },
+            {
+                "role": "user",
+                "content": "Discount Impact on Quantity Sold"
+            },
+            {
+                "role": "assistant",
+                "content": "The highest total quantity sold corresponds to 0% discount, followed by 5% discount, while discounts between 1% and 4% yield negligible total quantities sold. There is no direct linear correlation between higher discounts and higher sales volume; instead, specific discount tiers like 5%, 10%, 15%, 20%, and 25% drive the bulk of volume, suggesting customers respond to specific promotional thresholds."
+            }
+        ],
+        "sql_retries": 0,
+        "errors": "",
+        "status": "insight_generated",
+        "session_start_time": 1791345372.5213363,
+        "intent": "Using order-details.csv, group transactions by Discount tiers (e.g., 0%, 5%, 10%, 15%, 20%, 25%). Plot a box plot or grouped bar chart showing the distribution of Quantity ordered across discount levels.",
+        "intent_type": "visualization",
+        "dimensions": [
+            "Discount tiers"
+        ],
+        "measures": [
+            "Quantity"
+        ],
+        "filters": [],
+        "semantic_mapping": "{\n  \"search_term\": \"Discount tiers Quantity\",\n  \"matches\": [\n    {\n      \"table\": \"order_details\",\n      \"column\": \"quantity\",\n      \"role\": \"measure\",\n      \"type\": \"BIGINT\",\n      \"description\": \"The quantity field.\",\n      \"annotation\": \"read-only\",\n      \"allowed_aggregations\": [\n        \"SUM\",\n        \"AVG\",\n        \"MIN\",\n        \"MAX\"\n      ]\n    },\n    {\n      \"table\": \"order_details\",\n      \"column\": \"discount\",\n      \"role\": \"measure\",\n      \"type\": \"DOUBLE\",\n      \"description\": \"The discount field.\",\n      \"annotation\": \"read-only\",\n      \"allowed_aggregations\": [\n        \"SUM\",\n        \"AVG\",\n        \"MIN\",\n        \"MAX\"\n      ]\n    },\n    {\n      \"table\": \"products\",\n      \"column\": \"quantityPerUnit\",\n      \"role\": \"dimension\",\n      \"type\": \"VARCHAR\",\n      \"description\": \"The quantityPerUnit field.\",\n      \"annotation\": \"read-only\"\n    }\n  ],\n  \"kpi_definitions\": [],\n  \"date_filter_hints\": {}\n}",
+        "generated_sql": "SELECT \n    CASE \n        WHEN discount = 0.00 THEN '0%'\n        WHEN discount = 0.05 THEN '5%'\n        WHEN discount = 0.10 THEN '10%'\n        WHEN discount = 0.15 THEN '15%'\n        WHEN discount = 0.20 THEN '20%'\n        WHEN discount = 0.25 THEN '25%'\n        ELSE 'Other'\n    END AS discount_tier,\n    MIN(quantity) AS min_quantity,\n    QUANTILE_CONT(quantity, 0.25) AS q1_quantity,\n    MEDIAN(quantity) AS median_quantity,\n    QUANTILE_CONT(quantity, 0.75) AS q3_quantity,\n    MAX(quantity) AS max_quantity\nFROM order_details\nGROUP BY 1\nORDER BY \n    CASE \n        WHEN discount_tier = '0%' THEN 0\n        WHEN discount_tier = '5%' THEN 1\n        WHEN discount_tier = '10%' THEN 2\n        WHEN discount_tier = '15%' THEN 3\n        WHEN discount_tier = '20%' THEN 4\n        WHEN discount_tier = '25%' THEN 5\n        ELSE 6\n    END",
+        "sql_validation": "VALID",
+        "visualization": {
+            "chart_type": "table",
+            "columns": [
+                "discount_tier",
+                "min_quantity",
+                "q1_quantity",
+                "median_quantity",
+                "q3_quantity",
+                "max_quantity"
+            ],
+            "plotly_json": {
+                "data": [
+                    {
+                        "cells": {
+                            "align": "left",
+                            "fill": {
+                                "color": "#0f172a"
+                            },
+                            "font": {
+                                "color": "white",
+                                "size": 12
+                            },
+                            "values": [
+                                [
+                                    "0%",
+                                    "5%",
+                                    "10%",
+                                    "15%",
+                                    "20%",
+                                    "25%",
+                                    "Other"
+                                ],
+                                [
+                                    1,
+                                    1,
+                                    2,
+                                    2,
+                                    2,
+                                    2,
+                                    1
+                                ],
+                                [
+                                    10.0,
+                                    14.0,
+                                    10.0,
+                                    15.0,
+                                    12.0,
+                                    15.0,
+                                    1.0
+                                ],
+                                [
+                                    18.0,
+                                    20.0,
+                                    20.0,
+                                    21.0,
+                                    21.0,
+                                    25.0,
+                                    2.0
+                                ],
+                                [
+                                    30.0,
+                                    40.0,
+                                    30.0,
+                                    40.0,
+                                    40.0,
+                                    36.0,
+                                    2.0
+                                ],
+                                [
+                                    130,
+                                    120,
+                                    130,
+                                    100,
+                                    100,
+                                    120,
+                                    3
+                                ]
+                            ]
+                        },
+                        "header": {
+                            "align": "left",
+                            "fill": {
+                                "color": "#1e293b"
+                            },
+                            "font": {
+                                "color": "white",
+                                "size": 14
+                            },
+                            "values": [
+                                "discount_tier",
+                                "min_quantity",
+                                "q1_quantity",
+                                "median_quantity",
+                                "q3_quantity",
+                                "max_quantity"
+                            ]
+                        },
+                        "type": "table"
+                    }
+                ],
+                "layout": {
+                    "template": {
+                        "data": {
+                            "histogram2dcontour": [
+                                {
+                                    "type": "histogram2dcontour",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    },
+                                    "colorscale": [
+                                        [
+                                            0.0,
+                                            "#0d0887"
+                                        ],
+                                        [
+                                            0.1111111111111111,
+                                            "#46039f"
+                                        ],
+                                        [
+                                            0.2222222222222222,
+                                            "#7201a8"
+                                        ],
+                                        [
+                                            0.3333333333333333,
+                                            "#9c179e"
+                                        ],
+                                        [
+                                            0.4444444444444444,
+                                            "#bd3786"
+                                        ],
+                                        [
+                                            0.5555555555555556,
+                                            "#d8576b"
+                                        ],
+                                        [
+                                            0.6666666666666666,
+                                            "#ed7953"
+                                        ],
+                                        [
+                                            0.7777777777777778,
+                                            "#fb9f3a"
+                                        ],
+                                        [
+                                            0.8888888888888888,
+                                            "#fdca26"
+                                        ],
+                                        [
+                                            1.0,
+                                            "#f0f921"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "choropleth": [
+                                {
+                                    "type": "choropleth",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    }
+                                }
+                            ],
+                            "histogram2d": [
+                                {
+                                    "type": "histogram2d",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    },
+                                    "colorscale": [
+                                        [
+                                            0.0,
+                                            "#0d0887"
+                                        ],
+                                        [
+                                            0.1111111111111111,
+                                            "#46039f"
+                                        ],
+                                        [
+                                            0.2222222222222222,
+                                            "#7201a8"
+                                        ],
+                                        [
+                                            0.3333333333333333,
+                                            "#9c179e"
+                                        ],
+                                        [
+                                            0.4444444444444444,
+                                            "#bd3786"
+                                        ],
+                                        [
+                                            0.5555555555555556,
+                                            "#d8576b"
+                                        ],
+                                        [
+                                            0.6666666666666666,
+                                            "#ed7953"
+                                        ],
+                                        [
+                                            0.7777777777777778,
+                                            "#fb9f3a"
+                                        ],
+                                        [
+                                            0.8888888888888888,
+                                            "#fdca26"
+                                        ],
+                                        [
+                                            1.0,
+                                            "#f0f921"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "heatmap": [
+                                {
+                                    "type": "heatmap",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    },
+                                    "colorscale": [
+                                        [
+                                            0.0,
+                                            "#0d0887"
+                                        ],
+                                        [
+                                            0.1111111111111111,
+                                            "#46039f"
+                                        ],
+                                        [
+                                            0.2222222222222222,
+                                            "#7201a8"
+                                        ],
+                                        [
+                                            0.3333333333333333,
+                                            "#9c179e"
+                                        ],
+                                        [
+                                            0.4444444444444444,
+                                            "#bd3786"
+                                        ],
+                                        [
+                                            0.5555555555555556,
+                                            "#d8576b"
+                                        ],
+                                        [
+                                            0.6666666666666666,
+                                            "#ed7953"
+                                        ],
+                                        [
+                                            0.7777777777777778,
+                                            "#fb9f3a"
+                                        ],
+                                        [
+                                            0.8888888888888888,
+                                            "#fdca26"
+                                        ],
+                                        [
+                                            1.0,
+                                            "#f0f921"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "contourcarpet": [
+                                {
+                                    "type": "contourcarpet",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    }
+                                }
+                            ],
+                            "contour": [
+                                {
+                                    "type": "contour",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    },
+                                    "colorscale": [
+                                        [
+                                            0.0,
+                                            "#0d0887"
+                                        ],
+                                        [
+                                            0.1111111111111111,
+                                            "#46039f"
+                                        ],
+                                        [
+                                            0.2222222222222222,
+                                            "#7201a8"
+                                        ],
+                                        [
+                                            0.3333333333333333,
+                                            "#9c179e"
+                                        ],
+                                        [
+                                            0.4444444444444444,
+                                            "#bd3786"
+                                        ],
+                                        [
+                                            0.5555555555555556,
+                                            "#d8576b"
+                                        ],
+                                        [
+                                            0.6666666666666666,
+                                            "#ed7953"
+                                        ],
+                                        [
+                                            0.7777777777777778,
+                                            "#fb9f3a"
+                                        ],
+                                        [
+                                            0.8888888888888888,
+                                            "#fdca26"
+                                        ],
+                                        [
+                                            1.0,
+                                            "#f0f921"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "surface": [
+                                {
+                                    "type": "surface",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    },
+                                    "colorscale": [
+                                        [
+                                            0.0,
+                                            "#0d0887"
+                                        ],
+                                        [
+                                            0.1111111111111111,
+                                            "#46039f"
+                                        ],
+                                        [
+                                            0.2222222222222222,
+                                            "#7201a8"
+                                        ],
+                                        [
+                                            0.3333333333333333,
+                                            "#9c179e"
+                                        ],
+                                        [
+                                            0.4444444444444444,
+                                            "#bd3786"
+                                        ],
+                                        [
+                                            0.5555555555555556,
+                                            "#d8576b"
+                                        ],
+                                        [
+                                            0.6666666666666666,
+                                            "#ed7953"
+                                        ],
+                                        [
+                                            0.7777777777777778,
+                                            "#fb9f3a"
+                                        ],
+                                        [
+                                            0.8888888888888888,
+                                            "#fdca26"
+                                        ],
+                                        [
+                                            1.0,
+                                            "#f0f921"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "mesh3d": [
+                                {
+                                    "type": "mesh3d",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    }
+                                }
+                            ],
+                            "scatter": [
+                                {
+                                    "fillpattern": {
+                                        "fillmode": "overlay",
+                                        "size": 10,
+                                        "solidity": 0.2
+                                    },
+                                    "type": "scatter"
+                                }
+                            ],
+                            "parcoords": [
+                                {
+                                    "type": "parcoords",
+                                    "line": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scatterpolargl": [
+                                {
+                                    "type": "scatterpolargl",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "bar": [
+                                {
+                                    "error_x": {
+                                        "color": "#2a3f5f"
+                                    },
+                                    "error_y": {
+                                        "color": "#2a3f5f"
+                                    },
+                                    "marker": {
+                                        "line": {
+                                            "color": "#E5ECF6",
+                                            "width": 0.5
+                                        },
+                                        "pattern": {
+                                            "fillmode": "overlay",
+                                            "size": 10,
+                                            "solidity": 0.2
+                                        }
+                                    },
+                                    "type": "bar"
+                                }
+                            ],
+                            "scattergeo": [
+                                {
+                                    "type": "scattergeo",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scatterpolar": [
+                                {
+                                    "type": "scatterpolar",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "histogram": [
+                                {
+                                    "marker": {
+                                        "pattern": {
+                                            "fillmode": "overlay",
+                                            "size": 10,
+                                            "solidity": 0.2
+                                        }
+                                    },
+                                    "type": "histogram"
+                                }
+                            ],
+                            "scattergl": [
+                                {
+                                    "type": "scattergl",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scatter3d": [
+                                {
+                                    "type": "scatter3d",
+                                    "line": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    },
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scattermap": [
+                                {
+                                    "type": "scattermap",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scatterternary": [
+                                {
+                                    "type": "scatterternary",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scattercarpet": [
+                                {
+                                    "type": "scattercarpet",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "carpet": [
+                                {
+                                    "aaxis": {
+                                        "endlinecolor": "#2a3f5f",
+                                        "gridcolor": "white",
+                                        "linecolor": "white",
+                                        "minorgridcolor": "white",
+                                        "startlinecolor": "#2a3f5f"
+                                    },
+                                    "baxis": {
+                                        "endlinecolor": "#2a3f5f",
+                                        "gridcolor": "white",
+                                        "linecolor": "white",
+                                        "minorgridcolor": "white",
+                                        "startlinecolor": "#2a3f5f"
+                                    },
+                                    "type": "carpet"
+                                }
+                            ],
+                            "table": [
+                                {
+                                    "cells": {
+                                        "fill": {
+                                            "color": "#EBF0F8"
+                                        },
+                                        "line": {
+                                            "color": "white"
+                                        }
+                                    },
+                                    "header": {
+                                        "fill": {
+                                            "color": "#C8D4E3"
+                                        },
+                                        "line": {
+                                            "color": "white"
+                                        }
+                                    },
+                                    "type": "table"
+                                }
+                            ],
+                            "barpolar": [
+                                {
+                                    "marker": {
+                                        "line": {
+                                            "color": "#E5ECF6",
+                                            "width": 0.5
+                                        },
+                                        "pattern": {
+                                            "fillmode": "overlay",
+                                            "size": 10,
+                                            "solidity": 0.2
+                                        }
+                                    },
+                                    "type": "barpolar"
+                                }
+                            ],
+                            "pie": [
+                                {
+                                    "automargin": true,
+                                    "type": "pie"
+                                }
+                            ]
+                        },
+                        "layout": {
+                            "autotypenumbers": "strict",
+                            "colorway": [
+                                "#636efa",
+                                "#EF553B",
+                                "#00cc96",
+                                "#ab63fa",
+                                "#FFA15A",
+                                "#19d3f3",
+                                "#FF6692",
+                                "#B6E880",
+                                "#FF97FF",
+                                "#FECB52"
+                            ],
+                            "font": {
+                                "color": "#2a3f5f"
+                            },
+                            "hovermode": "closest",
+                            "hoverlabel": {
+                                "align": "left"
+                            },
+                            "paper_bgcolor": "white",
+                            "plot_bgcolor": "#E5ECF6",
+                            "polar": {
+                                "bgcolor": "#E5ECF6",
+                                "angularaxis": {
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "ticks": ""
+                                },
+                                "radialaxis": {
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "ticks": ""
+                                }
+                            },
+                            "ternary": {
+                                "bgcolor": "#E5ECF6",
+                                "aaxis": {
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "ticks": ""
+                                },
+                                "baxis": {
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "ticks": ""
+                                },
+                                "caxis": {
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "ticks": ""
+                                }
+                            },
+                            "coloraxis": {
+                                "colorbar": {
+                                    "outlinewidth": 0,
+                                    "ticks": ""
+                                }
+                            },
+                            "colorscale": {
+                                "sequential": [
+                                    [
+                                        0.0,
+                                        "#0d0887"
+                                    ],
+                                    [
+                                        0.1111111111111111,
+                                        "#46039f"
+                                    ],
+                                    [
+                                        0.2222222222222222,
+                                        "#7201a8"
+                                    ],
+                                    [
+                                        0.3333333333333333,
+                                        "#9c179e"
+                                    ],
+                                    [
+                                        0.4444444444444444,
+                                        "#bd3786"
+                                    ],
+                                    [
+                                        0.5555555555555556,
+                                        "#d8576b"
+                                    ],
+                                    [
+                                        0.6666666666666666,
+                                        "#ed7953"
+                                    ],
+                                    [
+                                        0.7777777777777778,
+                                        "#fb9f3a"
+                                    ],
+                                    [
+                                        0.8888888888888888,
+                                        "#fdca26"
+                                    ],
+                                    [
+                                        1.0,
+                                        "#f0f921"
+                                    ]
+                                ],
+                                "sequentialminus": [
+                                    [
+                                        0.0,
+                                        "#0d0887"
+                                    ],
+                                    [
+                                        0.1111111111111111,
+                                        "#46039f"
+                                    ],
+                                    [
+                                        0.2222222222222222,
+                                        "#7201a8"
+                                    ],
+                                    [
+                                        0.3333333333333333,
+                                        "#9c179e"
+                                    ],
+                                    [
+                                        0.4444444444444444,
+                                        "#bd3786"
+                                    ],
+                                    [
+                                        0.5555555555555556,
+                                        "#d8576b"
+                                    ],
+                                    [
+                                        0.6666666666666666,
+                                        "#ed7953"
+                                    ],
+                                    [
+                                        0.7777777777777778,
+                                        "#fb9f3a"
+                                    ],
+                                    [
+                                        0.8888888888888888,
+                                        "#fdca26"
+                                    ],
+                                    [
+                                        1.0,
+                                        "#f0f921"
+                                    ]
+                                ],
+                                "diverging": [
+                                    [
+                                        0,
+                                        "#8e0152"
+                                    ],
+                                    [
+                                        0.1,
+                                        "#c51b7d"
+                                    ],
+                                    [
+                                        0.2,
+                                        "#de77ae"
+                                    ],
+                                    [
+                                        0.3,
+                                        "#f1b6da"
+                                    ],
+                                    [
+                                        0.4,
+                                        "#fde0ef"
+                                    ],
+                                    [
+                                        0.5,
+                                        "#f7f7f7"
+                                    ],
+                                    [
+                                        0.6,
+                                        "#e6f5d0"
+                                    ],
+                                    [
+                                        0.7,
+                                        "#b8e186"
+                                    ],
+                                    [
+                                        0.8,
+                                        "#7fbc41"
+                                    ],
+                                    [
+                                        0.9,
+                                        "#4d9221"
+                                    ],
+                                    [
+                                        1,
+                                        "#276419"
+                                    ]
+                                ]
+                            },
+                            "xaxis": {
+                                "gridcolor": "white",
+                                "linecolor": "white",
+                                "ticks": "",
+                                "title": {
+                                    "standoff": 15
+                                },
+                                "zerolinecolor": "white",
+                                "automargin": true,
+                                "zerolinewidth": 2
+                            },
+                            "yaxis": {
+                                "gridcolor": "white",
+                                "linecolor": "white",
+                                "ticks": "",
+                                "title": {
+                                    "standoff": 15
+                                },
+                                "zerolinecolor": "white",
+                                "automargin": true,
+                                "zerolinewidth": 2
+                            },
+                            "scene": {
+                                "xaxis": {
+                                    "backgroundcolor": "#E5ECF6",
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "showbackground": true,
+                                    "ticks": "",
+                                    "zerolinecolor": "white",
+                                    "gridwidth": 2
+                                },
+                                "yaxis": {
+                                    "backgroundcolor": "#E5ECF6",
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "showbackground": true,
+                                    "ticks": "",
+                                    "zerolinecolor": "white",
+                                    "gridwidth": 2
+                                },
+                                "zaxis": {
+                                    "backgroundcolor": "#E5ECF6",
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "showbackground": true,
+                                    "ticks": "",
+                                    "zerolinecolor": "white",
+                                    "gridwidth": 2
+                                }
+                            },
+                            "shapedefaults": {
+                                "line": {
+                                    "color": "#2a3f5f"
+                                }
+                            },
+                            "annotationdefaults": {
+                                "arrowcolor": "#2a3f5f",
+                                "arrowhead": 0,
+                                "arrowwidth": 1
+                            },
+                            "geo": {
+                                "bgcolor": "white",
+                                "landcolor": "#E5ECF6",
+                                "subunitcolor": "white",
+                                "showland": true,
+                                "showlakes": true,
+                                "lakecolor": "white"
+                            },
+                            "title": {
+                                "x": 0.05
+                            }
+                        }
+                    },
+                    "margin": {
+                        "l": 0,
+                        "r": 0,
+                        "t": 30,
+                        "b": 0
+                    },
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor": "rgba(0,0,0,0)"
+                }
+            }
+        },
+        "insights": {
+            "fact": "Median order quantities range from 18 to 25 across standard discount tiers (0% to 25%), while the 'Other' category shows significantly lower order quantities with a median of 2.",
+            "insight": "Customers purchasing with a discount tend to order in higher volumes compared to transactions in the 'Other' category, suggesting that incentives effectively drive larger batch sizes.",
+            "action": "Investigate the characteristics of the 'Other' category to determine if these represent a different customer segment or product type, and consider testing whether increasing discount availability could shift 'Other' transactions into higher volume tiers."
+        },
+        "query_result_metadata": {
+            "rows_returned": 7
+        }
+    }
+}

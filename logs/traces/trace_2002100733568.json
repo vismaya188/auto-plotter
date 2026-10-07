@@ -1,0 +1,180 @@
+{
+    "session_id": "2002100733568",
+    "started_at": "2026-10-07T03:26:13.045330+00:00",
+    "completed_at": "2026-10-07T03:26:26.582872+00:00",
+    "final_status": "sql_error",
+    "sql_retries": 3,
+    "generated_sql": "SUMMARIZE order_details",
+    "errors": "Only SELECT queries are allowed.",
+    "events": [
+        {
+            "timestamp": "2026-10-07T03:26:13.045508+00:00",
+            "step": "validate_input",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "sanitize_prompt",
+            "tool_arguments": {
+                "prompt": "Can i know what data is all about?"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:26:18.180911+00:00",
+            "step": "understand_intent",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "gemini.generate_response",
+            "tool_arguments": {
+                "prompt_length": 1544
+            },
+            "tool_result": {
+                "intent_type": "data_qa",
+                "dimensions": [
+                    "all"
+                ],
+                "measures": [
+                    "summary"
+                ],
+                "filters": []
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:26:18.190216+00:00",
+            "step": "lookup_semantics",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "semantic_lookup",
+            "tool_arguments": {
+                "search_term": "all summary"
+            },
+            "tool_result": {
+                "mapping_length": 388
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:26:20.695291+00:00",
+            "step": "generate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "query_generate",
+            "tool_arguments": {
+                "intent": "Can i know what data is all about?",
+                "retry": 0
+            },
+            "tool_result": {
+                "sql": "SUMMARIZE (SELECT * FROM customers LEFT JOIN orders ON customers.customerID = orders.customerID LEFT JOIN order_details ON orders.orderID = order_details.orderID LEFT JOIN products ON order_details.productID = products.productID)"
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:26:20.698401+00:00",
+            "step": "validate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "validate_sql",
+            "tool_arguments": {
+                "sql": "SUMMARIZE (SELECT * FROM customers LEFT JOIN orders ON customers.customerID = orders.customerID LEFT JOIN order_details ON orders.orderID = order_details.orderID LEFT JOIN products ON order_details.productID = products.productID)"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:26:20.749202+00:00",
+            "step": "validate_and_retrieve",
+            "status": "failed",
+            "retry_count": 1,
+            "tool_called": "data_retrieve",
+            "hook_decision": "DENY",
+            "error": "Only SELECT queries are allowed."
+        },
+        {
+            "timestamp": "2026-10-07T03:26:23.681372+00:00",
+            "step": "generate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "query_generate",
+            "tool_arguments": {
+                "intent": "Can i know what data is all about?",
+                "retry": 1
+            },
+            "tool_result": {
+                "sql": "SELECT \n    'Customers' AS table_name, \n    COUNT(*) AS row_count, \n    COUNT(DISTINCT customerID) AS unique_entities \nFROM customers\nUNION ALL\nSELECT \n    'Orders' AS table_name, \n    COUNT(*) AS row_count, \n    COUNT(DISTINCT orderID) AS unique_entities \nFROM orders\nUNION ALL\nSELECT \n    'Products' AS table_name, \n    COUNT(*) AS row_count, \n    COUNT(DISTINCT productID) AS unique_entities \nFROM products\nUNION ALL\nSELECT \n    'Order_Details' AS table_name, \n    COUNT(*) AS row_count, \n    COUNT(DISTINCT orderID || '-' || productID) AS unique_entities \nFROM order_details;"
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:26:23.685185+00:00",
+            "step": "validate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "validate_sql",
+            "tool_arguments": {
+                "sql": "SELECT \n    'Customers' AS table_name, \n    COUNT(*) AS row_count, \n    COUNT(DISTINCT customerID) AS unique_entities \nFROM customers\nUNION ALL\nSELECT \n    'Orders' AS table_name, \n    COUNT(*) AS row_count, \n    COUNT(DISTINCT orderID) AS unique_entities \nFROM orders\nUNION ALL\nSELECT \n    'Products' AS table_name, \n    COUNT(*) AS row_count, \n    COUNT(DISTINCT productID) AS unique_entities \nFROM products\nUNION ALL\nSELECT \n    'Order_Details' AS table_name, \n    COUNT(*) AS row_count, \n    COUNT(DISTINCT orderID || '-' || productID) AS unique_entities \nFROM order_details;"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:26:23.755217+00:00",
+            "step": "validate_and_retrieve",
+            "status": "failed",
+            "retry_count": 2,
+            "tool_called": "data_retrieve",
+            "hook_decision": "DENY",
+            "error": "Invalid SQL Query: Catalog Error: Table with name orders does not exist!\nDid you mean \"order_details\"?\n\nLINE 11: FROM orders\n              ^"
+        },
+        {
+            "timestamp": "2026-10-07T03:26:26.518322+00:00",
+            "step": "generate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "query_generate",
+            "tool_arguments": {
+                "intent": "Can i know what data is all about?",
+                "retry": 2
+            },
+            "tool_result": {
+                "sql": "SUMMARIZE order_details"
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:26:26.521850+00:00",
+            "step": "validate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "validate_sql",
+            "tool_arguments": {
+                "sql": "SUMMARIZE order_details"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:26:26.580721+00:00",
+            "step": "validate_and_retrieve",
+            "status": "failed",
+            "retry_count": 3,
+            "tool_called": "data_retrieve",
+            "hook_decision": "DENY",
+            "error": "Only SELECT queries are allowed."
+        }
+    ],
+    "final_state_summary": {
+        "_session_id": "e24e4283-843e-4163-818d-6e1be293c316",
+        "session_id": "e24e4283-843e-4163-818d-6e1be293c316",
+        "user_prompt": "Can i know what data is all about?",
+        "chat_history": [],
+        "sql_retries": 3,
+        "errors": "Only SELECT queries are allowed.",
+        "status": "sql_error",
+        "session_start_time": 1791343573.0455225,
+        "intent": "Can i know what data is all about?",
+        "intent_type": "data_qa",
+        "dimensions": [
+            "all"
+        ],
+        "measures": [
+            "summary"
+        ],
+        "filters": [],
+        "semantic_mapping": "No semantic matches found for 'all summary'. Available columns: customerID, companyName, contactName, contactTitle, address, city, region, postalCode, country, phone, fax, orderID, productID, unitPrice, quantity, discount, productID, productName, supplierID, categoryID, quantityPerUnit, unitPrice, unitsInStock, unitsOnOrder, reorderLevel, discontinued. Try rephrasing using these terms.",
+        "generated_sql": "SUMMARIZE order_details",
+        "sql_validation": "Only SELECT queries are allowed."
+    }
+}

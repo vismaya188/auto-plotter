@@ -1,0 +1,48 @@
+{
+    "session_id": "2002071846272",
+    "started_at": "2026-10-07T03:22:40.919111+00:00",
+    "completed_at": "2026-10-07T03:22:44.336459+00:00",
+    "final_status": "conversational",
+    "sql_retries": 0,
+    "generated_sql": null,
+    "errors": "",
+    "events": [
+        {
+            "timestamp": "2026-10-07T03:22:40.920482+00:00",
+            "step": "validate_input",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "sanitize_prompt",
+            "tool_arguments": {
+                "prompt": "hey who are you"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:22:44.332224+00:00",
+            "step": "understand_intent",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "gemini.generate_response",
+            "tool_result": {
+                "intent_type": "conversational"
+            }
+        }
+    ],
+    "final_state_summary": {
+        "_session_id": "27464ebf-a776-43a5-96f4-6e6ff0cf0051",
+        "session_id": "27464ebf-a776-43a5-96f4-6e6ff0cf0051",
+        "user_prompt": "hey who are you",
+        "chat_history": [],
+        "sql_retries": 0,
+        "errors": "",
+        "status": "conversational",
+        "session_start_time": 1791343360.9204996,
+        "intent": "hey who are you",
+        "intent_type": "conversational",
+        "visualization": {
+            "chart_type": "message",
+            "message": "Hello! I am your AI-powered data assistant. You can ask me questions about your business data, such as requesting summaries, identifying trends, or looking up specific metrics. How can I help you today?"
+        }
+    }
+}

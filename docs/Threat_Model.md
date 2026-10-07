@@ -25,13 +25,13 @@ In Prompt-to-Plot, we use **Deterministic Hooks**—hardcoded, immutable Python 
 * **Mitigation**: Semantic mapping explicitly restricts the schema context the LLM receives to allowed tables (e.g., `sales`). The LLM is physically unaware of other schemas.
 * **Component**: `backend/agent/tools.py` (`schema_lookup`)
 
-### 3. Destructive SQL
-* **Risk**: The agent generates SQL that destroys, mutates, or locks data.
-* **Attack Example**: *"Drop the sales table."*
-* **Potential Impact**: Permanent data loss or corruption.
+### 3. Destructive SQL & Arbitrary File Access (Air-Gap Bypass)
+* **Risk**: The agent generates SQL that destroys data (e.g. `DROP`) or accesses sensitive host files using database extensions (e.g. `read_csv('/etc/passwd')`).
+* **Attack Example**: *"Drop the sales table"* or *"Select * from read_csv('/etc/passwd')"*.
+* **Potential Impact**: Permanent data loss, corruption, or catastrophic data exfiltration from the host OS.
 * **Mitigation**: 
   1. A strict deterministic regex check blocks any query containing `DROP`, `DELETE`, `INSERT`, `UPDATE`, or `ALTER`.
-  2. The DuckDB connection is explicitly instantiated in strict read-only mode (`read_only=True`), making mutation physically impossible at the driver level.
+  2. The DuckDB connection is strictly air-gapped using `read_only=True` and `config={'enable_external_access': False}`. This natively disables all file system operations (`read_csv`, `read_parquet`) and ATTACH commands at the driver level, neutralizing air-gap bypasses.
 * **Component**: `backend/security/hooks.py` (`validate_sql`) & `backend/data/database.py`
 
 ### 4. Excessive Tool Permissions
@@ -68,6 +68,13 @@ In Prompt-to-Plot, we use **Deterministic Hooks**—hardcoded, immutable Python 
 * **Potential Impact**: Massive API bill (token exhaustion), rate-limiting, and system lockup.
 * **Component**: `backend/agent/graph.py`
 
+### 9. Context Window Exhaustion (Denial of Service)
+* **Risk**: The agent ingests a dataset with massive text blobs that exceed the LLM's token limit during schema discovery.
+* **Attack Example**: Uploading a CSV where a single cell contains a 50MB Base64 image string.
+* **Potential Impact**: The LLM throws an `EOF while parsing` JSON error, defaulting to a weak rule-based schema model, silently crippling agent performance.
+* **Mitigation**: We deterministically truncate all string values to 50 characters before sending sample data to the LLM during semantic auto-discovery.
+* **Component**: `backend/semantic/auto_discover.py`
+
 ---
 
 ## Documented Attack Attempt & Outcome
@@ -89,6 +96,6 @@ When run against the **Prompt-to-Plot Harness**, the attack was neutralized befo
 
 1. **Layer 1 (The Pre-Tool Hook):** The LLM still succumbed to the injection and generated the `DROP TABLE sales;` string as its action. However, the action was intercepted by our deterministic hook (`validate_sql` in `backend/security/hooks.py`).
 2. **Layer 2 (Regex Block):** The hook immediately flagged the keyword `DROP` and raised a `SecurityViolation`. 
-3. **Layer 3 (Driver-Level Protection):** Even if the regex check had failed (e.g., via obfuscation), our `DuckDB` driver is explicitly instantiated with `read_only=True`. A drop command is physically impossible to execute on the connection.
+3. **Layer 3 (Driver-Level Protection & Air-Gap):** Even if the regex check had failed (e.g., via obfuscation), our `DuckDB` driver is explicitly instantiated with `read_only=True` and `enable_external_access=False`. A drop command is physically impossible to execute, and any attempt to read host files via `read_csv` is blocked natively.
 
 **Result:** The graph terminated the execution immediately, returning the error to the UI: *"Security Violation: Destructive SQL is strictly prohibited."* Data remained completely secure.

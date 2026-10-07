@@ -1,0 +1,987 @@
+{
+    "session_id": "1951962564672",
+    "started_at": "2026-10-07T03:32:11.418052+00:00",
+    "completed_at": "2026-10-07T03:32:31.496036+00:00",
+    "final_status": "insight_generated",
+    "sql_retries": 0,
+    "generated_sql": "SELECT\n    product,\n    SUM(revenue) AS total_revenue\nFROM sales\nGROUP BY product\nORDER BY total_revenue DESC\nLIMIT 10",
+    "errors": "",
+    "events": [
+        {
+            "timestamp": "2026-10-07T03:32:11.418276+00:00",
+            "step": "validate_input",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "sanitize_prompt",
+            "tool_arguments": {
+                "prompt": "Top 10 Revenue-Generating Products"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:32:14.385669+00:00",
+            "step": "understand_intent",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "gemini.generate_response",
+            "tool_arguments": {
+                "prompt_length": 1692
+            },
+            "tool_result": {
+                "intent_type": "visualization",
+                "dimensions": [
+                    "product"
+                ],
+                "measures": [
+                    "revenue"
+                ],
+                "filters": [
+                    "top 10"
+                ]
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:32:14.395574+00:00",
+            "step": "lookup_semantics",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "semantic_lookup",
+            "tool_arguments": {
+                "search_term": "product revenue top 10"
+            },
+            "tool_result": {
+                "mapping_length": 1589
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:32:21.140449+00:00",
+            "step": "generate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "query_generate",
+            "tool_arguments": {
+                "intent": "Top 10 Revenue-Generating Products",
+                "retry": 0
+            },
+            "tool_result": {
+                "sql": "SELECT\n    product,\n    SUM(revenue) AS total_revenue\nFROM sales\nGROUP BY product\nORDER BY total_revenue DESC\nLIMIT 10"
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:32:21.145288+00:00",
+            "step": "validate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "validate_sql",
+            "tool_arguments": {
+                "sql": "SELECT\n    product,\n    SUM(revenue) AS total_revenue\nFROM sales\nGROUP BY product\nORDER BY total_revenue DESC\nLIMIT 10"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:32:21.218600+00:00",
+            "step": "validate_and_retrieve",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "data_retrieve",
+            "tool_result": {
+                "rows": 3
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:32:22.606212+00:00",
+            "step": "select_visualization",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "viz_select",
+            "tool_result": {
+                "chart_type": "bar"
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:32:31.483588+00:00",
+            "step": "generate_insight",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "insight_generate",
+            "tool_result": {
+                "insight_keys": [
+                    "fact",
+                    "insight",
+                    "action"
+                ]
+            }
+        }
+    ],
+    "final_state_summary": {
+        "_session_id": "e24e4283-843e-4163-818d-6e1be293c316",
+        "session_id": "e24e4283-843e-4163-818d-6e1be293c316",
+        "user_prompt": "Top 10 Revenue-Generating Products",
+        "chat_history": [
+            {
+                "role": "user",
+                "content": "Can i know what data is all about?"
+            },
+            {
+                "role": "assistant",
+                "content": "The dataset contains 15 records across 6 columns covering a date range from 2025-01-01 to 2025-06-15, documenting revenue, units, regions, accounts, and products. The data tracks transactional performance with 4 regions, 5 accounts, and 3 distinct product types, showing a wide variation in revenue between 1200.0 and 4500.0."
+            }
+        ],
+        "sql_retries": 0,
+        "errors": "",
+        "status": "insight_generated",
+        "session_start_time": 1791343931.4182875,
+        "intent": "Top 10 Revenue-Generating Products",
+        "intent_type": "visualization",
+        "dimensions": [
+            "product"
+        ],
+        "measures": [
+            "revenue"
+        ],
+        "filters": [
+            "top 10"
+        ],
+        "semantic_mapping": "{\n  \"search_term\": \"product revenue top 10\",\n  \"matches\": [\n    {\n      \"table\": \"sales\",\n      \"column\": \"product\",\n      \"role\": \"dimension\",\n      \"type\": \"VARCHAR\",\n      \"description\": \"The item that was sold (e.g., Widget A, Widget B, Widget C)\",\n      \"annotation\": \"read-only\"\n    },\n    {\n      \"table\": \"sales\",\n      \"column\": \"revenue\",\n      \"role\": \"measure\",\n      \"type\": \"DOUBLE\",\n      \"description\": \"The total monetary value of the sale\",\n      \"annotation\": \"read-only\",\n      \"allowed_aggregations\": [\n        \"SUM\",\n        \"AVG\",\n        \"MIN\",\n        \"MAX\"\n      ]\n    }\n  ],\n  \"kpi_definitions\": [\n    {\n      \"kpi\": \"total_revenue\",\n      \"description\": \"Sum of all revenue across all transactions\",\n      \"sql\": \"SELECT SUM(revenue) AS total_revenue FROM sales\"\n    },\n    {\n      \"kpi\": \"average_revenue\",\n      \"description\": \"Average revenue per transaction\",\n      \"sql\": \"SELECT AVG(revenue) AS average_revenue FROM sales\"\n    }\n  ],\n  \"date_filter_hints\": {\n    \"this year\": \"YEAR(date) = YEAR(CURRENT_DATE)\",\n    \"last year\": \"YEAR(date) = YEAR(CURRENT_DATE) - 1\",\n    \"this month\": \"YEAR(date) = YEAR(CURRENT_DATE) AND MONTH(date) = MONTH(CURRENT_DATE)\",\n    \"last month\": \"date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND date < DATE_TRUNC('month', CURRENT_DATE)\",\n    \"last quarter\": \"date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND date < DATE_TRUNC('quarter', CURRENT_DATE)\",\n    \"this quarter\": \"date >= DATE_TRUNC('quarter', CURRENT_DATE) AND date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH\"\n  }\n}",
+        "generated_sql": "SELECT\n    product,\n    SUM(revenue) AS total_revenue\nFROM sales\nGROUP BY product\nORDER BY total_revenue DESC\nLIMIT 10",
+        "sql_validation": "VALID",
+        "visualization": {
+            "chart_type": "bar",
+            "columns": [
+                "product",
+                "total_revenue"
+            ],
+            "plotly_json": {
+                "data": [
+                    {
+                        "hovertemplate": "product=%{x}<br>total_revenue=%{y}<extra></extra>",
+                        "legendgroup": "",
+                        "marker": {
+                            "color": "#636efa",
+                            "pattern": {
+                                "shape": ""
+                            }
+                        },
+                        "name": "",
+                        "orientation": "v",
+                        "showlegend": false,
+                        "textposition": "auto",
+                        "x": [
+                            "Widget C",
+                            "Widget B",
+                            "Widget A"
+                        ],
+                        "xaxis": "x",
+                        "y": {
+                            "dtype": "f8",
+                            "bdata": "AAAAAAC8y0AAAAAAACzKQAAAAAAA7MNA"
+                        },
+                        "yaxis": "y",
+                        "type": "bar"
+                    }
+                ],
+                "layout": {
+                    "template": {
+                        "data": {
+                            "histogram2dcontour": [
+                                {
+                                    "type": "histogram2dcontour",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    },
+                                    "colorscale": [
+                                        [
+                                            0.0,
+                                            "#0d0887"
+                                        ],
+                                        [
+                                            0.1111111111111111,
+                                            "#46039f"
+                                        ],
+                                        [
+                                            0.2222222222222222,
+                                            "#7201a8"
+                                        ],
+                                        [
+                                            0.3333333333333333,
+                                            "#9c179e"
+                                        ],
+                                        [
+                                            0.4444444444444444,
+                                            "#bd3786"
+                                        ],
+                                        [
+                                            0.5555555555555556,
+                                            "#d8576b"
+                                        ],
+                                        [
+                                            0.6666666666666666,
+                                            "#ed7953"
+                                        ],
+                                        [
+                                            0.7777777777777778,
+                                            "#fb9f3a"
+                                        ],
+                                        [
+                                            0.8888888888888888,
+                                            "#fdca26"
+                                        ],
+                                        [
+                                            1.0,
+                                            "#f0f921"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "choropleth": [
+                                {
+                                    "type": "choropleth",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    }
+                                }
+                            ],
+                            "histogram2d": [
+                                {
+                                    "type": "histogram2d",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    },
+                                    "colorscale": [
+                                        [
+                                            0.0,
+                                            "#0d0887"
+                                        ],
+                                        [
+                                            0.1111111111111111,
+                                            "#46039f"
+                                        ],
+                                        [
+                                            0.2222222222222222,
+                                            "#7201a8"
+                                        ],
+                                        [
+                                            0.3333333333333333,
+                                            "#9c179e"
+                                        ],
+                                        [
+                                            0.4444444444444444,
+                                            "#bd3786"
+                                        ],
+                                        [
+                                            0.5555555555555556,
+                                            "#d8576b"
+                                        ],
+                                        [
+                                            0.6666666666666666,
+                                            "#ed7953"
+                                        ],
+                                        [
+                                            0.7777777777777778,
+                                            "#fb9f3a"
+                                        ],
+                                        [
+                                            0.8888888888888888,
+                                            "#fdca26"
+                                        ],
+                                        [
+                                            1.0,
+                                            "#f0f921"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "heatmap": [
+                                {
+                                    "type": "heatmap",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    },
+                                    "colorscale": [
+                                        [
+                                            0.0,
+                                            "#0d0887"
+                                        ],
+                                        [
+                                            0.1111111111111111,
+                                            "#46039f"
+                                        ],
+                                        [
+                                            0.2222222222222222,
+                                            "#7201a8"
+                                        ],
+                                        [
+                                            0.3333333333333333,
+                                            "#9c179e"
+                                        ],
+                                        [
+                                            0.4444444444444444,
+                                            "#bd3786"
+                                        ],
+                                        [
+                                            0.5555555555555556,
+                                            "#d8576b"
+                                        ],
+                                        [
+                                            0.6666666666666666,
+                                            "#ed7953"
+                                        ],
+                                        [
+                                            0.7777777777777778,
+                                            "#fb9f3a"
+                                        ],
+                                        [
+                                            0.8888888888888888,
+                                            "#fdca26"
+                                        ],
+                                        [
+                                            1.0,
+                                            "#f0f921"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "contourcarpet": [
+                                {
+                                    "type": "contourcarpet",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    }
+                                }
+                            ],
+                            "contour": [
+                                {
+                                    "type": "contour",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    },
+                                    "colorscale": [
+                                        [
+                                            0.0,
+                                            "#0d0887"
+                                        ],
+                                        [
+                                            0.1111111111111111,
+                                            "#46039f"
+                                        ],
+                                        [
+                                            0.2222222222222222,
+                                            "#7201a8"
+                                        ],
+                                        [
+                                            0.3333333333333333,
+                                            "#9c179e"
+                                        ],
+                                        [
+                                            0.4444444444444444,
+                                            "#bd3786"
+                                        ],
+                                        [
+                                            0.5555555555555556,
+                                            "#d8576b"
+                                        ],
+                                        [
+                                            0.6666666666666666,
+                                            "#ed7953"
+                                        ],
+                                        [
+                                            0.7777777777777778,
+                                            "#fb9f3a"
+                                        ],
+                                        [
+                                            0.8888888888888888,
+                                            "#fdca26"
+                                        ],
+                                        [
+                                            1.0,
+                                            "#f0f921"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "surface": [
+                                {
+                                    "type": "surface",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    },
+                                    "colorscale": [
+                                        [
+                                            0.0,
+                                            "#0d0887"
+                                        ],
+                                        [
+                                            0.1111111111111111,
+                                            "#46039f"
+                                        ],
+                                        [
+                                            0.2222222222222222,
+                                            "#7201a8"
+                                        ],
+                                        [
+                                            0.3333333333333333,
+                                            "#9c179e"
+                                        ],
+                                        [
+                                            0.4444444444444444,
+                                            "#bd3786"
+                                        ],
+                                        [
+                                            0.5555555555555556,
+                                            "#d8576b"
+                                        ],
+                                        [
+                                            0.6666666666666666,
+                                            "#ed7953"
+                                        ],
+                                        [
+                                            0.7777777777777778,
+                                            "#fb9f3a"
+                                        ],
+                                        [
+                                            0.8888888888888888,
+                                            "#fdca26"
+                                        ],
+                                        [
+                                            1.0,
+                                            "#f0f921"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "mesh3d": [
+                                {
+                                    "type": "mesh3d",
+                                    "colorbar": {
+                                        "outlinewidth": 0,
+                                        "ticks": ""
+                                    }
+                                }
+                            ],
+                            "scatter": [
+                                {
+                                    "fillpattern": {
+                                        "fillmode": "overlay",
+                                        "size": 10,
+                                        "solidity": 0.2
+                                    },
+                                    "type": "scatter"
+                                }
+                            ],
+                            "parcoords": [
+                                {
+                                    "type": "parcoords",
+                                    "line": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scatterpolargl": [
+                                {
+                                    "type": "scatterpolargl",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "bar": [
+                                {
+                                    "error_x": {
+                                        "color": "#2a3f5f"
+                                    },
+                                    "error_y": {
+                                        "color": "#2a3f5f"
+                                    },
+                                    "marker": {
+                                        "line": {
+                                            "color": "#E5ECF6",
+                                            "width": 0.5
+                                        },
+                                        "pattern": {
+                                            "fillmode": "overlay",
+                                            "size": 10,
+                                            "solidity": 0.2
+                                        }
+                                    },
+                                    "type": "bar"
+                                }
+                            ],
+                            "scattergeo": [
+                                {
+                                    "type": "scattergeo",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scatterpolar": [
+                                {
+                                    "type": "scatterpolar",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "histogram": [
+                                {
+                                    "marker": {
+                                        "pattern": {
+                                            "fillmode": "overlay",
+                                            "size": 10,
+                                            "solidity": 0.2
+                                        }
+                                    },
+                                    "type": "histogram"
+                                }
+                            ],
+                            "scattergl": [
+                                {
+                                    "type": "scattergl",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scatter3d": [
+                                {
+                                    "type": "scatter3d",
+                                    "line": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    },
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scattermap": [
+                                {
+                                    "type": "scattermap",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scatterternary": [
+                                {
+                                    "type": "scatterternary",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "scattercarpet": [
+                                {
+                                    "type": "scattercarpet",
+                                    "marker": {
+                                        "colorbar": {
+                                            "outlinewidth": 0,
+                                            "ticks": ""
+                                        }
+                                    }
+                                }
+                            ],
+                            "carpet": [
+                                {
+                                    "aaxis": {
+                                        "endlinecolor": "#2a3f5f",
+                                        "gridcolor": "white",
+                                        "linecolor": "white",
+                                        "minorgridcolor": "white",
+                                        "startlinecolor": "#2a3f5f"
+                                    },
+                                    "baxis": {
+                                        "endlinecolor": "#2a3f5f",
+                                        "gridcolor": "white",
+                                        "linecolor": "white",
+                                        "minorgridcolor": "white",
+                                        "startlinecolor": "#2a3f5f"
+                                    },
+                                    "type": "carpet"
+                                }
+                            ],
+                            "table": [
+                                {
+                                    "cells": {
+                                        "fill": {
+                                            "color": "#EBF0F8"
+                                        },
+                                        "line": {
+                                            "color": "white"
+                                        }
+                                    },
+                                    "header": {
+                                        "fill": {
+                                            "color": "#C8D4E3"
+                                        },
+                                        "line": {
+                                            "color": "white"
+                                        }
+                                    },
+                                    "type": "table"
+                                }
+                            ],
+                            "barpolar": [
+                                {
+                                    "marker": {
+                                        "line": {
+                                            "color": "#E5ECF6",
+                                            "width": 0.5
+                                        },
+                                        "pattern": {
+                                            "fillmode": "overlay",
+                                            "size": 10,
+                                            "solidity": 0.2
+                                        }
+                                    },
+                                    "type": "barpolar"
+                                }
+                            ],
+                            "pie": [
+                                {
+                                    "automargin": true,
+                                    "type": "pie"
+                                }
+                            ]
+                        },
+                        "layout": {
+                            "autotypenumbers": "strict",
+                            "colorway": [
+                                "#636efa",
+                                "#EF553B",
+                                "#00cc96",
+                                "#ab63fa",
+                                "#FFA15A",
+                                "#19d3f3",
+                                "#FF6692",
+                                "#B6E880",
+                                "#FF97FF",
+                                "#FECB52"
+                            ],
+                            "font": {
+                                "color": "#2a3f5f"
+                            },
+                            "hovermode": "closest",
+                            "hoverlabel": {
+                                "align": "left"
+                            },
+                            "paper_bgcolor": "white",
+                            "plot_bgcolor": "#E5ECF6",
+                            "polar": {
+                                "bgcolor": "#E5ECF6",
+                                "angularaxis": {
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "ticks": ""
+                                },
+                                "radialaxis": {
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "ticks": ""
+                                }
+                            },
+                            "ternary": {
+                                "bgcolor": "#E5ECF6",
+                                "aaxis": {
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "ticks": ""
+                                },
+                                "baxis": {
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "ticks": ""
+                                },
+                                "caxis": {
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "ticks": ""
+                                }
+                            },
+                            "coloraxis": {
+                                "colorbar": {
+                                    "outlinewidth": 0,
+                                    "ticks": ""
+                                }
+                            },
+                            "colorscale": {
+                                "sequential": [
+                                    [
+                                        0.0,
+                                        "#0d0887"
+                                    ],
+                                    [
+                                        0.1111111111111111,
+                                        "#46039f"
+                                    ],
+                                    [
+                                        0.2222222222222222,
+                                        "#7201a8"
+                                    ],
+                                    [
+                                        0.3333333333333333,
+                                        "#9c179e"
+                                    ],
+                                    [
+                                        0.4444444444444444,
+                                        "#bd3786"
+                                    ],
+                                    [
+                                        0.5555555555555556,
+                                        "#d8576b"
+                                    ],
+                                    [
+                                        0.6666666666666666,
+                                        "#ed7953"
+                                    ],
+                                    [
+                                        0.7777777777777778,
+                                        "#fb9f3a"
+                                    ],
+                                    [
+                                        0.8888888888888888,
+                                        "#fdca26"
+                                    ],
+                                    [
+                                        1.0,
+                                        "#f0f921"
+                                    ]
+                                ],
+                                "sequentialminus": [
+                                    [
+                                        0.0,
+                                        "#0d0887"
+                                    ],
+                                    [
+                                        0.1111111111111111,
+                                        "#46039f"
+                                    ],
+                                    [
+                                        0.2222222222222222,
+                                        "#7201a8"
+                                    ],
+                                    [
+                                        0.3333333333333333,
+                                        "#9c179e"
+                                    ],
+                                    [
+                                        0.4444444444444444,
+                                        "#bd3786"
+                                    ],
+                                    [
+                                        0.5555555555555556,
+                                        "#d8576b"
+                                    ],
+                                    [
+                                        0.6666666666666666,
+                                        "#ed7953"
+                                    ],
+                                    [
+                                        0.7777777777777778,
+                                        "#fb9f3a"
+                                    ],
+                                    [
+                                        0.8888888888888888,
+                                        "#fdca26"
+                                    ],
+                                    [
+                                        1.0,
+                                        "#f0f921"
+                                    ]
+                                ],
+                                "diverging": [
+                                    [
+                                        0,
+                                        "#8e0152"
+                                    ],
+                                    [
+                                        0.1,
+                                        "#c51b7d"
+                                    ],
+                                    [
+                                        0.2,
+                                        "#de77ae"
+                                    ],
+                                    [
+                                        0.3,
+                                        "#f1b6da"
+                                    ],
+                                    [
+                                        0.4,
+                                        "#fde0ef"
+                                    ],
+                                    [
+                                        0.5,
+                                        "#f7f7f7"
+                                    ],
+                                    [
+                                        0.6,
+                                        "#e6f5d0"
+                                    ],
+                                    [
+                                        0.7,
+                                        "#b8e186"
+                                    ],
+                                    [
+                                        0.8,
+                                        "#7fbc41"
+                                    ],
+                                    [
+                                        0.9,
+                                        "#4d9221"
+                                    ],
+                                    [
+                                        1,
+                                        "#276419"
+                                    ]
+                                ]
+                            },
+                            "xaxis": {
+                                "gridcolor": "white",
+                                "linecolor": "white",
+                                "ticks": "",
+                                "title": {
+                                    "standoff": 15
+                                },
+                                "zerolinecolor": "white",
+                                "automargin": true,
+                                "zerolinewidth": 2
+                            },
+                            "yaxis": {
+                                "gridcolor": "white",
+                                "linecolor": "white",
+                                "ticks": "",
+                                "title": {
+                                    "standoff": 15
+                                },
+                                "zerolinecolor": "white",
+                                "automargin": true,
+                                "zerolinewidth": 2
+                            },
+                            "scene": {
+                                "xaxis": {
+                                    "backgroundcolor": "#E5ECF6",
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "showbackground": true,
+                                    "ticks": "",
+                                    "zerolinecolor": "white",
+                                    "gridwidth": 2
+                                },
+                                "yaxis": {
+                                    "backgroundcolor": "#E5ECF6",
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "showbackground": true,
+                                    "ticks": "",
+                                    "zerolinecolor": "white",
+                                    "gridwidth": 2
+                                },
+                                "zaxis": {
+                                    "backgroundcolor": "#E5ECF6",
+                                    "gridcolor": "white",
+                                    "linecolor": "white",
+                                    "showbackground": true,
+                                    "ticks": "",
+                                    "zerolinecolor": "white",
+                                    "gridwidth": 2
+                                }
+                            },
+                            "shapedefaults": {
+                                "line": {
+                                    "color": "#2a3f5f"
+                                }
+                            },
+                            "annotationdefaults": {
+                                "arrowcolor": "#2a3f5f",
+                                "arrowhead": 0,
+                                "arrowwidth": 1
+                            },
+                            "geo": {
+                                "bgcolor": "white",
+                                "landcolor": "#E5ECF6",
+                                "subunitcolor": "white",
+                                "showland": true,
+                                "showlakes": true,
+                                "lakecolor": "white"
+                            },
+                            "title": {
+                                "x": 0.05
+                            }
+                        }
+                    },
+                    "xaxis": {
+                        "anchor": "y",
+                        "domain": [
+                            0.0,
+                            1.0
+                        ],
+                        "title": {
+                            "text": "product"
+                        }
+                    },
+                    "yaxis": {
+                        "anchor": "x",
+                        "domain": [
+                            0.0,
+                            1.0
+                        ],
+                        "title": {
+                            "text": "total_revenue"
+                        }
+                    },
+                    "legend": {
+                        "tracegroupgap": 0
+                    },
+                    "title": {
+                        "text": "total_revenue by product"
+                    },
+                    "barmode": "relative"
+                }
+            }
+        },
+        "insights": {
+            "fact": "Widget C leads revenue at 14200.0, followed by Widget B at 13400.0 and Widget A at 10200.0.",
+            "insight": "There is a consistent performance gap between these three products, indicating that Widget C is currently the primary driver of total revenue.",
+            "action": "Investigate the marketing strategies or customer feedback for Widget C to replicate its success, while evaluating Widget A for potential bundling or promotional opportunities to increase its revenue contribution."
+        },
+        "query_result_metadata": {
+            "rows_returned": 3
+        }
+    }
+}

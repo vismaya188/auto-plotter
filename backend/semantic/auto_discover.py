@@ -76,6 +76,12 @@ def _get_schema_summary(session_id: str) -> dict:
             columns = [{"column_name": r[0], "column_type": r[1]} for r in schema_rows]
 
             sample_df = conn.execute(f"SELECT * FROM {table} LIMIT 3").fetchdf()
+            
+            # Truncate strings to prevent LLM context exhaustion
+            for col in sample_df.columns:
+                if sample_df[col].dtype == "object":
+                    sample_df[col] = sample_df[col].apply(lambda x: str(x)[:50] + "..." if isinstance(x, str) and len(str(x)) > 50 else x)
+
             sample_rows = json.loads(sample_df.to_json(orient="records", date_format="iso"))
 
             row_count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]

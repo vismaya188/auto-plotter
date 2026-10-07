@@ -183,6 +183,17 @@ def generate_sql_node(state: AgentState):
         semantic_mapping=state.get("semantic_mapping", ""),
         error_context=state.get("sql_validation", "") if state.get("sql_retries", 0) > 0 else ""
     )
+
+    if sql.startswith("CANNOT_ANSWER:"):
+        trace.log_event("generate_sql", hook_decision="ABORT", status="success")
+        message = sql.replace("CANNOT_ANSWER:", "").strip()
+        return {
+            "intent_type": "conversational",
+            "visualization": {"chart_type": "message", "message": message},
+            "status": "conversational",
+            "errors": ""
+        }
+
     trace.log_event("generate_sql", tool_called="query_generate",
                     tool_arguments={"intent": state.get("intent"), "retry": state.get("sql_retries", 0)},
                     tool_result={"sql": sql}, status="success")
@@ -325,6 +336,12 @@ def after_validate_and_retrieve(state: AgentState):
         return "generate_insight"
     return "fan_out"
 
+def check_sql_generation(state: AgentState):
+    """Routes to END if the LLM determines the SQL cannot be generated due to missing data."""
+    if state.get("status") == "conversational":
+        return "end"
+    return "continue"
+
 # 4. Build the LangGraph Workflow
 workflow = StateGraph(AgentState)
 
@@ -342,7 +359,12 @@ workflow.set_entry_point("validate_input")
 workflow.add_conditional_edges("validate_input", check_errors, {"continue": "understand_intent", "fail": END})
 workflow.add_conditional_edges("understand_intent", check_intent, {"continue": "lookup_semantics", "end": END, "fail": END})
 workflow.add_edge("lookup_semantics", "generate_sql")
-workflow.add_edge("generate_sql", "validate_and_retrieve")
+
+workflow.add_conditional_edges(
+    "generate_sql",
+    check_sql_generation,
+    {"continue": "validate_and_retrieve", "end": END}
+)
 
 workflow.add_conditional_edges(
     "validate_and_retrieve",

@@ -1,0 +1,174 @@
+{
+    "session_id": "2894620506240",
+    "started_at": "2026-10-07T04:25:16.463798+00:00",
+    "completed_at": "2026-10-07T04:25:53.939104+00:00",
+    "final_status": "insight_generated",
+    "sql_retries": 1,
+    "generated_sql": "SUMMARIZE order_details",
+    "errors": "",
+    "events": [
+        {
+            "timestamp": "2026-10-07T04:25:16.463978+00:00",
+            "step": "validate_input",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "sanitize_prompt",
+            "tool_arguments": {
+                "prompt": "Can you say what data has"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T04:25:25.257868+00:00",
+            "step": "understand_intent",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "gemini.generate_response",
+            "tool_arguments": {
+                "prompt_length": 1292
+            },
+            "tool_result": {
+                "intent_type": "data_qa",
+                "dimensions": [
+                    "all"
+                ],
+                "measures": [
+                    "summary"
+                ],
+                "filters": []
+            }
+        },
+        {
+            "timestamp": "2026-10-07T04:25:25.267562+00:00",
+            "step": "lookup_semantics",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "semantic_lookup",
+            "tool_arguments": {
+                "search_term": "all summary"
+            },
+            "tool_result": {
+                "mapping_length": 148
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T04:25:34.534040+00:00",
+            "step": "generate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "query_generate",
+            "tool_arguments": {
+                "intent": "Can you say what data has",
+                "retry": 0
+            },
+            "tool_result": {
+                "sql": "SUMMARIZE orders"
+            }
+        },
+        {
+            "timestamp": "2026-10-07T04:25:34.538230+00:00",
+            "step": "validate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "validate_sql",
+            "tool_arguments": {
+                "sql": "SUMMARIZE orders"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T04:25:34.616587+00:00",
+            "step": "validate_and_retrieve",
+            "status": "failed",
+            "retry_count": 1,
+            "tool_called": "data_retrieve",
+            "hook_decision": "DENY",
+            "error": "Invalid SQL Query: Catalog Error: Table with name orders does not exist!\nDid you mean \"order_details\"?\n\nLINE 1: SUMMARIZE orders\n                  ^"
+        },
+        {
+            "timestamp": "2026-10-07T04:25:42.609342+00:00",
+            "step": "generate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "query_generate",
+            "tool_arguments": {
+                "intent": "Can you say what data has",
+                "retry": 1
+            },
+            "tool_result": {
+                "sql": "SUMMARIZE order_details"
+            }
+        },
+        {
+            "timestamp": "2026-10-07T04:25:42.613989+00:00",
+            "step": "validate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "validate_sql",
+            "tool_arguments": {
+                "sql": "SUMMARIZE order_details"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T04:25:42.709940+00:00",
+            "step": "validate_and_retrieve",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "data_retrieve",
+            "tool_result": {
+                "rows": 5
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T04:25:53.936723+00:00",
+            "step": "generate_insight",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "insight_generate",
+            "tool_result": {
+                "insight_keys": [
+                    "fact",
+                    "insight",
+                    "action"
+                ]
+            }
+        }
+    ],
+    "final_state_summary": {
+        "_session_id": "8e27fa5b-9559-4c1c-a9ca-94d8f8052205",
+        "session_id": "8e27fa5b-9559-4c1c-a9ca-94d8f8052205",
+        "user_prompt": "Can you say what data has",
+        "chat_history": [],
+        "sql_retries": 1,
+        "errors": "",
+        "status": "insight_generated",
+        "session_start_time": 1791347116.4639914,
+        "intent": "Can you say what data has",
+        "intent_type": "data_qa",
+        "dimensions": [
+            "all"
+        ],
+        "measures": [
+            "summary"
+        ],
+        "filters": [],
+        "semantic_mapping": "No semantic matches found for 'all summary'. Available columns: orderID, productID, unitPrice, quantity, discount. Try rephrasing using these terms.",
+        "generated_sql": "SUMMARIZE order_details",
+        "sql_validation": "VALID",
+        "insights": {
+            "fact": "The dataset contains 2,155 entries across five columns: orderID, productID, unitPrice, quantity, and discount, with 0% null values in all fields.",
+            "insight": "The data tracks transactional activity with a broad range of product IDs (up to 77) and order IDs, indicating a diverse sales history where most orders involve moderate quantities and minimal discounting.",
+            "action": "Conduct a correlation analysis between unitPrice and quantity to determine if higher-priced items typically result in lower order volumes."
+        },
+        "visualization": {
+            "chart_type": "message",
+            "message": "The dataset contains 2,155 entries across five columns: orderID, productID, unitPrice, quantity, and discount, with 0% null values in all fields.\n\nThe data tracks transactional activity with a broad range of product IDs (up to 77) and order IDs, indicating a diverse sales history where most orders involve moderate quantities and minimal discounting.\n\nConduct a correlation analysis between unitPrice and quantity to determine if higher-priced items typically result in lower order volumes."
+        },
+        "query_result_metadata": {
+            "rows_returned": 5
+        }
+    }
+}

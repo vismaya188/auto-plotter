@@ -180,9 +180,40 @@ def select_visualization(intent_data: Dict[str, Any], data_records: List[Dict[st
     elif len(keys) == 2:
         chart_type, fig = _build_two_col_chart(df, keys, intent)
 
-    # Three+ columns with scatter/relationship intent
-    elif len(keys) >= 3 and ("relationship" in intent or "scatter" in intent):
-        chart_type, fig = _build_scatter(df, keys)
+    # Three+ columns
+    elif len(keys) >= 3:
+        if "scatter" in intent or "relationship" in intent:
+            chart_type, fig = _build_scatter(df, keys)
+        elif "box" in intent:
+            # Box plot
+            categorical_cols = df.select_dtypes(exclude='number').columns
+            numeric_cols = df.select_dtypes(include='number').columns
+            if len(categorical_cols) > 0 and len(numeric_cols) > 0:
+                x_col = categorical_cols[0]
+                y_col = numeric_cols[0]
+                color_col = categorical_cols[1] if len(categorical_cols) > 1 else None
+                fig = px.box(df, x=x_col, y=y_col, color=color_col, title=f"Box Plot of {y_col} by {x_col}")
+                chart_type = "box"
+            elif len(numeric_cols) >= 2:
+                # If everything is numeric, pick first two
+                fig = px.box(df, x=keys[0], y=numeric_cols[0], title=f"Box Plot of {numeric_cols[0]} by {keys[0]}")
+                chart_type = "box"
+        elif "bar" in intent:
+            # Grouped / Stacked bar chart
+            numeric_cols = df.select_dtypes(include='number').columns
+            categorical_cols = df.select_dtypes(exclude='number').columns
+            if len(numeric_cols) > 0:
+                y_col = numeric_cols[0]
+                if len(categorical_cols) > 0:
+                    x_col = categorical_cols[0]
+                    color_col = categorical_cols[1] if len(categorical_cols) > 1 else (keys[1] if keys[1] != x_col and keys[1] != y_col else keys[2])
+                else:
+                    x_col = keys[0]
+                    color_col = keys[1]
+                fig = px.bar(df, x=x_col, y=y_col, color=color_col, barmode="group", title=f"Grouped Bar of {y_col} by {x_col}")
+                chart_type = "bar"
+            else:
+                chart_type, fig = _build_table(df)
 
     # Fallback to a Plotly table if no other chart type fits
     if fig is None:

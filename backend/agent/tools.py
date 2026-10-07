@@ -42,6 +42,8 @@ Semantic Mapping (tables, columns, foreign keys): {semantic_mapping}
 - Output ONLY raw SQL — no markdown fences, no explanations, no comments.
 - The query MUST start with SELECT or WITH or SUMMARIZE.
 - Never use DROP, DELETE, UPDATE, INSERT, CREATE, TRUNCATE, or any write operation.
+- If the user's intent asks for metrics or columns that fundamentally DO NOT EXIST in the Semantic Mapping, DO NOT hallucinate column names. Instead, output EXACTLY this string:
+  CANNOT_ANSWER: I cannot answer this question because the required data (e.g., specific columns) is not present in the current dataset.
 
 === SQL CONSTRUCTION RULES ===
 1. JOINS: Use the foreign_keys from the Semantic Mapping to join tables correctly.

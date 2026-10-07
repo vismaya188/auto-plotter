@@ -21,14 +21,14 @@ def test_destructive_query_blocked(db):
     """Test that our pre-tool hook correctly blocks destructive SQL."""
     
     # This query doesn't start with SELECT, so it should hit the first security check
-    with pytest.raises(QuerySecurityError, match="Only SELECT queries are allowed"):
+    with pytest.raises(QuerySecurityError, match="Only SELECT, SUMMARIZE, and WITH queries are allowed."):
         db.execute_query("DROP TABLE sales")
         
     # This query starts with SELECT, but contains a forbidden keyword, hitting the second check
     with pytest.raises(QuerySecurityError, match="forbidden keyword"):
         db.execute_query("SELECT * FROM sales; DELETE FROM sales WHERE region='North'")
         
-    with pytest.raises(QuerySecurityError, match="Only SELECT queries are allowed"):
+    with pytest.raises(QuerySecurityError, match="Only SELECT, SUMMARIZE, and WITH queries are allowed."):
         db.execute_query("UPDATE sales SET revenue=0")
 
 def test_invalid_sql_raises_value_error(db):

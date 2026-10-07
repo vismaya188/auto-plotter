@@ -1,0 +1,57 @@
+{
+    "session_id": "2002073831040",
+    "started_at": "2026-10-07T03:23:01.345193+00:00",
+    "completed_at": "2026-10-07T03:23:04.204381+00:00",
+    "final_status": "conversational",
+    "sql_retries": 0,
+    "generated_sql": null,
+    "errors": "",
+    "events": [
+        {
+            "timestamp": "2026-10-07T03:23:01.345524+00:00",
+            "step": "validate_input",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "sanitize_prompt",
+            "tool_arguments": {
+                "prompt": "Can you say what line chart is"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:23:04.201773+00:00",
+            "step": "understand_intent",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "gemini.generate_response",
+            "tool_result": {
+                "intent_type": "conversational"
+            }
+        }
+    ],
+    "final_state_summary": {
+        "_session_id": "909360b8-9f75-4434-9186-92c133fd4ba7",
+        "session_id": "909360b8-9f75-4434-9186-92c133fd4ba7",
+        "user_prompt": "Can you say what line chart is",
+        "chat_history": [
+            {
+                "role": "user",
+                "content": "hey who are you"
+            },
+            {
+                "role": "assistant",
+                "content": "Hello! I am your AI-powered data assistant. You can ask me questions about your business data, such as requesting summaries, identifying trends, or looking up specific metrics. How can I help you today?"
+            }
+        ],
+        "sql_retries": 0,
+        "errors": "",
+        "status": "conversational",
+        "session_start_time": 1791343381.3455453,
+        "intent": "Can you say what line chart is",
+        "intent_type": "conversational",
+        "visualization": {
+            "chart_type": "message",
+            "message": "A line chart is a type of data visualization used to display information as a series of data points connected by straight line segments. It is typically used to show trends over time or across ordered categories, helping to easily identify patterns, increases, or decreases in your business metrics."
+        }
+    }
+}

@@ -1,0 +1,140 @@
+{
+    "session_id": "1951962565184",
+    "started_at": "2026-10-07T03:29:16.832002+00:00",
+    "completed_at": "2026-10-07T03:29:31.532658+00:00",
+    "final_status": "insight_generated",
+    "sql_retries": 0,
+    "generated_sql": "SUMMARIZE sales",
+    "errors": "",
+    "events": [
+        {
+            "timestamp": "2026-10-07T03:29:16.833197+00:00",
+            "step": "validate_input",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "sanitize_prompt",
+            "tool_arguments": {
+                "prompt": "Can i know what data is all about?"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:29:20.122365+00:00",
+            "step": "understand_intent",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "gemini.generate_response",
+            "tool_arguments": {
+                "prompt_length": 1301
+            },
+            "tool_result": {
+                "intent_type": "data_qa",
+                "dimensions": [
+                    "all"
+                ],
+                "measures": [
+                    "summary"
+                ],
+                "filters": []
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:29:20.154510+00:00",
+            "step": "lookup_semantics",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "semantic_lookup",
+            "tool_arguments": {
+                "search_term": "all summary"
+            },
+            "tool_result": {
+                "mapping_length": 1042
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:29:22.399885+00:00",
+            "step": "generate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "query_generate",
+            "tool_arguments": {
+                "intent": "Can i know what data is all about?",
+                "retry": 0
+            },
+            "tool_result": {
+                "sql": "SUMMARIZE sales"
+            }
+        },
+        {
+            "timestamp": "2026-10-07T03:29:22.403843+00:00",
+            "step": "validate_sql",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "validate_sql",
+            "tool_arguments": {
+                "sql": "SUMMARIZE sales"
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:29:22.511022+00:00",
+            "step": "validate_and_retrieve",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "data_retrieve",
+            "tool_result": {
+                "rows": 6
+            },
+            "hook_decision": "ALLOW"
+        },
+        {
+            "timestamp": "2026-10-07T03:29:31.530280+00:00",
+            "step": "generate_insight",
+            "status": "success",
+            "retry_count": 0,
+            "tool_called": "insight_generate",
+            "tool_result": {
+                "insight_keys": [
+                    "fact",
+                    "insight",
+                    "action"
+                ]
+            }
+        }
+    ],
+    "final_state_summary": {
+        "_session_id": "e24e4283-843e-4163-818d-6e1be293c316",
+        "session_id": "e24e4283-843e-4163-818d-6e1be293c316",
+        "user_prompt": "Can i know what data is all about?",
+        "chat_history": [],
+        "sql_retries": 0,
+        "errors": "",
+        "status": "insight_generated",
+        "session_start_time": 1791343756.8332167,
+        "intent": "Can i know what data is all about?",
+        "intent_type": "data_qa",
+        "dimensions": [
+            "all"
+        ],
+        "measures": [
+            "summary"
+        ],
+        "filters": [],
+        "semantic_mapping": "{\n  \"search_term\": \"all summary\",\n  \"matches\": [],\n  \"kpi_definitions\": [\n    {\n      \"kpi\": \"total_revenue\",\n      \"description\": \"Sum of all revenue across all transactions\",\n      \"sql\": \"SELECT SUM(revenue) AS total_revenue FROM sales\"\n    },\n    {\n      \"kpi\": \"total_units\",\n      \"description\": \"Sum of all units sold across all transactions\",\n      \"sql\": \"SELECT SUM(units) AS total_units FROM sales\"\n    }\n  ],\n  \"date_filter_hints\": {\n    \"this year\": \"YEAR(date) = YEAR(CURRENT_DATE)\",\n    \"last year\": \"YEAR(date) = YEAR(CURRENT_DATE) - 1\",\n    \"this month\": \"YEAR(date) = YEAR(CURRENT_DATE) AND MONTH(date) = MONTH(CURRENT_DATE)\",\n    \"last month\": \"date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND date < DATE_TRUNC('month', CURRENT_DATE)\",\n    \"last quarter\": \"date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND date < DATE_TRUNC('quarter', CURRENT_DATE)\",\n    \"this quarter\": \"date >= DATE_TRUNC('quarter', CURRENT_DATE) AND date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH\"\n  }\n}",
+        "generated_sql": "SUMMARIZE sales",
+        "sql_validation": "VALID",
+        "insights": {
+            "fact": "The dataset contains 15 records across 6 columns covering a date range from 2025-01-01 to 2025-06-15, documenting revenue, units, regions, accounts, and products.",
+            "insight": "The data tracks transactional performance with 4 regions, 5 accounts, and 3 distinct product types, showing a wide variation in revenue between 1200.0 and 4500.0.",
+            "action": "Perform a cross-tabulation analysis between region and product to identify which products are driving the most revenue within specific accounts."
+        },
+        "visualization": {
+            "chart_type": "message",
+            "message": "The dataset contains 15 records across 6 columns covering a date range from 2025-01-01 to 2025-06-15, documenting revenue, units, regions, accounts, and products.\n\nThe data tracks transactional performance with 4 regions, 5 accounts, and 3 distinct product types, showing a wide variation in revenue between 1200.0 and 4500.0.\n\nPerform a cross-tabulation analysis between region and product to identify which products are driving the most revenue within specific accounts."
+        },
+        "query_result_metadata": {
+            "rows_returned": 6
+        }
+    }
+}

@@ -233,7 +233,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const sqlContainer = document.querySelector('.sql-container');
 
             if (viz.chart_type === 'message') {
-                plotlyDiv.innerHTML = `<div style="color: #f8fafc; font-size: 1.2rem; text-align: center; margin-top: 150px; padding: 0 20px;">${viz.message}</div>`;
+                plotlyDiv.innerHTML = '';
+                const msgDiv = document.createElement('div');
+                msgDiv.style.cssText = 'color: #f8fafc; font-size: 1.2rem; text-align: center; margin-top: 150px; padding: 0 20px;';
+                msgDiv.textContent = viz.message;
+                plotlyDiv.appendChild(msgDiv);
                 if (insightContainer) insightContainer.style.display = 'none';
                 if (sqlContainer) sqlContainer.style.display = 'none';
             } else {
@@ -261,14 +265,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     plotlyDiv.innerHTML = `
                         <div class="custom-kpi-container">
                             <div class="kpi-glass-card">
-                                <h3 class="kpi-title">${title}</h3>
-                                <div class="kpi-value">${formattedValue}</div>
+                                <h3 class="kpi-title"></h3>
+                                <div class="kpi-value"></div>
                                 <div class="kpi-glow"></div>
                             </div>
                         </div>
                     `;
+                    plotlyDiv.querySelector('.kpi-title').textContent = title;
+                    plotlyDiv.querySelector('.kpi-value').textContent = formattedValue;
                 } else {
-                    plotlyDiv.innerHTML = '<div style="color: #94a3b8; text-align: center; margin-top: 200px;">Table output generated. Please refer to raw data or adjust query for a chart.</div>';
+                    plotlyDiv.innerHTML = '';
+                    const fbDiv = document.createElement('div');
+                    fbDiv.style.cssText = 'color: #94a3b8; text-align: center; margin-top: 200px;';
+                    fbDiv.textContent = 'Table output generated. Please refer to raw data or adjust query for a chart.';
+                    plotlyDiv.appendChild(fbDiv);
                 }
             }
 

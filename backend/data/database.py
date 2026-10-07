@@ -48,7 +48,12 @@ class Database:
                 init_conn.close()
 
         # All query execution uses a read-only connection (matches threat model)
-        self.conn = duckdb.connect(database=self.db_path, read_only=True)
+        # enable_external_access=False completely blocks read_csv and ATTACH in SQL
+        self.conn = duckdb.connect(
+            database=self.db_path, 
+            read_only=True, 
+            config={'enable_external_access': False}
+        )
 
     def _initialize_db(self, conn):
         """Loads the raw CSV into a DuckDB table named 'sales'. Requires a write connection."""
