@@ -9914,5 +9914,205 @@
       },
       "kpis": {}
     }
+  },
+  "facadb6b-192a-45cd-9ae3-32acac8e1b28": {
+    "tables": {
+      "products": {
+        "source_type": "csv",
+        "source_label": "products.csv",
+        "row_count": 6,
+        "columns": [
+          {
+            "column_name": "product_id",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "product_name",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "category",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "unit_price",
+            "column_type": "DOUBLE"
+          }
+        ]
+      },
+      "sales": {
+        "source_type": "csv",
+        "source_label": "sales.csv",
+        "row_count": 10,
+        "columns": [
+          {
+            "column_name": "sale_id",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "product_id",
+            "column_type": "VARCHAR"
+          },
+          {
+            "column_name": "sale_date",
+            "column_type": "DATE"
+          },
+          {
+            "column_name": "quantity",
+            "column_type": "BIGINT"
+          },
+          {
+            "column_name": "region",
+            "column_type": "VARCHAR"
+          }
+        ]
+      }
+    },
+    "semantic": {
+      "tables": {
+        "products": {
+          "description": "Contains catalog information for all products offered including their names, categories, and individual pricing.",
+          "columns": {
+            "product_id": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Unique identifier for each product in the catalog.",
+              "synonyms": [
+                "product code",
+                "item ID",
+                "product identifier",
+                "sku",
+                "product number"
+              ]
+            },
+            "product_name": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The descriptive name assigned to a specific product.",
+              "synonyms": [
+                "product title",
+                "item name",
+                "product label",
+                "product description",
+                "item description"
+              ]
+            },
+            "category": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The grouping or classification that the product belongs to.",
+              "synonyms": [
+                "product type",
+                "item category",
+                "department",
+                "grouping",
+                "class"
+              ]
+            },
+            "unit_price": {
+              "type": "DOUBLE",
+              "role": "measure",
+              "description": "The cost of a single unit of the product.",
+              "synonyms": [
+                "price",
+                "item cost",
+                "selling price",
+                "unit cost",
+                "amount per unit"
+              ],
+              "allowed_aggregations": [
+                "AVG",
+                "MIN",
+                "MAX",
+                "SUM"
+              ]
+            }
+          }
+        },
+        "sales": {
+          "description": "Records individual transaction events including quantity sold, date of purchase, and geographic region.",
+          "columns": {
+            "sale_id": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "Unique identifier for each sales transaction.",
+              "synonyms": [
+                "transaction ID",
+                "order number",
+                "sale number",
+                "reference ID",
+                "transaction code"
+              ]
+            },
+            "product_id": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The identifier of the product associated with this sale.",
+              "synonyms": [
+                "item ID",
+                "sold product ID",
+                "product reference",
+                "sku code"
+              ]
+            },
+            "sale_date": {
+              "type": "DATE",
+              "role": "dimension",
+              "description": "The date on which the transaction occurred.",
+              "synonyms": [
+                "transaction date",
+                "date of sale",
+                "order date",
+                "purchase date",
+                "calendar date"
+              ]
+            },
+            "quantity": {
+              "type": "BIGINT",
+              "role": "measure",
+              "description": "The number of units purchased in the transaction.",
+              "synonyms": [
+                "units sold",
+                "order quantity",
+                "item count",
+                "volume sold",
+                "number of items"
+              ],
+              "allowed_aggregations": [
+                "SUM",
+                "AVG",
+                "MIN",
+                "MAX",
+                "COUNT"
+              ]
+            },
+            "region": {
+              "type": "VARCHAR",
+              "role": "dimension",
+              "description": "The geographic location or sales territory where the transaction took place.",
+              "synonyms": [
+                "sales region",
+                "location",
+                "territory",
+                "area",
+                "market zone"
+              ]
+            }
+          }
+        }
+      },
+      "foreign_keys": [
+        "sales.product_id = products.product_id"
+      ],
+      "date_filters": {
+        "this year": "YEAR(sale_date) = YEAR(CURRENT_DATE)",
+        "last year": "YEAR(sale_date) = YEAR(CURRENT_DATE) - 1",
+        "this month": "YEAR(sale_date) = YEAR(CURRENT_DATE) AND MONTH(sale_date) = MONTH(CURRENT_DATE)",
+        "last month": "sale_date >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL 1 MONTH AND sale_date < DATE_TRUNC('month', CURRENT_DATE)",
+        "last quarter": "sale_date >= DATE_TRUNC('quarter', CURRENT_DATE) - INTERVAL 3 MONTH AND sale_date < DATE_TRUNC('quarter', CURRENT_DATE)",
+        "this quarter": "sale_date >= DATE_TRUNC('quarter', CURRENT_DATE) AND sale_date < DATE_TRUNC('quarter', CURRENT_DATE) + INTERVAL 3 MONTH"
+      },
+      "kpis": {}
+    }
   }
 }
