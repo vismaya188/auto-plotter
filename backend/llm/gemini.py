@@ -6,8 +6,8 @@ from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_excep
 from backend.config import settings
 
 # Hard caps to prevent unbounded resource consumption (CWE-400, CWE-770)
-MAX_INPUT_CHARS = 8000
-MAX_OUTPUT_TOKENS = 1024
+MAX_INPUT_CHARS = 16000
+MAX_OUTPUT_TOKENS = 8192
 
 # Setup basic logging
 logging.basicConfig(level=logging.INFO)

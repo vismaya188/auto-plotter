@@ -74,5 +74,6 @@ def semantic_lookup(search_term: str, session_id: str = None) -> str:
         "search_term": search_term,
         "matches": matches,
         "kpi_definitions": kpi_matches,
-        "date_filter_hints": date_filters
+        "date_filter_hints": date_filters,
+        "foreign_keys": schema.get("foreign_keys", [])
     }, indent=2)
