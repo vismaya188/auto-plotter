@@ -30,7 +30,7 @@ class AgentState(TypedDict, total=False):
     sql_retries: int
     query_result: List[Dict[str, Any]]
     visualization: Dict[str, Any]
-    insights: str
+    insights: Dict[str, Any]
     errors: str
     status: str
     session_start_time: float
