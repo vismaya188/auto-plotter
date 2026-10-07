@@ -1,8 +1,18 @@
 import json
 import logging
+from difflib import SequenceMatcher
 from backend.semantic.model import semantic_model
 
 logger = logging.getLogger(__name__)
+
+
+def _fuzzy_match(term: str, candidates: list, threshold: float = 0.72) -> bool:
+    """Returns True if `term` fuzzy-matches any candidate above the threshold."""
+    term_lower = term.lower()
+    for c in candidates:
+        if SequenceMatcher(None, term_lower, c.lower()).ratio() >= threshold:
+            return True
+    return False
 
 
 def semantic_lookup(search_term: str, session_id: str = None) -> str:
@@ -25,10 +35,15 @@ def semantic_lookup(search_term: str, session_id: str = None) -> str:
 
     for table_name, table_info in schema.get("tables", {}).items():
         for col_name, col_info in table_info.get("columns", {}).items():
+            synonyms_lower = [s.lower() for s in col_info.get("synonyms", [])]
+            description_lower = col_info.get("description", "").lower()
+            all_candidates = [col_name.lower()] + synonyms_lower + description_lower.split()
+
             is_match = any(
                 term in col_name.lower()
-                or term in [s.lower() for s in col_info.get("synonyms", [])]
-                or term in col_info.get("description", "").lower()
+                or term in synonyms_lower
+                or term in description_lower
+                or _fuzzy_match(term, all_candidates)
                 for term in terms
             )
             if is_match:
@@ -63,10 +78,12 @@ def semantic_lookup(search_term: str, session_id: str = None) -> str:
             for col_name in table_info.get("columns", {}).keys()
         ]
         col_list = ", ".join(all_cols) if all_cols else "no columns found"
+        fk_list = ", ".join(schema.get("foreign_keys", [])) if schema.get("foreign_keys") else "none"
         return (
             f"No semantic matches found for '{search_term}'.\n"
             f"Available tables: {table_list}.\n"
             f"Available columns: {col_list}.\n"
+            f"Foreign keys: {fk_list}.\n"
             f"Try rephrasing using these terms."
         )
 

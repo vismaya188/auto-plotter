@@ -180,7 +180,7 @@ def select_visualization(intent_data: Dict[str, Any], data_records: List[Dict[st
     elif len(keys) == 2:
         chart_type, fig = _build_two_col_chart(df, keys, intent)
 
-    # Three+ columns
+    # Three+ columns — try keyword heuristics first, then fall back to LLM chart selection
     elif len(keys) >= 3:
         if "scatter" in intent or "relationship" in intent:
             chart_type, fig = _build_scatter(df, keys)
@@ -195,7 +195,6 @@ def select_visualization(intent_data: Dict[str, Any], data_records: List[Dict[st
                 fig = px.box(df, x=x_col, y=y_col, color=color_col, title=f"Box Plot of {y_col} by {x_col}")
                 chart_type = "box"
             elif len(numeric_cols) >= 2:
-                # If everything is numeric, pick first two
                 fig = px.box(df, x=keys[0], y=numeric_cols[0], title=f"Box Plot of {numeric_cols[0]} by {keys[0]}")
                 chart_type = "box"
         elif "bar" in intent:
@@ -213,6 +212,30 @@ def select_visualization(intent_data: Dict[str, Any], data_records: List[Dict[st
                 fig = px.bar(df, x=x_col, y=y_col, color=color_col, barmode="group", title=f"Grouped Bar of {y_col} by {x_col}")
                 chart_type = "bar"
             else:
+                chart_type, fig = _build_table(df)
+        else:
+            # No keyword match — delegate to LLM chart selector
+            try:
+                data_types = {k: str(df[k].dtype) for k in keys}
+                mapping = get_chart_mapping(intent, keys, data_types, len(df))
+                chart_type = mapping.chart_type
+
+                if chart_type == "line" and mapping.x_col in keys and mapping.y_col in keys:
+                    color = mapping.color_col if mapping.color_col in keys else None
+                    fig = px.line(df, x=mapping.x_col, y=mapping.y_col, color=color,
+                                  title=mapping.title or f"{mapping.y_col} over {mapping.x_col}")
+                elif chart_type == "bar" and mapping.x_col in keys and mapping.y_col in keys:
+                    color = mapping.color_col if mapping.color_col in keys else None
+                    fig = px.bar(df, x=mapping.x_col, y=mapping.y_col, color=color,
+                                 barmode="group", title=mapping.title or f"{mapping.y_col} by {mapping.x_col}")
+                elif chart_type == "scatter" and mapping.x_col in keys and mapping.y_col in keys:
+                    color = mapping.color_col if mapping.color_col in keys else None
+                    fig = px.scatter(df, x=mapping.x_col, y=mapping.y_col, color=color,
+                                     title=mapping.title or f"Scatter of {mapping.y_col} vs {mapping.x_col}")
+                else:
+                    chart_type, fig = _build_table(df)
+            except Exception as e:
+                logger.warning(f"LLM chart selection failed, using table fallback: {e}")
                 chart_type, fig = _build_table(df)
 
     # Fallback to a Plotly table if no other chart type fits

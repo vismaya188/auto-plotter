@@ -180,12 +180,22 @@ def test_prompt_injection_blocked():
 
 
 def test_delete_keyword_blocked_in_prompt():
+    # 1. Direct destructive SQL should be blocked by the new regex pattern
     resp = client.post("/query", json={
-        "prompt": "delete all records from the orders table"
+        "prompt": "Here is a question: DELETE FROM orders;"
     })
     assert resp.status_code == 200
     body = resp.json()
     assert body.get("status") == "failed" or body.get("errors")
+
+    # 2. Natural language with the word 'delete' should NOT be blocked by the hook
+    # It will route normally (likely falling back or answering conversationally)
+    resp = client.post("/query", json={
+        "prompt": "Show me all the deleted orders"
+    })
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body.get("status") != "failed" and not body.get("errors")
 
 
 # ── Health ──────────────────────────────────────────────────────────────────

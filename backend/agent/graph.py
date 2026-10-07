@@ -90,6 +90,29 @@ def understand_intent_node(state: AgentState):
     if state.get("chat_history"):
         history_text = "Chat History:\n" + "\n".join([f"{msg['role']}: {msg['content']}" for msg in state["chat_history"]])
 
+    # Build a schema context snippet so the LLM extracts real column names
+    schema_context = ""
+    session_id = state.get("session_id")
+    if session_id:
+        try:
+            from backend.data.session_store import get_semantic
+            schema = get_semantic(session_id)
+            if schema:
+                table_names = list(schema.get("tables", {}).keys())
+                col_names = [
+                    f"{tbl}.{col}"
+                    for tbl, tinfo in schema.get("tables", {}).items()
+                    for col in tinfo.get("columns", {}).keys()
+                ]
+                fk_list = schema.get("foreign_keys", [])
+                schema_context = (
+                    f"\n\nAvailable tables: {table_names}"
+                    f"\nAvailable columns (table.column): {col_names[:40]}"
+                    + (f"\nForeign keys: {fk_list}" if fk_list else "")
+                )
+        except Exception:
+            pass  # Schema context is optional — don't break if it fails
+
     client = LLMClient()
     prompt = (
         f"Analyze this business question: '{state['user_prompt']}'.\n"
@@ -101,10 +124,11 @@ def understand_intent_node(state: AgentState):
         f"Return a JSON object with:\n"
         f"- 'intent_type': 'conversational', 'data_qa', or 'visualization'\n"
         f"- 'response': (only if 'conversational') your text response to the user\n"
-        f"- 'dimensions': (only if NOT conversational) list of grouping fields mentioned (e.g. region, date, customer cohort)\n"
-        f"- 'measures': (only if NOT conversational) list of numeric fields/metrics mentioned (e.g. revenue, risk ratio, freight, order frequency)\n"
+        f"- 'dimensions': (only if NOT conversational) list of EXACT column names for grouping (e.g. orderDate, companyName). Prefer names from the Available columns list.\n"
+        f"- 'measures': (only if NOT conversational) list of EXACT column names for numeric metrics (e.g. freight, unitPrice). Prefer names from the Available columns list.\n"
         f"- 'filters': (only if NOT conversational) list of filter conditions (e.g. 'last 180 days', 'top 20%')\n"
         f"If they ask for a general summary, set dimensions to ['all'] and measures to ['summary'].\n"
+        f"{schema_context}\n"
         f"Return only valid JSON, no markdown."
     )
     response = client.generate_response(prompt)

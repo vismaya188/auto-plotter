@@ -29,9 +29,21 @@ INJECTION_PATTERNS = [
     "forget all",
     "bypass",
     "sudo",
-    "delete",
-    "drop",
     "trick"
+]
+
+# SQL command patterns that should never appear in a user business question.
+# Using word-boundary anchors to avoid false positives on words like "deleted orders".
+SQL_COMMAND_PATTERNS = [
+    r"\bDELETE\s+FROM\b",
+    r"\bDROP\s+TABLE\b",
+    r"\bDROP\s+DATABASE\b",
+    r"\bTRUNCATE\s+TABLE\b",
+    r"\bALTER\s+TABLE\b",
+    r"\bINSERT\s+INTO\b",
+    r"\bUPDATE\s+\w+\s+SET\b",
+    r"\bCREATE\s+TABLE\b",
+    r"\bGRANT\s+\w+\s+ON\b",
 ]
 
 
@@ -54,11 +66,17 @@ def sanitize_prompt(prompt: str) -> str:
             logger.warning(f"Hook decision: DENY — injection pattern '{pattern}'")
             raise SecurityViolation(f"🚨 WARNING: Do not try to trick me! I am a strong AI agent built with strict security hooks. Malicious input detected: pattern '{pattern}' is not allowed.")
 
+    # Block SQL commands typed directly in the prompt (e.g. "DROP TABLE sales")
+    prompt_upper = prompt.upper()
+    for pattern in SQL_COMMAND_PATTERNS:
+        if re.search(pattern, prompt_upper):
+            logger.warning(f"Hook decision: DENY — SQL command pattern '{pattern}' in prompt")
+            raise SecurityViolation(f"🚨 WARNING: Direct SQL commands are not allowed in the chat. Please describe what you want to know in plain English.")
+
     for pattern in AMBIGUOUS_PATTERNS:
         if re.search(pattern, prompt_lower):
             logger.info(f"Hook decision: WARN — ambiguous/conversational prompt matched '{pattern}'")
             # We no longer block this. The LLM intent node will route it appropriately.
-
 
     logger.info("Hook decision: ALLOW — prompt passed all checks")
     return prompt
