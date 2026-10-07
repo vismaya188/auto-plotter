@@ -230,56 +230,86 @@ async def get_session_info(session_id: str):
 
 @app.post("/query")
 async def run_query(request: QueryRequest):
-    """
-    Executes the full LangGraph agent workflow for a given prompt.
-    If session_id is provided and has ingested data, the agent queries
-    the user's uploaded dataset instead of the default sales DB.
-    """
-    try:
-        session_id = request.session_id or str(uuid.uuid4())
-        journal = AgentJournal(session_id=session_id)
+    from fastapi.responses import StreamingResponse
+    import json
 
-        # Session recovery: rehydrate from last checkpoint if available
-        recovered_state = journal.rehydrate_state()
-        if recovered_state:
-            initial_state = recovered_state
-            initial_state["_session_id"] = session_id
-            initial_state["user_prompt"] = request.prompt  # Always use latest prompt
-            initial_state["chat_history"] = request.chat_history or []
-        else:
-            initial_state = {
-                "_session_id": session_id,
-                "session_id": session_id,   # threads through graph for DB routing
-                "user_prompt": request.prompt,
-                "chat_history": request.chat_history or [],
-                "sql_retries": 0,
-                "errors": ""
-            }
+    session_id = request.session_id or str(uuid.uuid4())
+    journal = AgentJournal(session_id=session_id)
 
-        final_merged_state = initial_state.copy()
-
-        for s in agent_app.stream(initial_state):
-            node_name = list(s.keys())[0]
-            state_data = s[node_name]
-            final_merged_state.update(state_data)
-            journal.checkpoint(final_merged_state)
-
-        trace = final_merged_state.get("trace")
-        if trace:
-            trace.save(final_merged_state)
-
-        journal.clear_checkpoint()
-
-        return {
-            "status": final_merged_state.get("status", "unknown"),
-            "visualization": final_merged_state.get("visualization", {}),
-            "insights": final_merged_state.get("insights", {}),
-            "generated_sql": final_merged_state.get("generated_sql", ""),
-            "errors": final_merged_state.get("errors", ""),
-            "session_id": session_id
+    # Session recovery: rehydrate from last checkpoint if available
+    recovered_state = journal.rehydrate_state()
+    if recovered_state:
+        initial_state = recovered_state
+        initial_state["_session_id"] = session_id
+        initial_state["user_prompt"] = request.prompt  # Always use latest prompt
+        initial_state["chat_history"] = request.chat_history or []
+    else:
+        initial_state = {
+            "_session_id": session_id,
+            "session_id": session_id,
+            "user_prompt": request.prompt,
+            "chat_history": request.chat_history or [],
+            "sql_retries": 0,
+            "errors": ""
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
+    async def event_generator():
+        final_merged_state = initial_state.copy()
+        
+        try:
+            yield f"data: {json.dumps({'event': 'progress', 'message': '🚀 Initializing agent...'})}\n\n"
+            
+            async for s in agent_app.astream(initial_state):
+                node_name = list(s.keys())[0]
+                state_data = s[node_name]
+                final_merged_state.update(state_data)
+                journal.checkpoint(final_merged_state)
+                
+                # Friendly progress messages
+                msg = f"⚙️ Processing step: {node_name}"
+                if node_name == "understand_intent": msg = "🔍 Understanding your question..."
+                elif node_name == "lookup_semantics": msg = "📚 Checking data dictionary..."
+                elif node_name == "generate_sql": msg = "🔨 Generating database query..."
+                elif node_name == "validate_and_retrieve": msg = "✅ Validating and fetching data..."
+                elif node_name == "select_visualization": msg = "📊 Building chart..."
+                elif node_name == "generate_insight": msg = "🧠 Extracting insights..."
+                
+                yield f"data: {json.dumps({'event': 'progress', 'message': msg})}\n\n"
+
+            trace = final_merged_state.get("trace")
+            if trace:
+                trace.save(final_merged_state)
+
+            journal.clear_checkpoint()
+
+            final_result = {
+                "status": final_merged_state.get("status", "unknown"),
+                "visualization": final_merged_state.get("visualization", {}),
+                "insights": final_merged_state.get("insights", {}),
+                "generated_sql": final_merged_state.get("generated_sql", ""),
+                "errors": final_merged_state.get("errors", ""),
+                "session_id": session_id
+            }
+            
+            import math
+            def clean_nan(obj):
+                if isinstance(obj, float):
+                    if math.isnan(obj) or math.isinf(obj):
+                        return None
+                    return obj
+                elif isinstance(obj, dict):
+                    return {k: clean_nan(v) for k, v in obj.items()}
+                elif isinstance(obj, list) or isinstance(obj, tuple):
+                    return [clean_nan(v) for v in obj]
+                return obj
+
+            yield f"data: {json.dumps({'event': 'complete', 'result': clean_nan(final_result)})}\n\n"
+            
+        except Exception as e:
+            logger.error(f"Agent streaming error: {e}")
+            yield f"data: {json.dumps({'event': 'error', 'error': str(e)})}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
 @app.get("/health")

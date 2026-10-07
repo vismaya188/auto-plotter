@@ -21,3 +21,13 @@ env/
 .vscode/
 .idea/
 .DS_Store
+
+# Scratch and Tests
+scratch/
+.pytest_cache/
+.coverage
+data/sessions/
+
+# Logs and specific output files
+logs/
+autoplotter_arch.*

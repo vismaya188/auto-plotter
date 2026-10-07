@@ -86,12 +86,10 @@ def understand_intent_node(state: AgentState):
         trace.log_event("understand_intent", status="failed", error=str(e))
         return {"errors": str(e), "status": "failed"}
 
-    history_text = ""
-    if state.get("chat_history"):
-        history_text = "Chat History:\n" + "\n".join([f"{msg['role']}: {msg['content']}" for msg in state["chat_history"]])
-
     # Build a schema context snippet so the LLM extracts real column names
+    # and has conversational memory of what's loaded.
     schema_context = ""
+    system_prefix = ""
     session_id = state.get("session_id")
     if session_id:
         try:
@@ -110,8 +108,13 @@ def understand_intent_node(state: AgentState):
                     f"\nAvailable columns (table.column): {col_names[:40]}"
                     + (f"\nForeign keys: {fk_list}" if fk_list else "")
                 )
+                system_prefix = f"[SYSTEM] User currently has {len(table_names)} tables loaded: {', '.join(table_names)}.\n"
         except Exception:
             pass  # Schema context is optional — don't break if it fails
+
+    history_text = system_prefix
+    if state.get("chat_history"):
+        history_text += "Chat History:\n" + "\n".join([f"{msg['role']}: {msg['content']}" for msg in state["chat_history"]])
 
     client = LLMClient()
     prompt = (
@@ -269,15 +272,30 @@ def validate_and_retrieve_node(state: AgentState):
         }
 
     except Exception as e:
+        error_msg = str(e)
         new_retries = retries + 1
+        
+        # New targeted lookup logic for missing columns/tables
+        error_lower = error_msg.lower()
+        supplemental_info = ""
+        if "not found" in error_lower or "does not exist" in error_lower or "no column named" in error_lower:
+            import re
+            match = re.search(r"name '?([^']*)'?", error_msg) or re.search(r"column '?([^']*)'?", error_msg)
+            term = match.group(1) if match else error_msg
+            supplemental_info = semantic_lookup(term, session_id=session_id)
+            
+        error_context = error_msg
+        if supplemental_info:
+            error_context += f"\nHint: Here is the semantic mapping for the missing term: {supplemental_info}"
+
         trace.log_event("validate_and_retrieve", tool_called="data_retrieve",
                         hook_decision="DENY", retry_count=new_retries,
-                        status="failed", error=str(e))
+                        status="failed", error=error_msg)
         return {
-            "sql_validation": str(e),
+            "sql_validation": error_context,
             "sql_retries": new_retries,
             "status": "sql_error",
-            "errors": str(e)
+            "errors": error_msg
         }
 
 
@@ -300,7 +318,15 @@ def generate_insight_node(state: AgentState):
 
     data = state.get("query_result", [])
     if len(data) > 15:
-        data_str = f"Showing top 15 of {len(data)} rows: {data[:15]}"
+        try:
+            import pandas as pd
+            import numpy as np
+            df = pd.DataFrame(data)
+            # Replace NaNs with None so it's clean for the prompt
+            desc = df.describe(include='all').replace({np.nan: None}).to_dict()
+            data_str = f"Showing top 15 of {len(data)} rows: {data[:15]}\n\nSummary Statistics for all {len(data)} rows:\n{desc}"
+        except Exception:
+            data_str = f"Showing top 15 of {len(data)} rows: {data[:15]}"
     else:
         data_str = str(data)
 

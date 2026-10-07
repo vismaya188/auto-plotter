@@ -8,8 +8,31 @@ from fastapi.testclient import TestClient
 from backend.main import app
 from backend.data.session_store import get_session_db_path, session_has_data, SESSION_DB_DIR
 
-client = TestClient(app)
+import json
+class StreamTestClient(TestClient):
+    def post(self, url, *args, **kwargs):
+        resp = super().post(url, *args, **kwargs)
+        if url == "/query":
+            # parse the SSE stream
+            data = None
+            for line in resp.text.split("\n\n"):
+                if line.startswith("data: "):
+                    try:
+                        parsed = json.loads(line[6:])
+                        if parsed.get("event") == "complete":
+                            data = parsed.get("result")
+                    except:
+                        pass
+            class MockResponse:
+                def __init__(self, data, status_code):
+                    self._data = data
+                    self.status_code = status_code
+                def json(self):
+                    return self._data
+            return MockResponse(data, resp.status_code)
+        return resp
 
+client = StreamTestClient(app)
 @pytest.fixture(autouse=True)
 def clean_sessions():
     """Ensure sessions dir exists and clean up after tests."""

@@ -31,6 +31,7 @@ def verify_grounding(generated_text: str, source_data: str) -> bool:
     - Be LENIENT with general data overviews (e.g. if the source data is a table schema or SUMMARIZE output).
     - It is ACCEPTABLE for numbers to be formatted for readability (e.g. '1.5k' instead of 1500, or '12%' instead of 0.12).
     - It is ACCEPTABLE to count the number of columns, rows, or data points.
+    - If the Source Data explicitly states it is a truncated sample (e.g., 'Showing top 15 of X rows'), DO NOT penalize claims that describe the general structure of the data or explicitly state they are analyzing a sample. However, still flag invented global totals (like "Total revenue is $5M" if not present).
     
     Answer ONLY with 'YES' (if there are severe, objectively ungrounded numerical hallucinations) or 'NO' (if the claim is factually grounded). Do not explain your reasoning.
     """
@@ -55,6 +56,7 @@ def generate_structured_insight(intent: str, data_summary: str) -> dict:
     CRITICAL RULES:
     1. DO NOT invent, calculate, or hallucinate any numbers.
     2. ONLY use numbers that appear exactly in the Data Summary or can be safely logically deduced.
+    3. If the Data Summary says it is truncated (e.g., 'Showing top 15 of X rows'), DO NOT attempt to calculate overall totals, sums, or averages for the entire dataset. Acknowledge you are looking at a sample and only provide insights on the visible data.
     
     User Intent: {intent}
     Data Summary: {data_summary}

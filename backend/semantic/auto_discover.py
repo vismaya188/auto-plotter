@@ -213,11 +213,22 @@ def _llm_discover(raw: dict, session_id: str) -> dict:
             "columns": columns_dict
         }
 
+    # Auto-generate KPIs for numeric measures
+    auto_kpis = {}
+    for table_name, table in tables_output.items():
+        for col_name, col_info in table["columns"].items():
+            if col_info["role"] == "measure" and "SUM" in col_info.get("allowed_aggregations", []):
+                kpi_key = f"total_{col_name}"
+                auto_kpis[kpi_key] = {
+                    "expression": f"SUM({table_name}.{col_name})",
+                    "description": f"Total sum of {col_name} across all records in {table_name}"
+                }
+
     return {
         "tables": tables_output,
         "foreign_keys": parsed.foreign_keys,
         "date_filters": _build_date_filters(all_columns),
-        "kpis": {}  # KPIs can be added by the user later
+        "kpis": auto_kpis
     }
 
 
@@ -258,9 +269,20 @@ def _rule_based_fallback(raw: dict) -> dict:
             "columns": columns_dict
         }
 
+    # Auto-generate KPIs for numeric measures
+    auto_kpis = {}
+    for table_name, table in tables_output.items():
+        for col_name, col_info in table["columns"].items():
+            if col_info["role"] == "measure" and "SUM" in col_info.get("allowed_aggregations", []):
+                kpi_key = f"total_{col_name}"
+                auto_kpis[kpi_key] = {
+                    "expression": f"SUM({table_name}.{col_name})",
+                    "description": f"Total sum of {col_name} across all records in {table_name}"
+                }
+
     return {
         "tables": tables_output,
         "foreign_keys": [],
         "date_filters": _build_date_filters(all_columns),
-        "kpis": {}
+        "kpis": auto_kpis
     }

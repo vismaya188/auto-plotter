@@ -208,11 +208,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(body)
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                throw new Error(data.detail || 'Failed to process request (HTTP Error)');
+                const errData = await response.json();
+                throw new Error(errData.detail || 'Failed to process request (HTTP Error)');
             }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let data = null;
+            let buffer = '';
+            
+            let progressText = statusContainer.querySelector('.progress-text');
+            if (!progressText) {
+                progressText = document.createElement('div');
+                progressText.className = 'progress-text';
+                progressText.style.marginTop = '15px';
+                progressText.style.color = '#38bdf8';
+                progressText.style.fontWeight = '500';
+                progressText.style.fontSize = '1.1rem';
+                statusContainer.appendChild(progressText);
+            }
+            progressText.textContent = "🚀 Starting...";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n\n');
+                buffer = lines.pop(); // keep incomplete chunk
+                
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const dataStr = line.substring(6);
+                        try {
+                            const parsed = JSON.parse(dataStr);
+                            if (parsed.event === 'progress') {
+                                progressText.textContent = parsed.message;
+                            } else if (parsed.event === 'complete') {
+                                data = parsed.result;
+                            } else if (parsed.event === 'error') {
+                                throw new Error(parsed.error);
+                            }
+                        } catch (e) {
+                            if (e.name !== 'SyntaxError') throw e;
+                        }
+                    }
+                }
+            }
+
+            if (!data) throw new Error("Connection closed without receiving final data.");
 
             if (data.status === 'failed' || data.errors) {
                 throw new Error(data.errors || 'The agent completely failed to process the request.');
